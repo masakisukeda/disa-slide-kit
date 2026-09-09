@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 差し替え用のプレースホルダロゴ。自社のロゴSVGに置き換えてください。
+     横長（およそ 6.3 : 1）で作ると、既存のヘッダー・フッターの余白に収まります。 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 299.52 47.67">
+  <rect x="1" y="1" width="297.52" height="45.67" rx="6"
+        fill="none" stroke="#438093" stroke-width="2" stroke-dasharray="6 4"/>
+  <text x="149.76" y="30.5" text-anchor="middle"
+        font-family="Inter, 'Noto Sans JP', sans-serif" font-size="18"
+        font-weight="700" letter-spacing="2" fill="#438093">YOUR LOGO</text>
+</svg>

@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <title>[クライアント名]様向け ご提案スライド | 〇〇株式会社</title>
+  <meta name="description" content="[クライアント名]様向けの資料です。">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Noto+Sans+JP:wght@400;600;700;900&display=swap" rel="stylesheet">
+  
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="googlebot" content="noindex,nofollow">
+
+  <style>
+    /* Premium Slide Core Styles - AM95 OG Neon パレット */
+    /* 構造: クールグレーのランプ（黒→白）で面をつくり、アクセントはネオンイエロー1色のみ */
+    :root {
+      /* Grey Ramp - 面・区切り・補足テキストはすべてここから取る */
+      --ink-900: #0b0b0b;
+      --ink-800: #17171a;
+      --ink-700: #2c2c31;
+      --ink-600: #424247;
+      --ink-500: #63656e;
+      --ink-400: #929499;
+      --ink-300: #adafb2;
+      --ink-200: #c1c7cd;
+      --ink-100: #d5dce0;
+
+      /* ------------------------------------------------------------------
+         アクセントカラー
+         既定は AM95 OG Neon のイエロー。
+
+         ★案件でクライアントカラーを使う場合は、CSSではなく
+           表紙（1枚目のsection）に data-accent="#xxxxxx" を書くだけ。
+           派生色は末尾のスクリプトが自動計算する。ここは触らないこと。
+           例: <section class="slide slide-dark slide-lead active"
+                        id="slide-1" data-accent="#0b2e4f">
+
+         以下は data-accent を指定しなかったときの既定値。
+         ------------------------------------------------------------------ */
+
+      /* プリセット: Neon Yellow（既定） */
+      --volt: #d7ff00;
+      --volt-deep: #a8c400;
+      --volt-rgb: 215, 255, 0;
+
+      --accent: var(--volt);            /* 主アクセント。チップ・バー・塗り */
+      --accent-deep: var(--volt-deep);  /* ライト面で線・記号に使う濃いめ（✓マーク等） */
+      --accent-rgb: var(--volt-rgb);    /* 透過ウォッシュ用。カンマ区切りのRGB値 */
+      --accent-on-dark: var(--volt);    /* ダーク面に置く文字・バー。暗い色を指定されたとき明るく逃がす */
+      --on-accent: var(--ink-700);      /* アクセント塗りの「上」に乗る文字色 */
+      --accent-tint: #fbffe9;           /* アクセントをごく薄く敷いた面（card-accent等） */
+
+      /* ダーク面のグラデ（AM95のソール）。アクセント側は単色運用でグラデを使わない */
+      --grad-ink: linear-gradient(160deg, #2c2c31 0%, #0b0b0b 70%);
+
+      /* Surfaces */
+      --bg: #ededed;
+      --panel: #dfdfdf;
+      --c-surface: #f5f5f5;
+      --c-ink: var(--ink-700);    /* 見出し。真っ黒を避けた濃いグレー */
+      --text: var(--ink-600);     /* 本文 */
+      --c-muted: var(--ink-500);  /* 補足・キャプション */
+      --text-muted: #c1c7cd;  /* ダーク面の補足テキスト */
+      --surface-border: #d0d0d0;
+      --primary-dark: #0b0b0b;
+
+      /* 旧名エイリアス - 既存案件からコピーしたHTMLをそのまま動かすため。新規では使わない */
+      --blue: var(--ink-500);
+      --blue-deep: var(--ink-700);
+      --blue-soft: var(--ink-100);
+      --brand-volt: var(--accent);
+      --accent-gold: var(--accent-deep);
+      --accent-rose: var(--ink-400);
+
+      /* Typography Scale */
+      --fs-title-lead: 50px;
+      --fs-title-slide: 36px;
+      --fs-card-title: 20px;   
+      --fs-body: 15px;         
+      --fs-caption: 13px;      
+
+      --transition-smooth: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--primary-dark);
+      color: var(--text);
+      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #presentation-viewport {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #presentation-wrapper {
+      width: 1280px;
+      height: 720px;
+      position: relative;
+      flex-shrink: 0;
+      transform-origin: center center;
+      background: var(--primary-dark);
+      box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    /* Slide Base Component */
+    .slide {
+      position: absolute;
+      inset: 0;
+      width: 1280px;
+      height: 720px;
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+      transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.8s;
+      transform: scale(0.97) translateY(8px);
+      padding: 45px 80px 35px 80px; 
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-sizing: border-box;
+      z-index: 1;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      visibility: visible;
+      transform: scale(1) translateY(0);
+      z-index: 2;
+    }
+
+    .slide-light {
+      background: #f2f4f6;
+      color: var(--text);
+    }
+
+    .slide-dark {
+      background: var(--grad-ink);
+      color: #ffffff;
+    }
+
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 15px;
+      border-bottom: 1px solid rgba(var(--accent-rgb), 0.12);
+      padding-bottom: 12px;
+    }
+    
+    .slide-dark .slide-header {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .slide-header img {
+      height: 28px;
+    }
+    
+    .slide-dark .slide-header img {
+      filter: brightness(0) invert(1) drop-shadow(0 2px 4px rgba(255,255,255,0.05));
+    }
+
+    .slide-header .slide-tag {
+      font-size: var(--fs-caption);
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      color: var(--on-accent);
+      background: var(--accent);
+      padding: 3px 12px;
+      border-radius: 30px;
+    }
+    
+    .slide-dark .slide-tag {
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+    }
+
+    .slide-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      font-size: var(--fs-caption);
+      font-weight: 700;
+      color: var(--c-muted);
+      letter-spacing: 0.05em;
+      border-top: 1px solid rgba(var(--accent-rgb), 0.08);
+      padding-top: 12px;
+    }
+    
+    .slide-dark .slide-footer {
+      color: rgba(255, 255, 255, 0.4);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .slide-page-number {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--on-accent);
+      background: var(--accent);
+      padding: 2px 10px;
+      border-radius: 6px;
+      letter-spacing: 0.05em;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .slide-dark .slide-page-number {
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+    }
+
+    .slide-title-area {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .slide-title {
+      font-size: var(--fs-title-slide);
+      font-weight: 900;
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+      color: var(--c-ink);
+      position: relative;
+      display: inline-block;
+    }
+    
+    .slide-dark .slide-title {
+      color: #ffffff;
+    }
+
+    .slide-dark .slide-title::after {
+      background: var(--accent-on-dark);
+    }
+
+    .slide-title::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -6px;
+      width: 40px;
+      height: 3px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    .slide-subtitle {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--blue-deep);
+      margin-top: 6px;
+      letter-spacing: 0.02em;
+      text-align: left;
+    }
+    
+    /* ダーク面のサブタイトルは白。アクセント色で置くと読みにくく、
+       同じ面のアクセント（見出し下のバー等）と役割がぶつかるため */
+    .slide-dark .slide-subtitle {
+      color: #ffffff;
+    }
+
+    .slide-body {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      width: 100%;
+      margin-bottom: 15px; 
+    }
+
+    /* Layout Utilities */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      width: 100%;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      width: 100%;
+    }
+
+    /* Card Design */
+    .card {
+      background: #ffffff;
+      border: 1px solid var(--surface-border);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(31, 64, 75, 0.015);
+      transition: var(--transition-smooth);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--accent);
+      opacity: 0.9;
+    }
+
+    .slide-dark .card {
+      background: var(--ink-800);
+      border: 1px solid rgba(var(--accent-rgb), 0.25);
+    }
+
+    .slide-dark .card::before {
+      background: var(--accent-on-dark);
+    }
+
+    .card.card-accent {
+      background: var(--accent-tint);
+    }
+
+    .card.card-accent::before {
+      background: var(--accent);
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(var(--accent-rgb), 0.08);
+      border-color: var(--accent);
+    }
+
+    .card-num {
+      font-size: 11px;
+      font-weight: 900;
+      color: var(--on-accent);
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+      display: inline-block;
+      background: var(--accent);
+      padding: 2px 10px;
+      border-radius: 20px;
+      align-self: flex-start;
+    }
+
+    .card-title {
+      font-size: var(--fs-card-title);
+      font-weight: 800;
+      color: var(--c-ink);
+      margin-bottom: 8px;
+      line-height: 1.35;
+    }
+
+    .slide-dark .card-title {
+      color: #ffffff;
+    }
+
+    .card-text {
+      font-size: var(--fs-body);
+      font-weight: 600;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    .slide-dark .card-text {
+      color: var(--text-muted);
+    }
+
+    /* Animation */
+    .reveal {
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    
+    .slide.active .reveal.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Pricing Card Styles */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      width: 100%;
+    }
+    
+    .pricing-card {
+      background: #ffffff;
+      border: 1px solid var(--surface-border);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 12px rgba(31, 64, 75, 0.015);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition-smooth);
+      height: 100%;
+    }
+    
+    .pricing-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--accent);
+    }
+
+    
+    .pricing-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(31, 64, 75, 0.04);
+    }
+    
+    .pricing-card .plan-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: var(--accent);
+      color: var(--on-accent);
+      margin-bottom: 12px;
+      letter-spacing: 0.05em;
+    }
+
+    
+    .pricing-card .plan-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--c-ink);
+      margin-bottom: 8px;
+    }
+    
+    .pricing-card .plan-price {
+      font-size: 28px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 800;
+      color: var(--c-ink);
+      border-bottom: 1px solid var(--surface-border);
+      padding-bottom: 12px;
+      margin-bottom: 15px;
+    }
+    
+    .pricing-card .plan-price span {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--c-muted);
+      margin-left: 4px;
+    }
+    
+    
+    .pricing-card .plan-features {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 15px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .pricing-card .plan-features li {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.5;
+      display: flex;
+      align-items: flex-start;
+    }
+    
+    .pricing-card .plan-features li::before {
+      content: '✓';
+      color: var(--accent-deep);
+      font-weight: bold;
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+    
+    
+    .pricing-card .plan-note {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--c-muted);
+      border-top: 1px dashed var(--surface-border);
+      padding-top: 10px;
+      margin-top: auto;
+    }
+
+    /* Profile Slide Style: 担当者・会社概要（1枚統合版） / patterns.html PATTERN 14 と同一実装 */
+    .profile-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      width: 100%;
+    }
+
+    .profile-card {
+      min-height: 150px;
+    }
+
+    .profile-person-card {
+      display: grid;
+      grid-template-columns: 170px 1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .profile-photo-wrap {
+      display: flex;
+      align-items: stretch;
+    }
+
+    .profile-photo {
+      width: 100%;
+      height: 100%;
+      min-height: 210px;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 1px solid var(--surface-border);
+      background: #e9ebee;
+    }
+
+    .profile-body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .profile-kicker {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      color: var(--blue-deep);
+      margin-bottom: 8px;
+    }
+
+    .profile-name {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--c-ink);
+      margin-bottom: 8px;
+    }
+
+    .profile-role {
+      font-size: 11px;
+      line-height: 1.55;
+      font-weight: 700;
+      color: var(--c-muted);
+      margin-bottom: 10px;
+    }
+
+    .profile-copy {
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.62;
+      color: var(--text);
+    }
+
+    .company-overview {
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      row-gap: 8px;
+      column-gap: 12px;
+      margin-top: 6px;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .company-overview dt {
+      color: var(--c-muted);
+      font-weight: 800;
+    }
+
+    .company-overview dd {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .company-clients {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(var(--accent-rgb), 0.35);
+      font-size: 11px;
+      line-height: 1.55;
+      color: var(--c-muted);
+    }
+
+    /* Lead Slide */
+    .slide-lead {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 60px 80px;
+    }
+    
+    .slide-lead .slide-body {
+      align-items: center;
+      text-align: center;
+      justify-content: center;
+    }
+    
+    .slide-lead .logo-lead {
+      width: 140px;
+      margin-bottom: 25px;
+      filter: brightness(0) invert(1);
+    }
+    
+    .slide-lead .title-lead {
+      font-size: var(--fs-title-lead);
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1.25;
+      margin-bottom: 15px;
+      letter-spacing: -0.01em;
+      text-align: center;
+    }
+
+    .slide-lead .subtitle-lead {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent-on-dark);
+      max-width: 800px;
+      margin: 0 auto 30px auto;
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    .slide-lead .badge-lead {
+      border: 2px solid var(--accent-on-dark);
+      color: var(--accent-on-dark);
+      font-weight: 800;
+      font-size: var(--fs-caption);
+      letter-spacing: 0.15em;
+      padding: 4px 16px;
+      border-radius: 40px;
+      display: inline-block;
+      margin-bottom: 30px;
+      background: rgba(var(--accent-rgb), 0.05);
+    }
+
+    /* Lists */
+    .bullet-list {
+      list-style: none;
+      font-size: var(--fs-body);
+      font-weight: 600;
+      line-height: 1.8;
+      text-align: left;
+    }
+
+    .bullet-list li {
+      position: relative;
+      padding-left: 20px;
+      margin-bottom: 8px;
+    }
+
+    .bullet-list li::before {
+      content: '•';
+      position: absolute;
+      left: 5px;
+      color: var(--blue);
+      font-size: 18px;
+      line-height: 1;
+      top: 0px;
+    }
+
+    .slide-dark .bullet-list li::before {
+      color: var(--accent-on-dark);
+    }
+
+    /* Navigation UI */
+    #nav-controls {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      background: rgba(11, 11, 11, 0.95);
+      border: 1px solid rgba(var(--accent-rgb), 0.2);
+      padding: 8px 16px;
+      border-radius: 999px;
+      z-index: 1000;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      backdrop-filter: blur(8px);
+      gap: 12px;
+      transition: opacity 0.3s;
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #ffffff;
+      opacity: 0.7;
+      transition: var(--transition-smooth);
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      opacity: 1;
+      background: var(--accent);
+      color: var(--on-accent);
+      transform: scale(1.05);
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.2;
+      cursor: not-allowed;
+    }
+
+    .nav-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    .toc-select-wrapper select {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      padding-right: 20px;
+      cursor: pointer;
+      outline: none;
+      max-width: 280px;
+    }
+
+    .toc-select-wrapper select option {
+      background: var(--primary-dark);
+      color: #ffffff;
+    }
+
+    #page-indicator {
+      color: rgba(255, 255, 255, 0.6);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      min-width: 45px;
+      text-align: center;
+    }
+
+    #progress-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      border-bottom-left-radius: 999px;
+      border-bottom-right-radius: 999px;
+      overflow: hidden;
+    }
+
+    #progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent-on-dark);
+      transition: width 0.3s ease;
+    }
+
+    /* ------------------------------------------------------------------
+       制作用: アクセントカラー・ピッカー（表紙のみ表示）
+       表紙で色を試して決めるためのUI。印刷・PDF書き出しでは自動的に消える。
+       納品前に、このCSSブロックと表紙HTMLの .accent-picker ブロックを削除する。
+       ------------------------------------------------------------------ */
+    .accent-picker {
+      position: absolute;
+      right: 80px;   /* スライドの左右パディングに合わせる */
+      bottom: 92px;  /* フッターに重ならない高さ */
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 5px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(6px);
+      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+      opacity: 0.4;
+      transition: opacity 0.3s;
+    }
+
+    .accent-picker:hover,
+    .accent-picker:focus-within {
+      opacity: 1;
+    }
+
+    .accent-picker input[type="color"] {
+      width: 18px;
+      height: 18px;
+      padding: 0;
+      border: none;
+      border-radius: 50%;
+      background: none;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .accent-picker input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+
+    .accent-picker input[type="color"]::-webkit-color-swatch {
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 50%;
+    }
+
+    .accent-picker input[type="text"] {
+      width: 58px;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #ffffff;
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    .accent-picker input[type="text"].is-invalid { color: #ff8a8a; }
+
+    @media print {
+      .accent-picker { display: none !important; }
+    }
+
+    @media print {
+      @page {
+        size: 1280px 720px;
+        margin: 0;
+      }
+
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      html,
+      body {
+        width: 1280px !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+        background: #ffffff !important;
+      }
+
+      #presentation-viewport,
+      #presentation-wrapper {
+        display: block !important;
+        width: 1280px !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+        transform: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+      }
+
+      .slide {
+        position: relative !important;
+        inset: auto !important;
+        width: 1280px !important;
+        height: 720px !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+        transform: none !important;
+        transition: none !important;
+        page-break-after: always !important;
+        break-after: page !important;
+      }
+
+      .slide:last-child {
+        page-break-after: auto !important;
+        break-after: auto !important;
+      }
+
+      .reveal {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        transition: none !important;
+      }
+
+      #nav-controls {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="presentation-viewport">
+    <div id="presentation-wrapper">
+
+      <!-- ==================== SLIDE 1 (TITLE) ====================
+           クライアントカラーを使う場合は、下の section に
+             data-accent="#0b2e4f"
+           のように1色だけ足す。派生色（濃いめ・ダーク面用・文字色・
+           ティント）は末尾のスクリプトが自動計算するので、CSSは触らない。
+           属性を書かなければ既定のネオンイエローのまま。
+           ========================================================== -->
+      <section class="slide slide-dark slide-lead active" id="slide-1">
+        <!-- ▼制作用: アクセントカラー・ピッカー。納品前にこのブロックごと削除する
+             使い方: 色を選ぶかカラーコードを直接打つと、デッキ全体に即反映される。
+                     決まったら、そのコードを上の section の data-accent に書く。 -->
+        <div class="accent-picker">
+          <input type="color" value="#d7ff00" aria-label="アクセントカラーを選ぶ">
+          <input type="text" value="#d7ff00" maxlength="7" spellcheck="false" aria-label="カラーコード">
+        </div>
+        <!-- ▲制作用ここまで -->
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PRESENTATION</span>
+        </div>
+        <div class="slide-body">
+          <div class="reveal"><span class="badge-lead">FOR [クライアント名]</span></div>
+          <h1 class="title-lead reveal">[クライアント名]様向け<br>ご提案スライドタイトル</h1>
+          <p class="subtitle-lead reveal">サブタイトル・概要などをここに記述します。</p>
+        </div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span>COPYRIGHT © 〇〇株式会社 ALL RIGHTS RESERVED</span>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 2 (GRID) ==================== -->
+      <section class="slide slide-light" id="slide-2">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">ご提案内容</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">2カラムカードレイアウト</h2>
+          <p class="slide-subtitle">左右に整理して伝える構成です。</p>
+        </div>
+        <div class="slide-body">
+          <div class="grid-2">
+            <div class="card reveal">
+              <div>
+                <span class="card-num">POINT 01</span>
+                <h3 class="card-title">課題の整理</h3>
+                <p class="card-text">ここに左側のポイント説明が入ります。簡潔に箇条書きや文章で記述します。</p>
+              </div>
+            </div>
+            <div class="card card-accent reveal">
+              <div>
+                <span class="card-num">POINT 02</span>
+                <h3 class="card-title">解決策の提示</h3>
+                <p class="card-text">ここに右側のポイント説明が入ります。強調カード（accent）を使用して視線を集めることができます。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">2 / 6</span>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 3 (LIST) ==================== -->
+      <section class="slide slide-light" id="slide-3">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">詳細データ</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">リスト表現と詳細</h2>
+          <p class="slide-subtitle">リストを使って細かな情報を整理して伝えます。</p>
+        </div>
+        <div class="slide-body">
+          <div class="grid-2">
+            <div class="card reveal">
+              <div>
+                <h3 class="card-title">特徴リスト</h3>
+                <ul class="bullet-list">
+                  <li>主要な機能やベネフィットその1を記述します。</li>
+                  <li>導入することによるメリットその2を分かりやすく書きます。</li>
+                  <li>サポート体制など、補足説明その3。</li>
+                </ul>
+              </div>
+            </div>
+            <div class="card reveal">
+              <div>
+                <h3 class="card-title">補足解説</h3>
+                <p class="card-text">右側に自由な説明スペースを配置して、リストの補足を行います。デザイン変数を活かした上品な設計です。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">3 / 6</span>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 4 (担当者・会社概要 1枚統合版 / patterns.html PATTERN 14) ==================== -->
+      <section class="slide slide-light" id="slide-4">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 14</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">担当者・会社概要（1枚統合版）</h2>
+          <p class="slide-subtitle">本サービスを運営する担当者と、会社の基本情報</p>
+        </div>
+        <div class="slide-body">
+          <div class="profile-grid reveal">
+            <div class="card profile-card profile-person-card">
+              <div class="profile-photo-wrap">
+                <img class="profile-photo" src="./profile-photo.svg" alt="担当者の顔写真">
+              </div>
+              <div class="profile-body">
+                <div class="profile-kicker">担当者プロフィール</div>
+                <div class="profile-name">〇〇 太郎</div>
+                <div class="profile-role">〇〇株式会社 代表取締役 / 〇〇株式会社 顧問</div>
+                <p class="profile-copy">ここに担当者の経歴を書く。出身・生年・学歴から始めて、職歴を時系列で並べ、いまの立場に至る流れが1本でつながるようにする。相手が「この人に任せて大丈夫か」を判断する材料になる事実（実績の規模、在籍年数、関わった案件の種類）を具体的な数字で入れる。300字前後が目安。</p>
+              </div>
+            </div>
+            <div class="card profile-card">
+              <div class="profile-kicker">会社概要</div>
+              <div class="profile-name">〇〇株式会社</div>
+              <dl class="company-overview">
+                <dt>英語表記</dt>
+                <dd>〇〇 Inc.</dd>
+                <dt>代表者</dt>
+                <dd>〇〇 太郎</dd>
+                <dt>設立</dt>
+                <dd>20〇〇年〇月〇日</dd>
+                <dt>所在地</dt>
+                <dd>〇〇県〇〇市〇〇 1-2-3</dd>
+                <dt>事業内容</dt>
+                <dd>事業内容をここに書く</dd>
+                <dt>登録番号</dt>
+                <dd>T0000000000000</dd>
+              </dl>
+              <p class="company-clients">主な取引先：〇〇株式会社、〇〇株式会社 ほか</p>
+            </div>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">4 / 6</span>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 5 (PRICING) ==================== -->
+      <section class="slide slide-light" id="slide-5">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PRICING PLAN</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">お見積もり・ご提案プラン</h2>
+          <p class="slide-subtitle">ご要望や実施規模に合わせた、10万円・20万円の2パターンのプランです。</p>
+        </div>
+        <div class="slide-body">
+          <div class="pricing-grid reveal">
+            <!-- Plan A (10万) -->
+            <div class="pricing-card">
+              <div>
+                <span class="plan-badge">PLAN A</span>
+                <h3 class="plan-title">ライトプラン（基本パッケージ）</h3>
+                <div class="plan-price">¥100,000<span>/ 月 (税別)</span></div>
+                <ul class="plan-features">
+                  <li>月1回のオンラインミーティング</li>
+                  <li>その他、必要に応じたサポート・実務支援</li>
+                  <li>ディレクション業務の整理・課題の壁打ち</li>
+                  <li>オンラインによるテキスト相談サポート（随時）</li>
+                </ul>
+              </div>
+              <p class="plan-note">※月次の定例オンライン会議を中心に、必要なアドバイザリーを行います。</p>
+            </div>
+            
+            <!-- Plan B (20万) -->
+            <div class="pricing-card">
+              <div>
+                <span class="plan-badge">PLAN B</span>
+                <h3 class="plan-title">スタンダードプラン（推奨パッケージ）</h3>
+                <div class="plan-price">¥200,000<span>/ 月 (税別)</span></div>
+                <ul class="plan-features">
+                  <li>週1回のオンラインミーティング</li>
+                  <li>特定課題のプロジェクト推進・PMO支援</li>
+                  <li>課題ヒアリングから施策実行までの伴走サポート</li>
+                  <li>ドキュメントの整理および再現性ある仕組みづくり</li>
+                </ul>
+              </div>
+              <p class="plan-note">※週次の定例会議と具体的なプロジェクト推進業務を巻き取ります。</p>
+            </div>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">5 / 6</span>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 6 (END) ==================== -->
+      <section class="slide slide-dark slide-lead" id="slide-6">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">THANK YOU</span>
+        </div>
+        <div class="slide-body">
+          <div class="badge-lead reveal">CO-CREATION FUTURE</div>
+          <h1 class="title-lead reveal">ご清聴ありがとうございました</h1>
+          <p class="subtitle-lead reveal">未来の共創に向けて、ディレクションの力でサポートいたします。</p>
+        </div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- NAVIGATION CONTROL BAR -->
+  <div id="nav-controls">
+    <button id="prev-btn" class="nav-btn" disabled aria-label="前のスライド">
+      <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+    </button>
+    
+    <div class="toc-select-wrapper">
+      <select id="toc-select" aria-label="スライド選択">
+        <option value="slide-1">1. 表紙</option>
+        <option value="slide-2">2. ご提案内容</option>
+        <option value="slide-3">3. 詳細データ</option>
+        <option value="slide-4">4. 担当者・会社概要（統合版）</option>
+        <option value="slide-5">5. 料金プラン</option>
+        <option value="slide-6">6. 結び</option>
+      </select>
+    </div>
+
+    <span id="page-indicator">1 / 6</span>
+
+    <button id="next-btn" class="nav-btn" aria-label="次のスライド">
+      <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+    </button>
+
+    <div id="progress-bar">
+      <div id="progress-bar-fill"></div>
+    </div>
+  </div>
+
+  <!-- ------------------------------------------------------------------
+       アクセントカラーの自動生成
+       表紙に data-accent="#xxxxxx" があれば、そこから派生色を計算して
+       CSS変数を上書きする。属性がなければ何もしない（既定色のまま）。
+       ・--accent-deep    ライト面の線・✓記号。白地で3:1を満たすまで暗くする
+       ・--accent-on-dark ダーク面の文字・バー。黒地で4.5:1を満たすまで明るくする
+       ・--on-accent      アクセント塗りの上に乗る文字。明暗どちらか読める方
+       ・--accent-tint    アクセントを8%だけ白に混ぜた面
+       ------------------------------------------------------------------ -->
+  <script>
+    (function () {
+      function lum(c) {
+        var a = c.map(function (v) {
+          v /= 255;
+          return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+        });
+        return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+      }
+      function ratio(x, y) {
+        var a = lum(x), b = lum(y);
+        return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+      }
+      function toHsl(c) {
+        var r = c[0] / 255, g = c[1] / 255, b = c[2] / 255;
+        var mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+        var hh = 0, s = 0, l = (mx + mn) / 2;
+        if (d) {
+          s = l > 0.5 ? d / (2 - mx - mn) : d / (mx + mn);
+          hh = mx === r ? ((g - b) / d + (g < b ? 6 : 0)) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+          hh /= 6;
+        }
+        return [hh, s, l];
+      }
+      function toRgb(hsl) {
+        var hh = hsl[0], s = hsl[1], l = hsl[2];
+        if (!s) { var v = Math.round(l * 255); return [v, v, v]; }
+        var q = l < 0.5 ? l * (1 + s) : l + s - l * s, p = 2 * l - q;
+        function ch(t) {
+          if (t < 0) t += 1; if (t > 1) t -= 1;
+          if (t < 1 / 6) return p + (q - p) * 6 * t;
+          if (t < 1 / 2) return q;
+          if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+          return p;
+        }
+        return [ch(hh + 1 / 3), ch(hh), ch(hh - 1 / 3)].map(function (v) { return Math.round(v * 255); });
+      }
+      function hex(c) {
+        return '#' + c.map(function (v) {
+          return ('0' + Math.max(0, Math.min(255, v)).toString(16)).slice(-2);
+        }).join('');
+      }
+      // 明度を動かしながら、目標背景に対して target 比を超える最初の色を返す
+      function fit(rgb, bg, dir, target) {
+        var hsl = toHsl(rgb);
+        for (var i = 0; i <= 100; i++) {
+          var l = hsl[2] + dir * i / 100;
+          if (l < 0 || l > 1) break;
+          var cand = toRgb([hsl[0], hsl[1], l]);
+          if (ratio(cand, bg) >= target) return cand;
+        }
+        return dir < 0 ? [0, 0, 0] : [255, 255, 255];
+      }
+
+      var DARK = [11, 11, 11];    // --ink-900。ダーク面の背景
+      var LIGHT = [255, 255, 255];
+      var INK = [44, 44, 49];     // --ink-700
+
+      // #abc / #aabbcc を受け付ける。読めなければ false を返して何もしない
+      function apply(raw) {
+        var m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(String(raw == null ? '' : raw).trim());
+        if (!m) return false;
+        var h = m[1];
+        if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+        var base = [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+
+        var deep = ratio(base, LIGHT) >= 3 ? base : fit(base, LIGHT, -1, 3);
+        var onDark = ratio(base, DARK) >= 4.5 ? base : fit(base, DARK, 1, 4.5);
+        var onAccent = ratio(base, INK) >= ratio(base, LIGHT) ? '#2c2c31' : '#ffffff';
+        var tint = base.map(function (v) { return Math.round(v * 0.08 + 255 * 0.92); });
+
+        var s = document.documentElement.style;
+        s.setProperty('--accent', hex(base));
+        s.setProperty('--accent-rgb', base.join(', '));
+        s.setProperty('--accent-deep', hex(deep));
+        s.setProperty('--accent-on-dark', hex(onDark));
+        s.setProperty('--on-accent', onAccent);
+        s.setProperty('--accent-tint', hex(tint));
+        return hex(base);
+      }
+
+      // 現在効いているアクセント色。指定がなければCSSの既定値が返る
+      function current() {
+        return getComputedStyle(document.documentElement)
+          .getPropertyValue('--accent').trim() || '#d7ff00';
+      }
+
+      window.DiSAAccent = { apply: apply, current: current };
+
+      var host = document.querySelector('[data-accent]');
+      if (host && apply(host.getAttribute('data-accent')) === false) {
+        console.warn('[accent] カラーコードが不正です:', host.getAttribute('data-accent'));
+      }
+    })();
+  </script>
+
+  <!-- ▼制作用: 上のピッカーUIを動かすスクリプト。納品前にこの script ごと削除する -->
+  <script>
+    (function () {
+      var box = document.querySelector('.accent-picker');
+      if (!box || !window.DiSAAccent) return;
+
+      var swatch = box.querySelector('input[type="color"]');
+      var code = box.querySelector('input[type="text"]');
+      var host = document.querySelector('[data-accent]') || document.querySelector('.slide-lead');
+
+      function sync(hex) {
+        swatch.value = hex;
+        code.value = hex;
+        code.classList.remove('is-invalid');
+        if (host) host.setAttribute('data-accent', hex);
+      }
+
+      sync(window.DiSAAccent.current());
+
+      swatch.addEventListener('input', function () {
+        var hex = window.DiSAAccent.apply(swatch.value);
+        if (hex) sync(hex);
+      });
+
+      // 打ちかけの値でエラーを出さないよう、正しく読めたときだけ反映する
+      code.addEventListener('input', function () {
+        var hex = window.DiSAAccent.apply(code.value);
+        if (hex) {
+          swatch.value = hex;
+          code.classList.remove('is-invalid');
+          if (host) host.setAttribute('data-accent', hex);
+        } else {
+          code.classList.add('is-invalid');
+        }
+      });
+
+      // 入力を離れたタイミングで #rrggbb 表記に揃える（打っている最中は邪魔しない）
+      code.addEventListener('change', function () {
+        var hex = window.DiSAAccent.apply(code.value);
+        if (hex) sync(hex);
+        else sync(window.DiSAAccent.current());
+      });
+    })();
+  </script>
+
+  <!-- Slide Core Engine Script -->
+  <script>
+    (function () {
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const prevBtn = document.getElementById('prev-btn');
+      const nextBtn = document.getElementById('next-btn');
+      const pageIndicator = document.getElementById('page-indicator');
+      const progressBarFill = document.getElementById('progress-bar-fill');
+      const tocSelect = document.getElementById('toc-select');
+      const wrapper = document.getElementById('presentation-wrapper');
+      
+      let currentIndex = 0;
+
+      // Scaling presentation wrapper to fit window
+      const scalePresentation = () => {
+        const targetWidth = 1280;
+        const targetHeight = 720;
+        const scaleX = window.innerWidth / targetWidth;
+        const scaleY = window.innerHeight / targetHeight;
+        const scale = Math.min(scaleX, scaleY, 1.35); // 最大拡大率を少し制限して高精細を保つ
+        wrapper.style.transform = `scale(${scale})`;
+      };
+      
+      window.addEventListener('resize', scalePresentation);
+      scalePresentation();
+
+      const updateReveals = (slideEl) => {
+        const reveals = Array.from(slideEl.querySelectorAll('.reveal'));
+        reveals.forEach((el, index) => {
+          setTimeout(() => {
+            el.classList.add('revealed');
+          }, index * 150); // Stagger element entries
+        });
+      };
+
+      const resetReveals = (slideEl) => {
+        const reveals = Array.from(slideEl.querySelectorAll('.reveal'));
+        reveals.forEach(el => el.classList.remove('revealed'));
+      };
+
+      const goToSlide = (index, skipHistory) => {
+        if (index < 0 || index >= slides.length) return;
+
+        resetReveals(slides[currentIndex]);
+        slides[currentIndex].classList.remove('active');
+
+        currentIndex = index;
+
+        slides[currentIndex].classList.add('active');
+        updateReveals(slides[currentIndex]);
+
+        // UI state updates
+        prevBtn.disabled = currentIndex === 0;
+        nextBtn.disabled = currentIndex === slides.length - 1;
+
+        const pageNum = currentIndex + 1;
+        pageIndicator.textContent = `${pageNum} / ${slides.length}`;
+        progressBarFill.style.width = `${(pageNum / slides.length) * 100}%`;
+        tocSelect.value = slides[currentIndex].id;
+
+        // 更新・リロードしても最後に見ていたスライドに戻れるよう、URLハッシュに現在地を保存する
+        if (!skipHistory) {
+          history.replaceState(null, '', '#' + slides[currentIndex].id);
+        }
+      };
+
+      prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
+      nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
+
+      tocSelect.addEventListener('change', (e) => {
+        const targetId = e.target.value;
+        const targetIndex = slides.findIndex(s => s.id === targetId);
+        if (targetIndex !== -1) goToSlide(targetIndex);
+      });
+
+      // Keyboard Controls
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === 'Space') {
+          if (currentIndex < slides.length - 1) goToSlide(currentIndex + 1);
+        } else if (e.key === 'ArrowLeft') {
+          if (currentIndex > 0) goToSlide(currentIndex - 1);
+        }
+      });
+
+      // 初期表示: URLハッシュに前回のスライドIDが残っていれば、そこから再開する
+      const restoreIndex = slides.findIndex(s => s.id === window.location.hash.replace('#', ''));
+      if (restoreIndex > 0) {
+        slides[0].classList.remove('active');
+        goToSlide(restoreIndex, true);
+      } else {
+        setTimeout(() => updateReveals(slides[0]), 300);
+      }
+    })();
+  </script>
+
+</body>
+
+</html>

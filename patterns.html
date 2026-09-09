@@ -1,0 +1,5619 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <title>スライドレイアウトパターン集</title>
+  <meta name="description" content="DiSA提案スライドのレイアウトパターンカタログ（社内用）">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Noto+Sans+JP:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="googlebot" content="noindex,nofollow">
+
+  <style>
+    /*
+      DiSA レイアウトパターン集
+      - template.html と同じCSS変数体系・基本構造で作られたパターンカタログです。
+      - 使いたいパターンのスライド（<section>）と、対応するCSSブロックを
+        案件の index.html へコピーして使います。
+      - 出典: ベンチマーク（レポート型）（テーブル・ダークカード・
+        As-Is/To-Be/Action・詳細3カラム・横型フロー）、
+        ベンチマーク（提案型）（Before/Afterフロー・ロードマップ）
+    */
+    :root {
+      /* Grey Ramp - 面・区切り・補足テキストはすべてここから取る */
+      --ink-900: #0b0b0b;
+      --ink-800: #17171a;
+      --ink-700: #2c2c31;
+      --ink-600: #424247;
+      --ink-500: #63656e;
+      --ink-400: #929499;
+      --ink-300: #adafb2;
+      --ink-200: #c1c7cd;
+      --ink-100: #d5dce0;
+
+      /* ------------------------------------------------------------------
+         アクセントカラー
+         既定は AM95 OG Neon のイエロー。
+
+         ★案件でクライアントカラーを使う場合は、CSSではなく
+           表紙（1枚目のsection）に data-accent="#xxxxxx" を書くだけ。
+           派生色は末尾のスクリプトが自動計算する。ここは触らないこと。
+
+         以下は data-accent を指定しなかったときの既定値。
+         ------------------------------------------------------------------ */
+
+      /* プリセット: Neon Yellow（既定） */
+      --volt: #d7ff00;
+      --volt-deep: #a8c400;
+      --volt-rgb: 215, 255, 0;
+
+      --accent: var(--volt);            /* 主アクセント。チップ・バー・塗り */
+      --accent-deep: var(--volt-deep);  /* ライト面で線・記号に使う濃いめ（✓マーク等） */
+      --accent-rgb: var(--volt-rgb);    /* 透過ウォッシュ用。カンマ区切りのRGB値 */
+      --accent-on-dark: var(--volt);    /* ダーク面に置く文字・バー。暗い色を指定されたとき明るく逃がす */
+      --on-accent: var(--ink-700);      /* アクセント塗りの「上」に乗る文字色 */
+      --accent-tint: #fbffe9;           /* アクセントをごく薄く敷いた面 */
+
+      /* ダーク面のグラデ（AM95のソール）。アクセント側は単色運用でグラデを使わない */
+      --grad-ink: linear-gradient(160deg, #2c2c31 0%, #0b0b0b 70%);
+
+      /* Surfaces */
+      --bg: #ededed;
+      --panel: #dfdfdf;
+      --c-surface: #f5f5f5;
+      --c-ink: var(--ink-700);    /* 見出し。真っ黒を避けた濃いグレー */
+      --text: var(--ink-600);     /* 本文 */
+      --c-muted: var(--ink-500);  /* 補足・キャプション */
+      --text-muted: #c1c7cd;
+      --surface-border: #d0d0d0;
+      --primary-dark: #0b0b0b;
+
+      /* ダーク面用トークン（.slide-dark 内のカード・枠線に使う） */
+      --c-surface-dark: var(--ink-800);
+      --surface-border-dark: rgba(var(--accent-rgb), 0.25);
+
+      /* 旧名エイリアス - 既存案件からコピーしたHTMLをそのまま動かすため。新規では使わない */
+      --blue: var(--ink-500);
+      --blue-deep: var(--ink-700);
+      --blue-soft: var(--ink-100);
+      --brand-volt: var(--accent);
+      --accent-gold: var(--accent-deep);
+      --accent-rose: var(--ink-400);
+
+      /* Typography Scale */
+      --fs-title-lead: 50px;
+      --fs-title-slide: 36px;
+      --fs-card-title: 20px;
+      --fs-body: 15px;
+      --fs-caption: 13px;
+
+      --transition-smooth: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--primary-dark);
+      color: var(--text);
+      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #presentation-viewport {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #presentation-wrapper {
+      width: 1280px;
+      height: 720px;
+      position: relative;
+      flex-shrink: 0;
+      transform-origin: center center;
+      background: var(--primary-dark);
+      box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    /* Slide Base Component */
+    .slide {
+      position: absolute;
+      inset: 0;
+      width: 1280px;
+      height: 720px;
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+      transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.8s;
+      transform: scale(0.97) translateY(8px);
+      padding: 45px 80px 35px 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-sizing: border-box;
+      z-index: 1;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      visibility: visible;
+      transform: scale(1) translateY(0);
+      z-index: 2;
+    }
+
+    .slide-light {
+      background: #f2f4f6;
+      color: var(--text);
+    }
+
+    .slide-dark {
+      background: var(--grad-ink);
+      color: #ffffff;
+    }
+
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 15px;
+      border-bottom: 1px solid rgba(var(--accent-rgb), 0.12);
+      padding-bottom: 12px;
+    }
+
+    .slide-dark .slide-header {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .slide-header img {
+      height: 28px;
+    }
+
+    .slide-dark .slide-header img {
+      filter: brightness(0) invert(1) drop-shadow(0 2px 4px rgba(255,255,255,0.05));
+    }
+
+    .slide-header .slide-tag {
+      font-size: var(--fs-caption);
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      color: var(--on-accent);
+      background: var(--accent);
+      padding: 3px 12px;
+      border-radius: 30px;
+    }
+
+    .slide-dark .slide-tag {
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+    }
+
+    .slide-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      font-size: var(--fs-caption);
+      font-weight: 700;
+      color: var(--c-muted);
+      letter-spacing: 0.05em;
+      border-top: 1px solid rgba(var(--accent-rgb), 0.08);
+      padding-top: 12px;
+    }
+
+    .slide-dark .slide-footer {
+      color: rgba(255, 255, 255, 0.4);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .slide-page-number {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--on-accent);
+      background: var(--accent);
+      padding: 2px 10px;
+      border-radius: 6px;
+      letter-spacing: 0.05em;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slide-dark .slide-page-number {
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+    }
+
+    .slide-title-area {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .slide-title {
+      font-size: var(--fs-title-slide);
+      font-weight: 900;
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+      color: var(--c-ink);
+      position: relative;
+      display: inline-block;
+    }
+
+    .slide-dark .slide-title {
+      color: #ffffff;
+    }
+
+    .slide-dark .slide-title::after {
+      background: var(--accent-on-dark);
+    }
+
+    .slide-title::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -6px;
+      width: 40px;
+      height: 3px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    .slide-subtitle {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--blue-deep);
+      margin-top: 6px;
+      letter-spacing: 0.02em;
+      text-align: left;
+    }
+
+    /* ダーク面のサブタイトルは白。アクセント色で置くと読みにくく、
+       同じ面のアクセント（見出し下のバー等）と役割がぶつかるため */
+    .slide-dark .slide-subtitle {
+      color: #ffffff;
+    }
+
+    .slide-body {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      width: 100%;
+      margin-bottom: 15px;
+    }
+
+    /* Layout Utilities */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      width: 100%;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      width: 100%;
+    }
+
+    /* Card Design */
+    .card {
+      background: #ffffff;
+      border: 1px solid var(--surface-border);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(31, 64, 75, 0.015);
+      transition: var(--transition-smooth);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--accent);
+      opacity: 0.9;
+    }
+
+    .slide-dark .card::before {
+      background: var(--accent-on-dark);
+    }
+
+    /* ダーク面カード: 白の半透明オーバーレイではなく専用トークンで塗る */
+    .slide-dark .card {
+      background: var(--c-surface-dark);
+      border-color: var(--surface-border-dark);
+    }
+
+    .card-num {
+      font-size: 11px;
+      font-weight: 900;
+      color: var(--on-accent);
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+      display: inline-block;
+      background: var(--accent);
+      padding: 2px 10px;
+      border-radius: 20px;
+      align-self: flex-start;
+    }
+
+    .slide-dark .card-num {
+      background: var(--accent-on-dark);
+      color: var(--ink-900);
+    }
+
+    .card-title {
+      font-size: var(--fs-card-title);
+      font-weight: 800;
+      color: var(--c-ink);
+      margin-bottom: 8px;
+      line-height: 1.35;
+    }
+
+    .slide-dark .card-title {
+      color: #ffffff;
+    }
+
+    .card-text {
+      font-size: var(--fs-body);
+      font-weight: 600;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    .slide-dark .card-text {
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.82);
+    }
+
+    /* Lists */
+    .bullet-list {
+      list-style: none;
+      font-size: var(--fs-body);
+      font-weight: 600;
+      line-height: 1.8;
+      text-align: left;
+    }
+
+    .bullet-list li {
+      position: relative;
+      padding-left: 20px;
+      margin-bottom: 8px;
+    }
+
+    .bullet-list li::before {
+      content: '•';
+      position: absolute;
+      left: 5px;
+      color: var(--blue);
+      font-size: 18px;
+      line-height: 1;
+      top: 0px;
+    }
+
+    .slide-dark .bullet-list li::before {
+      color: var(--accent-on-dark);
+    }
+
+    /* Animation */
+    .reveal {
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .slide.active .reveal.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Lead Slide */
+    .slide-lead {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 60px 80px;
+    }
+
+    .slide-lead .slide-body {
+      align-items: center;
+      text-align: center;
+      justify-content: center;
+    }
+
+    .slide-lead .logo-lead {
+      width: 140px;
+      margin-bottom: 25px;
+      filter: brightness(0) invert(1);
+    }
+
+    .slide-lead .title-lead {
+      font-size: var(--fs-title-lead);
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1.25;
+      margin-bottom: 15px;
+      letter-spacing: -0.01em;
+      text-align: center;
+    }
+
+    .slide-lead .subtitle-lead {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent-on-dark);
+      max-width: 800px;
+      margin: 0 auto 30px auto;
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    .slide-lead .badge-lead {
+      border: 2px solid var(--accent-on-dark);
+      color: var(--accent-on-dark);
+      font-weight: 800;
+      font-size: var(--fs-caption);
+      letter-spacing: 0.15em;
+      padding: 4px 16px;
+      border-radius: 40px;
+      display: inline-block;
+      margin-bottom: 30px;
+      background: rgba(var(--accent-rgb), 0.05);
+    }
+
+    /* ============================================================
+       パターン注記（カタログ専用・案件へはコピーしない）
+       ============================================================ */
+    .pattern-note {
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--blue-deep);
+      background: rgba(var(--accent-rgb), 0.07);
+      border: 1px dashed rgba(66, 66, 71, 0.35);
+      border-radius: 8px;
+      padding: 8px 14px;
+      margin-bottom: 12px;
+      text-align: left;
+    }
+
+    .slide-dark .pattern-note {
+      color: var(--blue-soft);
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .pattern-note strong {
+      font-weight: 900;
+      margin-right: 4px;
+    }
+
+    /* ============================================================
+       PATTERN 01: 比較テーブル (.slide-table)
+       出典: ベンチマーク（レポート型）
+       ============================================================ */
+    .slide-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      background: #ffffff;
+    }
+
+    .slide-table th {
+      background: var(--primary-dark);
+      color: #ffffff;
+      font-weight: 700;
+      text-align: left;
+      padding: 12px 16px;
+      border-bottom: 2px solid var(--blue);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .slide-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--surface-border);
+      color: var(--text);
+      font-weight: 600;
+      line-height: 1.55;
+    }
+
+    .slide-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .slide-table tr:nth-child(even) {
+      background: #f8fafb;
+    }
+
+    .table-scroll-frame {
+      max-height: 430px;
+      overflow-y: auto;
+      border: 1px solid var(--surface-border);
+      border-radius: 6px;
+    }
+
+    /* ============================================================
+       PATTERN 03: Before/After 横フロー（AS-IS → 伴走 → TO-BE）
+       出典: ベンチマーク（提案型）
+       ============================================================ */
+    .asis-tobe-container {
+      display: flex;
+      align-items: stretch;
+      justify-content: space-between;
+      gap: 20px;
+      width: 100%;
+      min-height: 290px;
+    }
+
+    .flow-box {
+      flex: 1;
+      border-radius: 20px;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      position: relative;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.01);
+      text-align: left;
+    }
+
+    /* 現状（AS-IS）はアクセント色を使わず、ニュートラルなグレーで沈める */
+    .asis-box {
+      background: #f6f7f7;
+      border: 1px dashed var(--surface-border);
+    }
+
+    .asis-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: #9aa4a8;
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+    }
+
+    .tobe-box {
+      background: #f4fafb;
+      border: 1px solid rgba(66, 66, 71, 0.15);
+    }
+
+    .tobe-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: var(--blue);
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+    }
+
+    .bridge-box {
+      background: var(--primary-dark);
+      border: 1px solid rgba(66, 66, 71, 0.25);
+      color: #ffffff;
+      flex: 1.1;
+      justify-content: center;
+      align-items: flex-start;
+      box-shadow: 0 15px 35px rgba(18, 43, 51, 0.2);
+    }
+
+    .bridge-box .card-num {
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      align-self: flex-start;
+      margin-bottom: 15px;
+    }
+
+    .flow-label {
+      font-size: var(--fs-caption);
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      margin-bottom: 15px;
+    }
+
+    .asis-box .flow-label {
+      color: var(--c-muted);
+    }
+
+    .tobe-box .flow-label {
+      color: var(--blue);
+    }
+
+    .flow-title {
+      font-size: var(--fs-card-title);
+      font-weight: 800;
+      margin-bottom: 15px;
+      line-height: 1.3;
+    }
+
+    .flow-list {
+      list-style: none;
+      font-size: var(--fs-body);
+      font-weight: 600;
+      line-height: 1.8;
+      color: var(--text);
+    }
+
+    .asis-box .flow-list {
+      color: var(--text);
+    }
+
+    .bridge-box .flow-list {
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .flow-list li {
+      position: relative;
+      padding-left: 20px;
+      margin-bottom: 5px;
+    }
+
+    .flow-list li::before {
+      content: '•';
+      position: absolute;
+      left: 5px;
+      font-size: 18px;
+    }
+
+    .asis-box .flow-list li::before {
+      color: var(--c-muted);
+    }
+
+    .tobe-box .flow-list li::before {
+      color: var(--blue);
+    }
+
+    .bridge-box .flow-list li::before {
+      color: var(--blue-soft);
+    }
+
+    .flow-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: var(--blue);
+      font-weight: 300;
+    }
+
+    /* ============================================================
+       PATTERN 04: As-Is / To-Be / Action 3カラム
+       出典: ベンチマーク（レポート型）
+       ベンチマークの赤/緑/橙の意味色は使わず、アクセント1色ルールに従い
+       グレー（現状）→ 淡いブルー（理想）→ 濃いブルー枠（打ち手）の
+       トーン差で状態を区別する。
+       ============================================================ */
+    .ato-container {
+      display: grid;
+      /* 現状(As-Is)は事実・数値を並べるので情報量が多い。理想より広く取る */
+      grid-template-columns: 1.5fr 1fr 1.2fr;
+      gap: 20px;
+      align-items: stretch;
+      width: 100%;
+    }
+
+    .ato-box {
+      border-radius: 6px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ato-box.asis {
+      background: #f6f7f7;
+      border: 1px solid var(--surface-border);
+    }
+
+    .ato-box.tobe {
+      background: #f0f7f8;
+      border: 1px solid var(--blue-soft);
+    }
+
+    .ato-box.action {
+      background: #e9f2f5;
+      border: 1.5px solid var(--blue);
+    }
+
+    .ato-label {
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      padding-bottom: 6px;
+      border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+      width: fit-content;
+    }
+
+    .asis .ato-label {
+      color: var(--c-muted);
+    }
+
+    .tobe .ato-label {
+      color: var(--blue);
+    }
+
+    .action .ato-label {
+      color: var(--blue-deep);
+    }
+
+    .ato-content {
+      font-size: 12.5px;
+      font-weight: 600;
+      line-height: 1.6;
+      color: var(--c-ink);
+    }
+
+    .ato-content li {
+      list-style: none;
+      position: relative;
+      padding-left: 16px;
+      margin-bottom: 6px;
+    }
+
+    .ato-content li::before {
+      content: '';
+      position: absolute;
+      left: 2px;
+      top: 7px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--blue);
+    }
+
+    /* ============================================================
+       PATTERN 05: 4象限マトリクス
+       出典: ベンチマーク（レポート型）（map-q-grid を汎用化）
+       ============================================================ */
+    .matrix-layout {
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      grid-template-rows: 1fr 32px;
+      gap: 6px;
+      width: 100%;
+      height: 400px;
+    }
+
+    /* 日本語の縦書きラベルは rotate を掛けない（掛けると文字が逆さまになる） */
+    .matrix-axis-y {
+      writing-mode: vertical-rl;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.15em;
+      color: var(--c-muted);
+    }
+
+    .matrix-axis-x {
+      grid-column: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.15em;
+      color: var(--c-muted);
+    }
+
+    .matrix-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 10px;
+      height: 100%;
+    }
+
+    .matrix-q-card {
+      border-radius: 6px;
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+      background: #ffffff;
+      border: 1.5px solid var(--surface-border);
+      text-align: left;
+    }
+
+    .matrix-q-card.emphasis {
+      background: #f0f7f8;
+      border-color: var(--blue-soft);
+    }
+
+    .matrix-q-title {
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--c-muted);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .matrix-q-names {
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--blue-deep);
+      margin-bottom: 6px;
+    }
+
+    .matrix-q-desc {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    /* ============================================================
+       PATTERN 06: ロードマップ（3フェーズタイムライン）
+       出典: ベンチマーク（提案型）（インラインstyleをクラス化）
+       ============================================================ */
+    .roadmap-body {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 370px;
+    }
+
+    .roadmap-line {
+      position: absolute;
+      top: 42px;
+      left: 10%;
+      width: 80%;
+      height: 3px;
+      background: linear-gradient(to right, var(--blue-soft), var(--blue), var(--blue-deep));
+      z-index: 1;
+      border-radius: 2px;
+    }
+
+    .roadmap-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 30px;
+      width: 100%;
+      z-index: 2;
+      position: relative;
+    }
+
+    .roadmap-phase {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: left;
+    }
+
+    .roadmap-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #fff;
+      border: 4px solid var(--blue);
+      margin-bottom: 15px;
+      box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.3);
+      z-index: 3;
+    }
+
+    .roadmap-card {
+      background: #ffffff;
+      border: 1px solid var(--surface-border);
+      border-radius: 16px;
+      padding: 20px 22px;
+      width: 100%;
+      min-height: 250px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+      overflow: hidden;
+    }
+
+    .roadmap-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--blue);
+    }
+
+    .roadmap-badge {
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .15em;
+      color: var(--blue-deep);
+      background: var(--blue-soft);
+      padding: 3px 10px;
+      border-radius: 20px;
+      align-self: flex-start;
+    }
+
+    .roadmap-period {
+      font-size: 12px;
+      color: var(--blue);
+      font-weight: 700;
+      margin-top: -5px;
+    }
+
+    .roadmap-list {
+      list-style: none;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-top: 2px;
+    }
+
+    .roadmap-list li {
+      margin-bottom: 6px;
+      padding-left: 15px;
+      position: relative;
+    }
+
+    .roadmap-list li::before {
+      content: '✔';
+      position: absolute;
+      left: 0;
+      color: var(--blue);
+    }
+
+    /* ============================================================
+       PATTERN 07: 横型ステップフロー（ヘッドライン付き5ステップ）
+       出典: ベンチマーク（レポート型）（delivery-flow を汎用化）
+       ============================================================ */
+    .flowchart-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      height: 100%;
+      justify-content: center;
+    }
+
+    .flowchart-headline {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 20px;
+    }
+
+    .flowchart-headline-main {
+      background: #ffffff;
+      border: 1.5px solid var(--blue-soft);
+      border-radius: 6px;
+      padding: 15px 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+      text-align: left;
+    }
+
+    .flowchart-headline-kicker {
+      font-size: 10px;
+      font-weight: 900;
+      color: var(--blue);
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .flowchart-headline-text {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--c-ink);
+      line-height: 1.4;
+    }
+
+    .flowchart-headline-note {
+      background: var(--primary-dark);
+      border-radius: 6px;
+      padding: 15px;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+      text-align: left;
+    }
+
+    .flowchart-headline-note span {
+      color: var(--blue-soft);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    .flowchart-headline-note strong {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .flowchart-steps {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 15px;
+      position: relative;
+      align-items: stretch;
+    }
+
+    .flowchart-steps::before {
+      content: "";
+      position: absolute;
+      top: 30px;
+      left: 8%;
+      right: 8%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--blue), var(--blue-deep));
+      z-index: 0;
+    }
+
+    .flowchart-step {
+      background: #ffffff;
+      border: 1px solid var(--surface-border);
+      border-radius: 6px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    }
+
+    .flowchart-step-num {
+      width: 32px;
+      height: 32px;
+      background: #f0f7f8;
+      color: var(--blue-deep);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 900;
+      align-self: center;
+      margin-bottom: 5px;
+      border: 1.5px solid var(--blue);
+    }
+
+    .flowchart-step-title {
+      font-size: 13.5px;
+      font-weight: 900;
+      color: var(--c-ink);
+      text-align: center;
+      line-height: 1.3;
+      min-height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .flowchart-step-desc {
+      background: #f0f7f8;
+      border: 1px solid var(--blue-soft);
+      border-radius: 4px;
+      padding: 8px;
+      font-size: 10.5px;
+      font-weight: 600;
+      line-height: 1.45;
+      color: var(--blue-deep);
+      flex: 1;
+      text-align: left;
+    }
+
+    /* ============================================================
+       PATTERN 08: タイムライン 3×2（6ステップ）
+       出典: STYLE_GUIDE.md §3 の実装ルールをそのまま部品化
+       ============================================================ */
+    .timeline-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      row-gap: 22px;
+      column-gap: 20px;
+      width: 100%;
+    }
+
+    .timeline-item {
+      background: #ffffff;
+      border: 1px solid var(--surface-border);
+      border-radius: 10px;
+      padding: 18px 24px;
+      position: relative;
+      text-align: left;
+    }
+
+    .timeline-item::after {
+      content: '→';
+      position: absolute;
+      right: -17px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--blue);
+      font-size: 18px;
+      font-weight: 700;
+      z-index: 3;
+    }
+
+    .timeline-item:nth-child(3n)::after {
+      display: none;
+    }
+
+    .timeline-head {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .timeline-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: #ffffff;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 900;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .timeline-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--c-ink);
+      vertical-align: middle;
+    }
+
+    .timeline-desc {
+      font-size: 12.5px;
+      font-weight: 600;
+      line-height: 1.55;
+      color: var(--text);
+      text-align: left;
+    }
+
+    /* ============================================================
+       PATTERN 09: 詳細3カラム＋インサイトカード
+       出典: ベンチマーク（レポート型）（member-detail を汎用化）
+       ============================================================ */
+    .detail-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      height: 100%;
+      justify-content: space-between;
+    }
+
+    .detail-grid {
+      flex: 1;
+      align-items: stretch;
+    }
+
+    .detail-grid .bullet-list li {
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .detail-sub {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--c-muted);
+      margin: 0 0 8px 0;
+      padding-left: 20px;
+      line-height: 1.5;
+    }
+
+    .insight-card {
+      background: #f0f7f8;
+      border: 1.5px solid var(--blue-soft);
+      border-left: 5px solid var(--blue);
+      border-radius: 8px;
+      padding: 14px 18px;
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 18px;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      text-align: left;
+    }
+
+    .insight-label {
+      color: var(--blue-deep);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      border-right: 1px solid rgba(66, 66, 71, 0.25);
+      padding-right: 10px;
+    }
+
+    .insight-text {
+      font-size: 12.5px;
+      line-height: 1.6;
+      color: var(--c-ink);
+      font-weight: 600;
+    }
+
+    /* ============================================================
+       PATTERN 10: 目次（アジェンダ）
+       ============================================================ */
+    .agenda-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px 40px;
+      width: 100%;
+    }
+
+    .agenda-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: #ffffff;
+      border: 1px solid var(--surface-border);
+      border-radius: 10px;
+      padding: 16px 22px;
+      text-align: left;
+    }
+
+    .agenda-num {
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--blue-deep);
+      background: var(--blue-soft);
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .agenda-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--c-ink);
+    }
+
+    .agenda-sub {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--c-muted);
+      margin-top: 2px;
+    }
+
+    /* ============================================================
+       PATTERN 11: 中表紙（セクション区切り・ダーク）
+       ============================================================ */
+    .section-divider .slide-body {
+      justify-content: center;
+      align-items: flex-start;
+      text-align: left;
+    }
+
+    .section-num {
+      font-family: 'Inter', sans-serif;
+      font-size: 110px;
+      font-weight: 900;
+      color: transparent;
+      -webkit-text-stroke: 2px rgba(185, 215, 222, 0.35);
+      line-height: 1;
+    }
+
+    .section-title {
+      font-size: 42px;
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1.25;
+      margin: 14px 0 12px 0;
+      letter-spacing: -0.01em;
+    }
+
+    .section-lead {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--blue-soft);
+      line-height: 1.6;
+      max-width: 760px;
+    }
+
+    /* ============================================================
+       PATTERN 12: 数値ハイライト（KPI 3つ横並び）
+       ============================================================ */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      width: 100%;
+    }
+
+    .stat-card {
+      background: #ffffff;
+      border: 1px solid var(--surface-border);
+      border-radius: 12px;
+      padding: 28px 24px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--c-muted);
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+
+    .stat-value {
+      font-family: 'Inter', sans-serif;
+      font-size: 52px;
+      font-weight: 900;
+      color: var(--blue-deep);
+      line-height: 1;
+    }
+
+    .stat-value .stat-unit {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--c-muted);
+      margin-left: 4px;
+    }
+
+    .stat-note {
+      font-size: 12px;
+      color: var(--c-muted);
+      line-height: 1.5;
+      margin-top: 12px;
+      border-top: 1px dashed var(--surface-border);
+      padding-top: 10px;
+    }
+
+    /* ============================================================
+       PATTERN 13: 人物紹介（複数名）
+       1名のみの場合は template.html の profile-container を使う
+       ============================================================ */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      width: 100%;
+    }
+
+    .team-card {
+      background: #ffffff;
+      border: 1px solid var(--surface-border);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .team-avatar {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      margin-bottom: 14px;
+    }
+
+    .team-avatar-placeholder {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      background: var(--blue-soft);
+      color: var(--blue-deep);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      margin-bottom: 14px;
+    }
+
+    .team-name {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--c-ink);
+    }
+
+    .team-role {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: var(--blue-deep);
+      background: var(--blue-soft);
+      border-radius: 20px;
+      padding: 3px 12px;
+      margin: 8px 0 12px 0;
+    }
+
+    .team-bio {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.6;
+      text-align: left;
+    }
+
+    /* ============================================================
+       PATTERN 14: 担当者・会社概要（1枚統合版）
+       出典: 営業用スライドの実案件
+       担当者プロフィール＋会社概要の標準スライド。写真は同階層の
+       profile-photo.svg を一緒にコピーすること。
+       ============================================================ */
+    .profile-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      width: 100%;
+    }
+
+    .profile-card {
+      min-height: 150px;
+    }
+
+    .profile-person-card {
+      display: grid;
+      grid-template-columns: 170px 1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .profile-photo-wrap {
+      display: flex;
+      align-items: stretch;
+    }
+
+    .profile-photo {
+      width: 100%;
+      height: 100%;
+      min-height: 210px;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 1px solid var(--surface-border);
+      background: #e9ebee;
+    }
+
+    .profile-body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .profile-kicker {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      color: var(--blue-deep);
+      margin-bottom: 8px;
+    }
+
+    .profile-name {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--c-ink);
+      margin-bottom: 8px;
+    }
+
+    .profile-role {
+      font-size: 11px;
+      line-height: 1.55;
+      font-weight: 700;
+      color: var(--c-muted);
+      margin-bottom: 10px;
+    }
+
+    .profile-copy {
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.62;
+      color: var(--text);
+    }
+
+    .company-overview {
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      row-gap: 8px;
+      column-gap: 12px;
+      margin-top: 6px;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .company-overview dt {
+      color: var(--c-muted);
+      font-weight: 800;
+    }
+
+    .company-overview dd {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .company-clients {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(var(--accent-rgb), 0.35);
+      font-size: 11px;
+      line-height: 1.55;
+      color: var(--c-muted);
+    }
+
+    /* ============================================================
+       PATTERN 15-21: 事業分析フレームワーク
+       参考画像をもとに HTML で再現するための専用部品群
+       ============================================================ */
+    .framework-shell {
+      background: #ffffff;
+      border: 1px solid var(--surface-border);
+      border-radius: 18px;
+      padding: 18px 22px;
+      box-shadow: 0 6px 18px rgba(17, 37, 45, 0.05);
+    }
+
+    .framework-lead-copy {
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--c-muted);
+      margin-bottom: 14px;
+    }
+
+    .framework-caption {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: var(--blue-deep);
+      text-transform: uppercase;
+    }
+
+    .framework-muted {
+      color: var(--c-muted);
+    }
+
+    .swot-layout {
+      display: grid;
+      grid-template-columns: 112px 150px 1fr;
+      gap: 14px;
+      align-items: stretch;
+      height: 100%;
+    }
+
+    .swot-axis-main,
+    .swot-axis-sub,
+    .swot-head,
+    .swot-cell {
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .swot-axis-main {
+      background: var(--blue-deep);
+      color: #ffffff;
+      font-size: 17px;
+      font-weight: 900;
+      line-height: 1.2;
+      writing-mode: vertical-rl;
+      letter-spacing: 0.08em;
+      padding: 18px 0;
+    }
+
+    .swot-axis-stack {
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .swot-axis-sub {
+      background: var(--blue-soft);
+      color: var(--blue-deep);
+      font-size: 16px;
+      font-weight: 900;
+      writing-mode: vertical-rl;
+      padding: 18px 0;
+    }
+
+    .swot-main {
+      display: grid;
+      grid-template-rows: 86px 1fr;
+      gap: 14px;
+      position: relative;
+    }
+
+    .swot-header-row,
+    .swot-cell-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .swot-top-band {
+      grid-column: 1 / -1;
+      background: var(--blue-deep);
+      color: #ffffff;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      margin-bottom: 14px;
+      height: 72px;
+    }
+
+    .swot-head {
+      background: var(--blue-soft);
+      color: var(--blue-deep);
+      font-size: 17px;
+      font-weight: 900;
+      min-height: 72px;
+    }
+
+    .swot-cell {
+      background: #f7f8fa;
+      color: var(--c-ink);
+      min-height: 164px;
+      padding: 18px 20px;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .swot-cell-title {
+      font-size: 17px;
+      font-weight: 900;
+      color: var(--blue-deep);
+      line-height: 1.1;
+    }
+
+    .swot-cell-text {
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1.5;
+    }
+
+    .swot-center {
+      position: absolute;
+      left: 50%;
+      top: 57%;
+      transform: translate(-50%, -50%);
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 900;
+      box-shadow: 0 8px 20px rgba(66, 66, 71, 0.25);
+    }
+
+    .cross-shell {
+      background: #f8f9fb;
+    }
+
+    .cross-layout {
+      display: grid;
+      grid-template-columns: 90px 100px 1fr;
+      gap: 12px;
+      height: 100%;
+    }
+
+    .cross-axis-main,
+    .cross-axis-sub,
+    .cross-head,
+    .cross-cell {
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .cross-axis-main {
+      background: var(--blue-deep);
+      color: #ffffff;
+      writing-mode: vertical-rl;
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+    }
+
+    .cross-axis-stack {
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .cross-axis-sub {
+      background: var(--blue-soft);
+      color: var(--blue-deep);
+      writing-mode: vertical-rl;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .cross-main {
+      display: grid;
+      grid-template-rows: 50px 1fr;
+      gap: 12px;
+    }
+
+    .cross-top-band {
+      grid-column: 1 / -1;
+      background: var(--blue-deep);
+      color: #ffffff;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+      height: 50px;
+    }
+
+    .cross-header-row,
+    .cross-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .cross-head {
+      background: var(--blue-soft);
+      color: var(--blue-deep);
+      font-size: 17px;
+      font-weight: 900;
+      min-height: 48px;
+    }
+
+    .cross-cell {
+      background: #f7f8fa;
+      border: 1.5px solid rgba(66, 66, 71, 0.35);
+      min-height: 175px;
+      padding: 14px 18px;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .cross-cell-title {
+      font-size: 17px;
+      font-weight: 900;
+      line-height: 1.2;
+      color: var(--blue-deep);
+    }
+
+    .cross-cell-sub {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--blue);
+    }
+
+    .cross-cell-text {
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.55;
+      color: var(--text);
+    }
+
+    .pest-layout {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 0;
+      border: 1.5px solid var(--surface-border);
+      overflow: hidden;
+      min-height: 380px;
+    }
+
+    .pest-box {
+      padding: 18px 40px 18px 22px;
+      border-right: 1px solid var(--surface-border);
+      border-bottom: 1px solid var(--surface-border);
+      background: #ffffff;
+    }
+
+    .pest-box:nth-child(2n) {
+      border-right: none;
+      padding-right: 22px;
+      padding-left: 40px;
+    }
+
+    .pest-box:nth-last-child(-n + 2) {
+      border-bottom: none;
+    }
+
+    .pest-mark {
+      font-size: 42px;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--blue);
+    }
+
+    .pest-mark small {
+      font-size: 20px;
+      font-weight: 800;
+      margin-left: 4px;
+    }
+
+    .pest-ja {
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--c-muted);
+      margin: -34px 0 10px 74px;
+    }
+
+    .pest-list {
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.5;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+
+    .pest-focus {
+      background: rgba(var(--accent-rgb), 0.1);
+      color: var(--blue-deep);
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1.5;
+      padding: 10px 12px;
+    }
+
+    .pest-center {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 98px;
+      height: 98px;
+      background: #ffffff;
+      border: 1px solid var(--surface-border);
+      transform: translate(-50%, -50%) rotate(45deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    .pest-center span {
+      transform: rotate(-45deg);
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--blue-deep);
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .vrio-shell {
+      padding: 22px;
+    }
+
+    .vrio-title {
+      color: var(--c-ink);
+      font-size: 36px;
+      font-weight: 900;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .vrio-grid {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 12px;
+      min-height: 340px;
+    }
+
+    /* 4象限。ライト面の他フレーム（PEST・4C）に合わせ、白い面＋細い罫で組む */
+    .vrio-card {
+      background: #ffffff;
+      border: 1px solid var(--surface-border);
+      color: var(--c-ink);
+      padding: 30px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      gap: 10px;
+      min-height: 160px;
+    }
+
+    .vrio-card.value {
+      border-top-left-radius: 42px;
+    }
+
+    .vrio-card.rarity {
+      border-top-right-radius: 42px;
+    }
+
+    .vrio-card.imitability {
+      border-bottom-left-radius: 42px;
+    }
+
+    .vrio-card.organization {
+      border-bottom-right-radius: 42px;
+    }
+
+    .vrio-ja {
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .vrio-en {
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--c-muted);
+    }
+
+    /* V/R/I/O の頭文字。白地なので線・記号と同じ濃いめのアクセントを使う */
+    .vrio-en .accent {
+      color: var(--accent-deep);
+      margin-right: 3px;
+    }
+
+    /* 中央の「経営資源」。このページで唯一アクセントを置く焦点 */
+    .vrio-center {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--accent);
+      color: var(--on-accent);
+      min-width: 235px;
+      padding: 24px 28px;
+      border-radius: 32px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 900;
+      border: 4px solid #ffffff;  /* シェルと同色の縁で4象限から浮かせる */
+    }
+
+    .fourc-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      min-height: 380px;
+      position: relative;
+    }
+
+    .fourc-card {
+      background: #ffffff;
+      border: 1px solid rgba(66, 66, 71, 0.18);
+      border-radius: 18px;
+      padding: 18px 20px;
+      box-shadow: 0 4px 16px rgba(17, 37, 45, 0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .fourc-head {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      color: var(--blue-deep);
+    }
+
+    .fourc-head strong {
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .fourc-head span {
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .fourc-copy {
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    .fourc-chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .fourc-chip {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--blue-deep);
+      background: rgba(var(--accent-rgb), 0.1);
+      border-radius: 999px;
+      padding: 5px 10px;
+    }
+
+    .bmc-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1.1fr 1.1fr 1.1fr 1.1fr;
+      grid-template-rows: 1fr 1fr 0.9fr;
+      grid-template-areas:
+        "kp ka vp cr cs"
+        "kp kr vp ch cs"
+        "cost cost cost rev rev";
+      gap: 0;
+      border: 1px solid #676767;
+      min-height: 380px;
+      overflow: hidden;
+      font-size: 12px;
+    }
+
+    .bmc-box {
+      background: #ffffff;
+      border-right: 1px solid #676767;
+      border-bottom: 1px solid #676767;
+      padding: 14px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      text-align: center;
+    }
+
+    .bmc-box:nth-child(5),
+    .bmc-box:nth-child(7) {
+      border-right: none;
+    }
+
+    .bmc-box.cost,
+    .bmc-box.rev {
+      border-bottom: none;
+    }
+
+    .bmc-box.rev {
+      border-right: none;
+    }
+
+    .bmc-box.kp { grid-area: kp; }
+    .bmc-box.ka { grid-area: ka; }
+    .bmc-box.kr { grid-area: kr; }
+    .bmc-box.vp { grid-area: vp; }
+    .bmc-box.cr { grid-area: cr; }
+    .bmc-box.ch { grid-area: ch; }
+    .bmc-box.cs { grid-area: cs; }
+    .bmc-box.cost { grid-area: cost; }
+    .bmc-box.rev { grid-area: rev; }
+
+    .bmc-code {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--blue-deep);
+    }
+
+    .bmc-title {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--blue-deep);
+      line-height: 1.3;
+    }
+
+    .bmc-sub {
+      font-size: 13px;
+      line-height: 1.4;
+      color: var(--blue);
+      font-weight: 700;
+    }
+
+    .bmc-body {
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.55;
+      color: #333333;
+      margin-top: auto;
+    }
+
+    .cjm-shell {
+      padding: 12px 14px 16px;
+    }
+
+    .cjm-title-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 0 4px 10px;
+      border-bottom: 2px solid rgba(17, 37, 45, 0.12);
+      margin-bottom: 10px;
+    }
+
+    .cjm-title-main {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--c-ink);
+    }
+
+    .cjm-title-sub {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--c-muted);
+    }
+
+    .cjm-meta {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--c-muted);
+      margin-bottom: 10px;
+      padding: 0 4px;
+    }
+
+    .cjm-grid {
+      display: grid;
+      grid-template-columns: 120px repeat(5, 1fr);
+      border: 1px solid #8f8f8f;
+      font-size: 13px;
+      min-height: 360px;
+    }
+
+    .cjm-cell {
+      border-right: 1px solid #8f8f8f;
+      border-bottom: 1px solid #8f8f8f;
+      padding: 8px 9px;
+      font-weight: 600;
+      line-height: 1.45;
+      background: #ffffff;
+    }
+
+    .cjm-grid .cjm-cell:nth-child(6n) {
+      border-right: none;
+    }
+
+    .cjm-grid .cjm-cell.row-last {
+      border-bottom: none;
+    }
+
+    .cjm-rowhead {
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--c-ink);
+      background: #fafafa;
+      text-align: center;
+    }
+
+    .cjm-stage {
+      text-align: center;
+      font-weight: 900;
+      color: var(--c-ink);
+      background: #fafafa;
+    }
+
+    .cjm-stage small {
+      display: block;
+      font-size: 13px;
+      color: var(--blue);
+      margin-bottom: 4px;
+      letter-spacing: 0.08em;
+    }
+
+    .cjm-icon-row {
+      font-size: 20px;
+      text-align: center;
+      letter-spacing: 0.15em;
+    }
+
+    .cjm-emotion {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-size: 20px;
+    }
+
+    .cjm-issues {
+      background: #fbfbfb;
+    }
+
+    /* Dense analysis patterns: keep every table, note, and footer inside 1280 x 720. */
+    .framework-slide {
+      padding-top: 45px;
+      padding-bottom: 35px;
+    }
+
+    .framework-slide .slide-header {
+      margin-bottom: 15px;
+      padding-bottom: 12px;
+    }
+
+    .framework-slide .slide-title-area {
+      margin-bottom: 20px;
+    }
+
+    .framework-slide .slide-subtitle {
+      font-size: 18px;
+      line-height: normal;
+      margin-top: 6px;
+    }
+
+    .framework-slide .slide-body {
+      justify-content: flex-start;
+      min-height: 0;
+      margin-bottom: 15px;
+    }
+
+    .framework-slide .framework-shell {
+      padding: 12px 16px;
+    }
+
+    .framework-slide .pattern-note {
+      font-size: 11px;
+      line-height: 1.45;
+      padding: 6px 12px;
+      margin-bottom: 8px;
+    }
+
+    .framework-slide .slide-footer {
+      padding-top: 12px;
+    }
+
+    .framework-slide .swot-layout,
+    .framework-slide .cross-layout {
+      height: 368px;
+      gap: 10px;
+    }
+
+    .framework-slide .swot-axis-stack,
+    .framework-slide .cross-axis-stack {
+      gap: 10px;
+    }
+
+    .framework-slide .swot-main {
+      grid-template-rows: 112px 1fr;
+      gap: 10px;
+    }
+
+    .framework-slide .swot-header-row,
+    .framework-slide .swot-cell-grid,
+    .framework-slide .cross-header-row,
+    .framework-slide .cross-grid {
+      gap: 10px;
+    }
+
+    .framework-slide .swot-top-band {
+      height: 52px;
+      margin-bottom: 10px;
+    }
+
+    .framework-slide .swot-head {
+      min-height: 50px;
+    }
+
+    .framework-slide .swot-cell,
+    .framework-slide .cross-cell {
+      min-height: 0;
+      padding: 10px 14px;
+      gap: 6px;
+    }
+
+    .framework-slide .swot-center {
+      top: 62%;
+      width: 126px;
+      height: 126px;
+    }
+
+    .framework-slide .cross-main {
+      grid-template-rows: 108px 1fr;
+      gap: 10px;
+    }
+
+    .framework-slide .cross-top-band {
+      height: 48px;
+      margin-bottom: 10px;
+    }
+
+    .framework-slide .cross-head {
+      min-height: 46px;
+    }
+
+    .framework-slide .pest-layout {
+      min-height: 350px;
+    }
+
+    .framework-slide .pest-box {
+      padding: 12px 30px 12px 18px;
+    }
+
+    .framework-slide .pest-box:nth-child(2n) {
+      padding-right: 18px;
+      padding-left: 30px;
+    }
+
+    .framework-slide .pest-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      width: fit-content;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: var(--blue-soft);
+      color: var(--blue-deep);
+      font-size: 13px;
+      line-height: 1;
+      letter-spacing: 0.04em;
+      font-weight: 900;
+    }
+
+    .framework-slide .pest-mark small {
+      margin: 0;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+    }
+
+    .framework-slide .pest-ja {
+      margin: 0;
+      font-size: var(--fs-body);
+      line-height: 1.25;
+    }
+
+    .framework-slide .pest-heading {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .framework-slide .pest-list {
+      margin-bottom: 8px;
+    }
+
+    .framework-slide .pest-focus {
+      padding: 7px 9px;
+    }
+
+    .framework-slide .pest-center {
+      width: 82px;
+      height: 82px;
+    }
+
+    .framework-slide .vrio-shell {
+      padding: 14px;
+    }
+
+    .framework-slide .vrio-title {
+      font-size: 30px;
+      margin-bottom: 10px;
+    }
+
+    .framework-slide .vrio-grid {
+      min-height: 300px;
+    }
+
+    .framework-slide .vrio-card {
+      min-height: 140px;
+      padding: 16px 20px;
+    }
+
+    .framework-slide .vrio-center {
+      min-width: 190px;
+      padding: 16px 22px;
+      border-radius: 26px;
+    }
+
+    .framework-slide .fourc-layout {
+      min-height: 350px;
+    }
+
+    .framework-slide .fourc-card {
+      padding: 14px 16px;
+      gap: 6px;
+    }
+
+    .framework-slide .fourc-head strong {
+      font-size: 18px;
+    }
+
+    .framework-slide .fourc-copy {
+      line-height: 1.5;
+    }
+
+    .framework-slide .fourc-chip-row {
+      gap: 6px;
+    }
+
+    .framework-slide .fourc-chip {
+      padding: 4px 8px;
+    }
+
+    .framework-slide .bmc-grid {
+      min-height: 360px;
+    }
+
+    .framework-slide .bmc-box {
+      padding: 9px 8px;
+      gap: 4px;
+    }
+
+    .framework-slide .bmc-code,
+    .framework-slide .bmc-title {
+      font-size: 15px;
+    }
+
+    .framework-slide .bmc-title {
+      line-height: 1.25;
+    }
+
+    .framework-slide .bmc-sub {
+      font-size: 11px;
+      line-height: 1.3;
+    }
+
+    .framework-slide .bmc-body {
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .framework-slide .cjm-shell {
+      padding: 10px 12px 12px;
+    }
+
+    .framework-slide .cjm-title-row {
+      padding-bottom: 7px;
+      margin-bottom: 7px;
+    }
+
+    .framework-slide .cjm-title-main {
+      font-size: 18px;
+    }
+
+    .framework-slide .cjm-title-sub,
+    .framework-slide .cjm-meta {
+      font-size: 11px;
+    }
+
+    .framework-slide .cjm-meta {
+      margin-bottom: 7px;
+    }
+
+    .framework-slide .cjm-grid {
+      font-size: 11px;
+      min-height: 300px;
+    }
+
+    .framework-slide .cjm-cell {
+      padding: 5px 6px;
+      line-height: 1.35;
+    }
+
+    .framework-slide .cjm-rowhead,
+    .framework-slide .cjm-stage small {
+      font-size: 11px;
+    }
+
+    .framework-slide .cjm-icon-row {
+      font-size: 15px;
+    }
+
+    .framework-slide .cjm-emotion {
+      font-size: 16px;
+    }
+
+    /* ============================================================
+       PATTERN 22-26: 定量・実行設計テンプレート
+       ============================================================ */
+    .compact-pattern-slide {
+      padding-top: 45px;
+      padding-bottom: 35px;
+    }
+
+    .compact-pattern-slide .slide-header {
+      margin-bottom: 15px;
+      padding-bottom: 12px;
+    }
+
+    .compact-pattern-slide .slide-title-area {
+      margin-bottom: 20px;
+    }
+
+    .compact-pattern-slide .slide-subtitle {
+      font-size: 18px;
+      line-height: normal;
+      margin-top: 6px;
+    }
+
+    .compact-pattern-slide .slide-body {
+      min-height: 0;
+      justify-content: flex-start;
+      margin-bottom: 15px;
+    }
+
+    .compact-pattern-slide .pattern-note {
+      font-size: 11px;
+      line-height: 1.45;
+      padding: 6px 12px;
+      margin-bottom: 8px;
+    }
+
+    .compact-pattern-slide .slide-footer {
+      padding-top: 12px;
+    }
+
+    .kpi-dashboard {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      min-height: 370px;
+    }
+
+    .kpi-card {
+      background: #ffffff;
+      border: 1px solid var(--surface-border);
+      border-radius: 16px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .kpi-label,
+    .metric-label {
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--blue-deep);
+    }
+
+    .kpi-value-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin: 10px 0 4px;
+    }
+
+    .kpi-value {
+      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+      font-size: 42px;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--c-ink);
+    }
+
+    .kpi-unit {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--c-muted);
+    }
+
+    .kpi-target {
+      font-size: 13px;
+      color: var(--c-muted);
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--surface-border);
+    }
+
+    .kpi-delta {
+      display: inline-flex;
+      width: fit-content;
+      margin-top: 12px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: rgba(var(--accent-rgb), 0.12);
+      color: var(--blue-deep);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .sparkline {
+      display: flex;
+      align-items: end;
+      gap: 6px;
+      height: 76px;
+      margin-top: auto;
+      padding-top: 12px;
+    }
+
+    .sparkline span {
+      flex: 1;
+      background: var(--blue-soft);
+      border-radius: 4px 4px 0 0;
+    }
+
+    .sparkline span:last-child {
+      background: var(--blue);
+    }
+
+    .tree-layout {
+      display: grid;
+      grid-template-columns: 1fr 44px 1fr 44px 1fr;
+      align-items: stretch;
+      min-height: 370px;
+    }
+
+    .tree-column {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .tree-column-title {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--blue-deep);
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--blue-soft);
+    }
+
+    .tree-node {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      padding: 14px;
+      background: #ffffff;
+      border: 1px solid var(--surface-border);
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .tree-column:first-child .tree-node {
+      background: var(--blue-deep);
+      color: #ffffff;
+      border-color: var(--blue-deep);
+      font-weight: 900;
+    }
+
+    .tree-column:last-child .tree-node {
+      background: rgba(var(--accent-rgb), 0.08);
+      color: var(--blue-deep);
+      border-color: rgba(66, 66, 71, 0.28);
+    }
+
+    .tree-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--blue);
+      font-size: 28px;
+      font-weight: 900;
+    }
+
+    .positioning-map {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      min-height: 370px;
+      border: 1px solid var(--surface-border);
+      overflow: hidden;
+    }
+
+    .positioning-area {
+      padding: 14px;
+      background: #ffffff;
+    }
+
+    .positioning-area:nth-child(odd) {
+      border-right: 1px solid var(--surface-border);
+    }
+
+    .positioning-area:nth-child(-n + 2) {
+      border-bottom: 1px solid var(--surface-border);
+    }
+
+    .positioning-axis {
+      position: absolute;
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--blue-deep);
+      background: #ffffff;
+      padding: 3px 7px;
+      border-radius: 4px;
+      z-index: 2;
+    }
+
+    .positioning-axis.top { top: 8px; left: 50%; transform: translateX(-50%); }
+    .positioning-axis.bottom { bottom: 8px; left: 50%; transform: translateX(-50%); }
+    .positioning-axis.left { left: 8px; top: 50%; transform: translateY(-50%) rotate(-90deg); }
+    .positioning-axis.right { right: 8px; top: 50%; transform: translateY(-50%) rotate(90deg); }
+
+    .brand-bubble {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 13px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .brand-bubble.client {
+      width: 100px;
+      height: 100px;
+      left: 59%;
+      top: 27%;
+      color: #ffffff;
+      background: var(--blue-deep);
+      box-shadow: 0 8px 20px rgba(66, 66, 71, 0.25);
+    }
+
+    .brand-bubble.competitor-a { width: 64px; height: 64px; left: 29%; top: 24%; background: #e7eef0; color: var(--c-muted); }
+    .brand-bubble.competitor-b { width: 76px; height: 76px; left: 35%; top: 59%; background: #e7eef0; color: var(--c-muted); }
+    .brand-bubble.competitor-c { width: 56px; height: 56px; left: 71%; top: 61%; background: #e7eef0; color: var(--c-muted); }
+
+    .team-layout {
+      display: grid;
+      grid-template-columns: 1.15fr repeat(3, 1fr);
+      gap: 14px;
+      min-height: 370px;
+    }
+
+    .team-lead,
+    .team-role {
+      border-radius: 16px;
+      padding: 18px;
+    }
+
+    .team-lead {
+      color: #ffffff;
+      background: var(--blue-deep);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .team-role {
+      background: #ffffff;
+      border: 1px solid var(--surface-border);
+    }
+
+    .team-role-title {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--blue-deep);
+      margin-bottom: 10px;
+    }
+
+    .team-chip {
+      display: inline-flex;
+      margin-bottom: 12px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: var(--blue-soft);
+      color: var(--blue-deep);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .team-list {
+      list-style: none;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    .team-list li::before {
+      content: '•';
+      color: var(--blue);
+      margin-right: 6px;
+    }
+
+    .funnel-layout {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      align-items: end;
+      min-height: 370px;
+    }
+
+    .funnel-stage {
+      display: flex;
+      flex-direction: column;
+      min-height: 220px;
+      border-radius: 14px 14px 0 0;
+      overflow: hidden;
+      background: #ffffff;
+      border: 1px solid var(--surface-border);
+    }
+
+    .funnel-stage:nth-child(1) { min-height: 350px; }
+    .funnel-stage:nth-child(2) { min-height: 310px; }
+    .funnel-stage:nth-child(3) { min-height: 270px; }
+
+    .funnel-head {
+      padding: 12px 14px;
+      background: var(--blue-deep);
+      color: #ffffff;
+    }
+
+    .funnel-head strong {
+      display: block;
+      font-size: 20px;
+    }
+
+    .funnel-head span {
+      font-size: 11px;
+      font-weight: 800;
+      opacity: 0.8;
+    }
+
+    .funnel-body {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      height: 100%;
+    }
+
+    .funnel-number {
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--c-ink);
+      line-height: 1;
+    }
+
+    .funnel-rate {
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--blue-deep);
+    }
+
+    .funnel-issue {
+      margin-top: auto;
+      padding: 8px;
+      background: rgba(var(--accent-rgb), 0.08);
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.45;
+      color: var(--c-muted);
+    }
+
+    .commflow {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-height: auto;
+    }
+
+    .commflow-summary {
+      display: grid;
+      grid-template-columns: 1.2fr 2fr 1.2fr;
+      gap: 12px;
+    }
+
+    .commflow-summary-cell {
+      background: #ffffff;
+      border: 1px solid var(--surface-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+
+    .commflow-summary-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      color: var(--blue-deep);
+      margin-bottom: 4px;
+    }
+
+    .commflow-summary-cell p {
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.45;
+      color: var(--c-ink);
+    }
+
+    /* 中段のフローと下段の打ち手で、同じカラム定義を共有する。
+       これで「離脱バッジ」と、その対になる「打ち手カード」が縦に揃う。
+       変更するときは .commflow-recovery 側も必ず同じ値にすること。 */
+    .commflow-main,
+    .commflow-recovery {
+      display: grid;
+      grid-template-columns:
+        110px 44px 1fr 44px 1fr 44px 1fr 44px 1fr 44px 110px;
+      gap: 8px;
+    }
+
+    .commflow-main {
+      align-items: start;
+    }
+
+    .commflow-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      text-align: center;
+      min-width: 0;
+    }
+
+    .commflow-node {
+      width: 100%;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      border: 1.5px solid var(--surface-border);
+      border-radius: 8px;
+      padding: 6px 8px;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.35;
+      color: var(--c-ink);
+      word-break: break-all;
+    }
+
+    .commflow-node--start {
+      border: 2px solid var(--blue);
+      background: rgba(var(--accent-rgb), 0.06);
+      color: var(--blue-deep);
+      font-weight: 900;
+    }
+
+    .commflow-node--goal {
+      background: var(--blue-deep);
+      border-color: var(--blue-deep);
+      color: #ffffff;
+      font-weight: 900;
+    }
+
+    .commflow-channel {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--c-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    .commflow-drop {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--blue-deep);
+      background: var(--blue-soft);
+      padding: 2px 8px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    /* 離脱バッジと打ち手カードを結ぶ符号。ステップ番号1〜5と混ざらないよう英字にする */
+    .commflow-code {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: var(--ink-700);
+      color: #ffffff;
+      font-size: 8px;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+
+    /* 矢印はノード（min-height 48px）の垂直中心に合わせる。
+       ラベルを絶対配置にして、「→」本体の位置がラベル有無に影響されないようにする */
+    .commflow-arrow {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 48px;
+      color: var(--blue);
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .commflow-arrow-label {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--c-muted);
+      white-space: nowrap;
+    }
+
+    .commflow-recovery-caption {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--blue-deep);
+      text-align: center;
+      margin-top: 4px;
+    }
+
+    /* カラム定義は .commflow-main と共有（上の共通ルールを参照）。
+       外側の破線囲みは外し、「バッジの真下に来る」という位置関係だけで対応を示す */
+    .commflow-recovery {
+      margin-top: 14px;
+    }
+
+    /* 4枚を、対応する離脱バッジと同じカラムに置く */
+    .commflow-recovery-item:nth-child(1) { grid-column: 3; }
+    .commflow-recovery-item:nth-child(2) { grid-column: 5; }
+    .commflow-recovery-item:nth-child(3) { grid-column: 7; }
+    .commflow-recovery-item:nth-child(4) { grid-column: 9; }
+
+    .commflow-recovery-item {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 4px;
+      background: rgba(var(--accent-rgb), 0.06);
+      border: 1px solid var(--surface-border);
+      border-radius: 8px;
+      padding: 8px 6px;
+      text-align: center;
+      min-width: 0;
+    }
+
+    /* 上の離脱バッジから下ろす破線。横＝理想フロー、縦＝復帰の打ち手、と線種で分ける */
+    .commflow-recovery-item::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: -14px;
+      height: 14px;
+      border-left: 1px dashed var(--ink-300);
+    }
+
+    .commflow-recovery-title {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--c-ink);
+      line-height: 1.35;
+      word-break: break-all;
+    }
+
+    .commflow-recovery-channel {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--c-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* 外部リンク（用語集などから実物へ飛ばすとき）
+       PDF書き出し後もリンク注釈として保持され、押せる。
+       target="_blank" を付けてスライドから離脱させないこと。 */
+    .term-link {
+      color: var(--brand-volt);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    /* ============================================================
+       PATTERN 31: ポジション別ロードマップ（スイムレーン）
+       出典: 採用ロードマップの実案件が初出
+       複数の対象を、同じ時間軸の上に並べて見せる型。
+       列数は .swimlane-track の grid-template-columns で変える。
+       バーの位置は style="--from:1;--to:3" で列番号を渡す
+       （1が左端の列の左辺。--to は「その列の左辺」なので、
+         1列ぶんのバーは --from:n / --to:n+1 になる）。
+       ============================================================ */
+    .swimlane {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      width: 100%;
+    }
+
+    .swimlane-row {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .swimlane-label {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--c-ink);
+      line-height: 1.45;
+    }
+
+    .swimlane-label span {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--c-muted);
+      margin-top: 2px;
+    }
+
+    .swimlane-track {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    /* 各レーンに1本レールを通す。バーが乗っていない期間が「空き」として読める */
+    .swimlane-row:not(.is-head) .swimlane-track::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 1px;
+      background: var(--surface-border);
+      transform: translateY(-50%);
+    }
+
+    /* 月の見出し行。区切り線は各セルではなくトラック全体に1本引く */
+    .swimlane-row.is-head .swimlane-track {
+      border-bottom: 1px solid var(--surface-border);
+      padding-bottom: 8px;
+    }
+
+    .swimlane-col {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--c-muted);
+      text-align: center;
+      letter-spacing: 0.04em;
+    }
+
+    .swimlane-bar {
+      position: relative;
+      z-index: 1;
+      grid-column: var(--from) / var(--to);
+      display: flex;
+      align-items: center;
+      min-height: 46px;
+      background: #ffffff;
+      border: 1px solid var(--surface-border);
+      border-left: 4px solid var(--accent);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.35;
+      color: var(--text);
+    }
+
+    /* 締切を作っているバーだけ塗る。1枚につき2本までを目安にする */
+    .swimlane-bar.is-key {
+      background: var(--accent);
+      border-color: var(--accent);
+      border-left-color: var(--accent-deep);
+      color: var(--on-accent);
+      font-weight: 800;
+    }
+
+    .swimlane-hint {
+      margin-top: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--c-muted);
+      line-height: 1.55;
+    }
+
+    /* Navigation UI */
+    #nav-controls {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      background: rgba(11, 11, 11, 0.95);
+      border: 1px solid rgba(var(--accent-rgb), 0.2);
+      padding: 8px 16px;
+      border-radius: 999px;
+      z-index: 1000;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      backdrop-filter: blur(8px);
+      gap: 12px;
+      transition: opacity 0.3s;
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #ffffff;
+      opacity: 0.7;
+      transition: var(--transition-smooth);
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      opacity: 1;
+      background: var(--accent);
+      color: var(--on-accent);
+      transform: scale(1.05);
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.2;
+      cursor: not-allowed;
+    }
+
+    .nav-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    .toc-select-wrapper select {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      padding-right: 20px;
+      cursor: pointer;
+      outline: none;
+      max-width: 280px;
+    }
+
+    .toc-select-wrapper select option {
+      background: var(--primary-dark);
+      color: #ffffff;
+    }
+
+    #page-indicator {
+      color: rgba(255, 255, 255, 0.6);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      min-width: 45px;
+      text-align: center;
+    }
+
+    #progress-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      border-bottom-left-radius: 999px;
+      border-bottom-right-radius: 999px;
+      overflow: hidden;
+    }
+
+    #progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent-on-dark);
+      transition: width 0.3s ease;
+    }
+
+
+    /* ============================================================
+       PATTERN 29: 小パネル一覧（4×3グリッド）
+       出典: ウェビナー企画スライドの実案件
+       ※出典側のクラス名は category-* 。カタログ化にあたり panel-* に改名し、
+         カテゴリ色3色をアクセント1色のトーン展開に置き換えている。
+       ============================================================ */
+    .panel-layout {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .panel-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      width: 100%;
+    }
+
+    .panel-card {
+      border: 1px solid var(--surface-border);
+      border-radius: 8px;
+      padding: 9px 10px;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 104px;
+    }
+
+    .panel-card.emphasis {
+      border-color: var(--blue);
+      box-shadow: inset 3px 0 0 var(--blue);
+    }
+
+    .panel-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 6px;
+      margin-bottom: 3px;
+    }
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--c-ink);
+      line-height: 1.25;
+    }
+
+    .panel-badge {
+      font-size: 9px;
+      font-weight: 900;
+      padding: 1px 5px;
+      border-radius: 2px;
+      white-space: nowrap;
+      background: var(--blue-deep);
+      color: #ffffff;
+    }
+
+    .panel-badge.tone-mid { background: var(--blue); color: #ffffff; }
+    .panel-badge.tone-soft { background: var(--blue-soft); color: var(--primary-dark); }
+
+    .panel-desc {
+      font-size: 11.5px;
+      line-height: 1.35;
+      color: var(--c-muted);
+      font-weight: 700;
+      margin-bottom: 4px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .panel-tags {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .panel-tag {
+      font-size: 9px;
+      font-weight: 700;
+      background: #f2f4f6;
+      color: var(--c-muted);
+      padding: 1px 5px;
+      border-radius: 2px;
+    }
+
+    .panel-hint {
+      padding: 8px 15px;
+      font-size: 12px;
+      line-height: 1.45;
+      width: 100%;
+      box-sizing: border-box;
+      color: var(--blue-deep);
+      background: rgba(var(--accent-rgb), 0.07);
+      border: 1px solid rgba(66, 66, 71, 0.25);
+      border-radius: 8px;
+    }
+
+    .slide-dark .panel-card { background: var(--c-surface-dark); border-color: var(--surface-border-dark); }
+    .slide-dark .panel-title { color: #ffffff; }
+    .slide-dark .panel-desc { color: rgba(255, 255, 255, 0.82); }
+    .slide-dark .panel-tag { background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.7); }
+    .slide-dark .panel-hint { color: var(--blue-soft); background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.2); }
+
+    /* ------------------------------------------------------------------
+       制作用: アクセントカラー・ピッカー（表紙のみ表示）
+       表紙で色を試して決めるためのUI。印刷・PDF書き出しでは自動的に消える。
+       納品前に、このCSSブロックと表紙HTMLの .accent-picker ブロックを削除する。
+       ------------------------------------------------------------------ */
+    .accent-picker {
+      position: absolute;
+      right: 80px;   /* スライドの左右パディングに合わせる */
+      bottom: 92px;  /* フッターに重ならない高さ */
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 5px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(6px);
+      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+      opacity: 0.4;
+      transition: opacity 0.3s;
+    }
+
+    .accent-picker:hover,
+    .accent-picker:focus-within {
+      opacity: 1;
+    }
+
+    .accent-picker input[type="color"] {
+      width: 18px;
+      height: 18px;
+      padding: 0;
+      border: none;
+      border-radius: 50%;
+      background: none;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .accent-picker input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+
+    .accent-picker input[type="color"]::-webkit-color-swatch {
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 50%;
+    }
+
+    .accent-picker input[type="text"] {
+      width: 58px;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #ffffff;
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    .accent-picker input[type="text"].is-invalid { color: #ff8a8a; }
+
+    @media print {
+      .accent-picker { display: none !important; }
+    }
+
+    @media print {
+      @page {
+        size: 1280px 720px;
+        margin: 0;
+      }
+
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      html,
+      body {
+        width: 1280px !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+        background: #ffffff !important;
+      }
+
+      #presentation-viewport,
+      #presentation-wrapper {
+        display: block !important;
+        width: 1280px !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+        transform: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+      }
+
+      .slide {
+        position: relative !important;
+        inset: auto !important;
+        width: 1280px !important;
+        height: 720px !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+        transform: none !important;
+        transition: none !important;
+        page-break-after: always !important;
+        break-after: page !important;
+      }
+
+      .slide:last-child {
+        page-break-after: auto !important;
+        break-after: auto !important;
+      }
+
+      .table-scroll-frame {
+        max-height: none !important;
+        overflow: visible !important;
+      }
+
+      .reveal {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        transition: none !important;
+      }
+
+      #nav-controls {
+        display: none !important;
+      }
+    }
+
+    /* ============================================================
+       PATTERN 32: 制作プロセスと役割（ウォーターフォール／アジャイル）
+       出典: 自社の講義資料（2022年）
+       ============================================================ */
+    .proc-block { width: 100%; }
+    .proc-block + .proc-block { margin-top: 16px; }
+    .proc-label {
+      font-size: 12px; font-weight: 900; letter-spacing: 0.04em; color: var(--c-ink);
+      padding: 5px 12px; border-radius: 4px; background: var(--ink-100);
+      display: inline-block; margin-bottom: 9px;
+    }
+    .proc-wf { display: grid; grid-template-columns: 1.1fr 1.8fr 1fr 1.9fr; gap: 8px; }
+    .proc-col { display: flex; flex-direction: column; gap: 5px; }
+    .proc-phase {
+      font-size: 13px; font-weight: 900; color: var(--on-accent); background: var(--accent);
+      padding: 7px 10px; border-radius: 6px; text-align: center;
+    }
+    .proc-item {
+      flex: 1; display: flex; align-items: center; justify-content: center; text-align: center;
+      font-size: 11.5px; font-weight: 700; line-height: 1.35; color: var(--text);
+      background: #ffffff; border: 1px solid var(--surface-border); border-radius: 6px; padding: 8px 9px;
+    }
+    .proc-item.is-tall { align-items: flex-start; text-align: left; }
+    .proc-agile { display: flex; align-items: stretch; gap: 6px; }
+    .proc-milestone {
+      flex: 0 0 92px; display: flex; align-items: center; justify-content: center; text-align: center;
+      font-size: 12.5px; font-weight: 900; color: var(--c-ink);
+      background: var(--ink-100); border: 1px solid var(--ink-200); border-radius: 6px; padding: 8px;
+    }
+    .proc-sprint {
+      flex: 1; display: flex; flex-direction: column; gap: 4px; padding: 8px;
+      border: 1px dashed var(--accent-deep); border-radius: 8px; background: var(--accent-tint);
+    }
+    .proc-sprint-label {
+      font-size: 10px; font-weight: 900; letter-spacing: 0.06em; color: var(--accent-deep); text-align: center;
+    }
+    .proc-sprint .proc-item { padding: 5px 8px; }
+    .proc-arrow { align-self: center; font-size: 15px; font-weight: 900; color: var(--ink-300); flex: 0 0 auto; }
+    .proc-hint {
+      margin-top: 12px; padding: 8px 15px; font-size: 12px; line-height: 1.45; width: 100%;
+      box-sizing: border-box; color: var(--blue-deep); background: rgba(var(--accent-rgb), 0.07);
+      border: 1px solid rgba(66, 66, 71, 0.25); border-radius: 8px; font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="presentation-viewport">
+    <div id="presentation-wrapper">
+
+      <!-- ==================== SLIDE 1 (このカタログについて) ====================
+           クライアントカラーを使う場合は、下の section に data-accent="#0b2e4f"
+           のように1色だけ足す。派生色は末尾のスクリプトが自動計算する。
+           ====================================================================== -->
+      <section class="slide slide-dark slide-lead active" id="slide-1">
+        <!-- ▼制作用: アクセントカラー・ピッカー。納品前にこのブロックごと削除する
+             使い方: 色を選ぶかカラーコードを直接打つと、デッキ全体に即反映される。
+                     決まったら、そのコードを上の section の data-accent に書く。 -->
+        <div class="accent-picker">
+          <input type="color" value="#d7ff00" aria-label="アクセントカラーを選ぶ">
+          <input type="text" value="#d7ff00" maxlength="7" spellcheck="false" aria-label="カラーコード">
+        </div>
+        <!-- ▲制作用ここまで -->
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN CATALOG</span>
+        </div>
+        <div class="slide-body">
+          <div class="reveal"><span class="badge-lead"></span></div>
+          <h1 class="title-lead reveal">スライドレイアウト<br>パターン集</h1>
+          <p class="subtitle-lead reveal">再利用パターンのカタログです。<br>使いたいスライドのHTMLとCSSを、案件の index.html にコピー。<br>表紙・料金表・プロフィールは template.html に。</p>
+        </div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span>COPYRIGHT © 〇〇株式会社 ALL RIGHTS RESERVED</span>
+        </div>
+      </section>
+
+      <!-- ############### 骨格（デッキの枠をつくる） ############### -->
+      <!-- ==================== SLIDE 2 (PATTERN 10: 目次) ==================== -->
+      <section class="slide slide-light" id="slide-2">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 10</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">目次（アジェンダ）</h2>
+          <p class="slide-subtitle">本日お話しする内容の全体像を最初に示します。</p>
+        </div>
+        <div class="slide-body">
+          <div class="agenda-list">
+            <div class="agenda-item reveal">
+              <span class="agenda-num">1</span>
+              <div>
+                <div class="agenda-title">セクション名</div>
+                <div class="agenda-sub">セクションの補足をひとことで記述します。</div>
+              </div>
+            </div>
+            <div class="agenda-item reveal">
+              <span class="agenda-num">2</span>
+              <div>
+                <div class="agenda-title">セクション名</div>
+                <div class="agenda-sub">セクションの補足をひとことで記述します。</div>
+              </div>
+            </div>
+            <div class="agenda-item reveal">
+              <span class="agenda-num">3</span>
+              <div>
+                <div class="agenda-title">セクション名</div>
+                <div class="agenda-sub">セクションの補足をひとことで記述します。</div>
+              </div>
+            </div>
+            <div class="agenda-item reveal">
+              <span class="agenda-num">4</span>
+              <div>
+                <div class="agenda-title">セクション名</div>
+                <div class="agenda-sub">セクションの補足をひとことで記述します。</div>
+              </div>
+            </div>
+            <div class="agenda-item reveal">
+              <span class="agenda-num">5</span>
+              <div>
+                <div class="agenda-title">セクション名</div>
+                <div class="agenda-sub">セクションの補足をひとことで記述します。</div>
+              </div>
+            </div>
+            <div class="agenda-item reveal">
+              <span class="agenda-num">6</span>
+              <div>
+                <div class="agenda-title">セクション名</div>
+                <div class="agenda-sub">セクションの補足をひとことで記述します。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 表紙の直後。ページ数が多い提案（10枚以上）では入れる。<strong>注意:</strong> 項目は4〜6個に収める。7個以上になる場合は構成自体を見直すサイン。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">2 / 33</span>
+        </div>
+      </section>
+      <!-- ==================== SLIDE 3 (PATTERN 11: 中表紙) ==================== -->
+      <section class="slide slide-dark section-divider" id="slide-3">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 11</span>
+        </div>
+        <div class="slide-body">
+          <div class="section-num reveal">02</div>
+          <h2 class="section-title reveal">セクションタイトル</h2>
+          <p class="section-lead reveal">このセクションで扱う内容の要約を1〜2行で記述します。論理展開の切れ目でテーマが変わることを読み手に知らせます。</p>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 章の切り替え。ダーク⇄ライトのテーマ切り替えと合わせて配置するとリズムが生まれる（STYLE_GUIDE §9①）。<strong>注意:</strong> 番号は目次（PATTERN 10）の番号と必ず一致させる。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">3 / 33</span>
+        </div>
+      </section>
+
+      <!-- ############### 並べる（項目を一覧で見せる） ############### -->
+      <!-- ==================== SLIDE 4 (PATTERN 01: 比較テーブル) ==================== -->
+      <section class="slide slide-light" id="slide-4">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 01</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">比較テーブル</h2>
+          <p class="slide-subtitle">数値や条件を行×列で比較して見せるページの標準コンポーネントです。</p>
+        </div>
+        <div class="slide-body">
+          <div class="reveal table-scroll-frame">
+            <table class="slide-table">
+              <thead>
+                <tr>
+                  <th style="width: 18%;">項目</th>
+                  <th style="width: 28%;">現状</th>
+                  <th style="width: 28%;">導入後</th>
+                  <th style="width: 26%;">備考</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="font-weight: 700; color: var(--c-ink);">項目A</td>
+                  <td>現状の状態や課題を記述します。</td>
+                  <td>導入後に期待できる状態を記述します。</td>
+                  <td>補足や条件をここに書きます。</td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 700; color: var(--c-ink);">項目B</td>
+                  <td>現状の状態や課題を記述します。</td>
+                  <td>導入後に期待できる状態を記述します。</td>
+                  <td>補足や条件をここに書きます。</td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 700; color: var(--c-ink);">項目C</td>
+                  <td>現状の状態や課題を記述します。</td>
+                  <td>導入後に期待できる状態を記述します。</td>
+                  <td>補足や条件をここに書きます。</td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 700; color: var(--c-ink);">項目D</td>
+                  <td>現状の状態や課題を記述します。</td>
+                  <td>導入後に期待できる状態を記述します。</td>
+                  <td>補足や条件をここに書きます。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 条件比較・メンバー一覧・仕様整理など、行×列で俯瞰させたい情報。<strong>注意:</strong> 行が多い場合は `.table-scroll-frame` で囲みスクロールさせる（印刷時は自動で全展開）。ヘッダーは `--primary-dark` 背景＋白文字が標準。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">4 / 33</span>
+        </div>
+      </section>
+      <!-- ==================== SLIDE 5 (PATTERN 02: ダーク面カード) ==================== -->
+      <section class="slide slide-dark" id="slide-5">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 02</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">ダーク面カード（3カラム）</h2>
+          <p class="slide-subtitle">ダークテーマのスライドで使う専用配色トークンを適用したカードです。</p>
+        </div>
+        <div class="slide-body">
+          <div class="grid-3">
+            <div class="card reveal">
+              <span class="card-num">POINT 01</span>
+              <h3 class="card-title">ポイントの見出し</h3>
+              <p class="card-text">ダーク面のカードは白の半透明オーバーレイではなく、`--c-surface-dark` と `--surface-border-dark` で塗ります。</p>
+            </div>
+            <div class="card reveal">
+              <span class="card-num">POINT 02</span>
+              <h3 class="card-title">ポイントの見出し</h3>
+              <p class="card-text">本文テキストはやや明度を落とした白（82%程度）にすると、見出しとの階層が生まれます。</p>
+            </div>
+            <div class="card reveal">
+              <span class="card-num">POINT 03</span>
+              <h3 class="card-title">ポイントの見出し</h3>
+              <p class="card-text">課題提起や現状分析など、シャープな印象を作りたいページで使用します。</p>
+            </div>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 現状分析・課題定義などダーク面で情報をモジュール化したいページ。<strong>注意:</strong> `:root` に `--c-surface-dark` / `--surface-border-dark` を定義し、`.slide-dark .card` に適用する（STYLE_GUIDE §3）。クライアント色に合わせてダーク面の色相も調整する。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">5 / 33</span>
+        </div>
+      </section>
+      <!-- ==================== SLIDE 6 (PATTERN 09: 詳細3カラム＋インサイト) ==================== -->
+      <section class="slide slide-light" id="slide-6">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 09</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">詳細3カラム＋インサイトカード</h2>
+          <p class="slide-subtitle">対象1件（人・施策・案件）を深掘りし、最後に所見で締めるレイアウトです。</p>
+        </div>
+        <div class="slide-body">
+          <div class="detail-layout">
+            <div class="grid-3 detail-grid">
+              <div class="card reveal">
+                <h3 class="card-title"><span class="card-num">A</span>特徴・強み</h3>
+                <ul class="bullet-list">
+                  <li style="font-weight: bold; color: var(--c-ink);">要点の見出し</li>
+                </ul>
+                <p class="detail-sub">見出しの補足説明を小さめの文字で記述します。</p>
+                <ul class="bullet-list">
+                  <li style="font-weight: bold; color: var(--c-ink);">要点の見出し</li>
+                </ul>
+                <p class="detail-sub">見出しの補足説明を小さめの文字で記述します。</p>
+              </div>
+              <div class="card reveal">
+                <h3 class="card-title"><span class="card-num">B</span>課題・困りごと</h3>
+                <ul class="bullet-list">
+                  <li>観察された課題その1を記述します。</li>
+                  <li>観察された課題その2を記述します。</li>
+                  <li>観察された課題その3を記述します。</li>
+                </ul>
+              </div>
+              <div class="card reveal">
+                <h3 class="card-title"><span class="card-num">C</span>次のアクション</h3>
+                <ul class="bullet-list">
+                  <li style="font-weight: bold; color: var(--c-ink);">アクションの見出し</li>
+                </ul>
+                <p class="detail-sub">アクションの具体的な内容を記述します。</p>
+                <ul class="bullet-list">
+                  <li style="font-weight: bold; color: var(--c-ink);">アクションの見出し</li>
+                </ul>
+                <p class="detail-sub">アクションの具体的な内容を記述します。</p>
+              </div>
+            </div>
+            <div class="insight-card reveal">
+              <div class="insight-label">担当者の視点</div>
+              <div class="insight-text">A〜Cを踏まえた所見・総評をここに1〜2行で記述します。事実（A〜C）と主観（ここ）を分けるのがポイントです。</div>
+            </div>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 1on1レポートのメンバー詳細、施策別の深掘りページなど、同じ型を複数枚並べる資料。<strong>注意:</strong> カラムの意味（A/B/C）は全ページで固定し、読み手が位置で内容を予測できるようにする。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">6 / 33</span>
+        </div>
+      </section>
+      <!-- ==================== SLIDE 7 (PATTERN 29: 小パネル一覧 4×3) ==================== -->
+      <section class="slide slide-light" id="slide-7">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 29</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">小パネル一覧（4×3グリッド）</h2>
+          <p class="slide-subtitle">似た粒度の項目を10〜12個、1枚で見渡させる型。選択・分類・棚卸しに使います。</p>
+        </div>
+        <div class="slide-body">
+          <div class="panel-layout">
+            <div class="panel-grid reveal">
+            <div class="panel-card">
+              <div class="panel-card-header">
+                <span class="panel-title">見積もりの根拠</span>
+                <span class="panel-badge">お金</span>
+              </div>
+              <p class="panel-desc">なぜこの金額なのか、工数・品質・リスクを発注者に説明しきれない。</p>
+              <div class="panel-tags"><span class="panel-tag">クライアント</span></div>
+            </div>
+            <div class="panel-card">
+              <div class="panel-card-header">
+                <span class="panel-title">追加要望の線引き</span>
+                <span class="panel-badge">交渉</span>
+              </div>
+              <p class="panel-desc">仕様変更・差し込み・軽微な修正をどこから追加費用にするか迷う。</p>
+              <div class="panel-tags"><span class="panel-tag">クライアント</span></div>
+            </div>
+            <div class="panel-card">
+              <div class="panel-card-header">
+                <span class="panel-title">期待値のズレ</span>
+                <span class="panel-badge">合意</span>
+              </div>
+              <p class="panel-desc">発注者の「いい感じ」と制作側の現実が合わず、後工程で揉める。</p>
+              <div class="panel-tags"><span class="panel-tag">クライアント</span></div>
+            </div>
+            <div class="panel-card">
+              <div class="panel-card-header">
+                <span class="panel-title">要件定義の曖昧さ</span>
+                <span class="panel-badge tone-mid">進行</span>
+              </div>
+              <p class="panel-desc">目的・仕様・優先順位が曖昧なまま制作が走り、手戻りが増える。</p>
+              <div class="panel-tags"><span class="panel-tag">進行管理</span></div>
+            </div>
+            <div class="panel-card">
+              <div class="panel-card-header">
+                <span class="panel-title">承認が進まない</span>
+                <span class="panel-badge tone-mid">遅延</span>
+              </div>
+              <p class="panel-desc">レビュー待ち、決裁者不在、社内確認の長期化でスケジュールが崩れる。</p>
+              <div class="panel-tags"><span class="panel-tag">進行管理</span></div>
+            </div>
+            <div class="panel-card">
+              <div class="panel-card-header">
+                <span class="panel-title">タスクの抜け漏れ</span>
+                <span class="panel-badge tone-mid">品質</span>
+              </div>
+              <p class="panel-desc">進捗管理が属人化し、誰が何を持っているか見えなくなる。</p>
+              <div class="panel-tags"><span class="panel-tag">進行管理</span></div>
+            </div>
+            <div class="panel-card">
+              <div class="panel-card-header">
+                <span class="panel-title">炎上時の立て直し</span>
+                <span class="panel-badge tone-mid">危機</span>
+              </div>
+              <p class="panel-desc">遅延・品質問題・関係悪化が起きたとき、何から整えるべきか迷う。</p>
+              <div class="panel-tags"><span class="panel-tag">進行管理</span></div>
+            </div>
+            <div class="panel-card">
+              <div class="panel-card-header">
+                <span class="panel-title">職種間の翻訳</span>
+                <span class="panel-badge tone-mid">連携</span>
+              </div>
+              <p class="panel-desc">デザイナー・エンジニア・営業・顧客で、同じ言葉の意味がずれる。</p>
+              <div class="panel-tags"><span class="panel-tag">チーム</span></div>
+            </div>
+            <div class="panel-card">
+              <div class="panel-card-header">
+                <span class="panel-title">会議が決まらない</span>
+                <span class="panel-badge tone-soft">会議</span>
+              </div>
+              <p class="panel-desc">MTGは増えるのに論点・決定・宿題が曖昧で、前に進まない。</p>
+              <div class="panel-tags"><span class="panel-tag">チーム</span></div>
+            </div>
+            <div class="panel-card">
+              <div class="panel-card-header">
+                <span class="panel-title">育成と任せ方</span>
+                <span class="panel-badge tone-soft">組織</span>
+              </div>
+              <p class="panel-desc">若手・外部パートナーにどこまで任せ、どこで介入するかが難しい。</p>
+              <div class="panel-tags"><span class="panel-tag">チーム</span></div>
+            </div>
+            <div class="panel-card">
+              <div class="panel-card-header">
+                <span class="panel-title">スキルの言語化</span>
+                <span class="panel-badge tone-soft">キャリア</span>
+              </div>
+              <p class="panel-desc">調整力・推進力・PM力を職務経歴書や単価交渉で説明しづらい。</p>
+              <div class="panel-tags"><span class="panel-tag">キャリア</span></div>
+            </div>
+            <div class="panel-card">
+              <div class="panel-card-header">
+                <span class="panel-title">AI・新ツール導入</span>
+                <span class="panel-badge tone-soft">学習</span>
+              </div>
+              <p class="panel-desc">Cursor・Claude・Figma AIなどを、どこまで実務フローに入れるか迷う。</p>
+              <div class="panel-tags"><span class="panel-tag">キャリア</span></div>
+            </div>
+            </div>
+            <div class="panel-hint"><strong>使い方のヒント：</strong>「誰の話か」「どの場面で起きるか」「何を持ち帰れるか」まで分解すると、そのままタイトル・登壇者・告知文に展開できます。</div>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 選択肢・分類・課題の棚卸しなど、<strong>粒度の揃った項目を一覧で見渡して選ばせたいページ</strong>。カード比較（grid-2/3）が「3案を読み込ませる」型なのに対し、これは「12個を眺めて指させる」型。<strong>注意:</strong> バッジは色の役割を増やさず <code>tone-mid</code> / <code>tone-soft</code> のトーン展開で分類する（アクセント1色ルール）。説明文は2行で自動クランプされるので、1項目40字前後に収める。12個を超えるならページを分ける。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">7 / 33</span>
+        </div>
+      </section>
+      <!-- ==================== SLIDE 8 (PATTERN 12: 数値ハイライト) ==================== -->
+      <section class="slide slide-light" id="slide-8">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 12</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">数値ハイライト（KPI）</h2>
+          <p class="slide-subtitle">実績や効果を3つの数字で端的に見せます。</p>
+        </div>
+        <div class="slide-body">
+          <div class="stat-grid">
+            <div class="stat-card reveal">
+              <div class="stat-label">指標のラベル</div>
+              <div class="stat-value">00<span class="stat-unit">%</span></div>
+              <div class="stat-note">数値の出典・集計条件をここに明記します。</div>
+            </div>
+            <div class="stat-card reveal">
+              <div class="stat-label">指標のラベル</div>
+              <div class="stat-value">000<span class="stat-unit">件</span></div>
+              <div class="stat-note">数値の出典・集計条件をここに明記します。</div>
+            </div>
+            <div class="stat-card reveal">
+              <div class="stat-label">指標のラベル</div>
+              <div class="stat-value">0.0<span class="stat-unit">倍</span></div>
+              <div class="stat-note">数値の出典・集計条件をここに明記します。</div>
+            </div>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 実績紹介・効果試算・現状定量把握のページ。<strong>注意:</strong> 掲載する数値は必ず一次ソース（議事録・実績データ等）に根拠を持たせ、出典を `.stat-note` に書く（STYLE_GUIDE §8）。根拠のない試算値は載せない。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">8 / 33</span>
+        </div>
+      </section>
+
+      <!-- ############### 流れを見せる（時間・変化） ############### -->
+      <!-- ==================== SLIDE 9 (PATTERN 03: Before/After 横フロー) ==================== -->
+      <section class="slide slide-light" id="slide-9">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 03</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">Before / After 横フロー</h2>
+          <p class="slide-subtitle">現状（AS-IS）から理想（TO-BE）への変化を、支援内容を挟んで一枚で見せます。</p>
+        </div>
+        <div class="slide-body">
+          <div class="asis-tobe-container">
+            <div class="flow-box asis-box reveal">
+              <span class="flow-label">AS-IS 現状の課題</span>
+              <h3 class="flow-title" style="color: var(--c-ink);">現状の課題の要約</h3>
+              <ul class="flow-list">
+                <li>課題のポイントその1を記述します。</li>
+                <li>課題のポイントその2を記述します。</li>
+                <li>課題のポイントその3を記述します。</li>
+              </ul>
+            </div>
+            <div class="flow-arrow reveal">→</div>
+            <div class="flow-box bridge-box reveal">
+              <span class="card-num">DiSA SUPPORT</span>
+              <h3 class="flow-title" style="color: #ffffff;">伴走サポートの名称</h3>
+              <ul class="flow-list">
+                <li>支援内容の要点その1。</li>
+                <li>支援内容の要点その2。</li>
+              </ul>
+            </div>
+            <div class="flow-arrow reveal">→</div>
+            <div class="flow-box tobe-box reveal">
+              <span class="flow-label">TO-BE 理想の姿</span>
+              <h3 class="flow-title" style="color: var(--blue-deep);">実現したい状態の要約</h3>
+              <ul class="flow-list">
+                <li>理想の状態その1を記述します。</li>
+                <li>理想の状態その2を記述します。</li>
+                <li>理想の状態その3を記述します。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 提案の「全体像」ページ。課題→支援→理想の因果を一枚で示す。<strong>注意:</strong> 中央の `bridge-box` はダーク塗りで主役化する。左右のリストは3項目程度に絞ると崩れない。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">9 / 33</span>
+        </div>
+      </section>
+      <!-- ==================== SLIDE 10 (PATTERN 04: As-Is/To-Be/Action 3カラム) ==================== -->
+      <section class="slide slide-light" id="slide-10">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 04</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">As-Is / To-Be / Action 3カラム</h2>
+          <p class="slide-subtitle">課題ごとに「現状・理想・打ち手」を1テーマ1枚で整理するレイアウトです。</p>
+        </div>
+        <div class="slide-body">
+          <div class="ato-container">
+            <div class="ato-box asis reveal">
+              <span class="ato-label">As-Is 現状</span>
+              <ul class="ato-content">
+                <li>観察された事実や課題を記述します。</li>
+                <li>ヒアリングで得た発言を根拠として添えます。</li>
+                <li>数値があれば具体的に書きます。</li>
+              </ul>
+            </div>
+            <div class="ato-box tobe reveal">
+              <span class="ato-label">To-Be 理想</span>
+              <ul class="ato-content">
+                <li>目指す状態を記述します。</li>
+                <li>誰がどう動けている状態かを具体化します。</li>
+              </ul>
+            </div>
+            <div class="ato-box action reveal">
+              <span class="ato-label">Action 打ち手</span>
+              <ul class="ato-content">
+                <li>最初に着手するアクションを記述します。</li>
+                <li>次のステップと担当の目安を書きます。</li>
+                <li>効果検証の方法を添えます。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 解決策ページや報告書で、課題単位に打ち手まで落とすとき。<strong>注意:</strong> 状態の区別は色相を増やさず、グレー（現状）→淡いブルー（理想）→濃いブルー枠（打ち手）のトーン差で付ける（アクセント1色ルール）。Actionカラムはやや広め（1.2fr）が標準。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">10 / 33</span>
+        </div>
+      </section>
+      <!-- ==================== SLIDE 11 (PATTERN 06: ロードマップ) ==================== -->
+      <section class="slide slide-light" id="slide-11">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 06</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">ロードマップ（3フェーズ）</h2>
+          <p class="slide-subtitle">時系列のラインとドットで、段階的な実行計画を見せます。</p>
+        </div>
+        <div class="slide-body roadmap-body">
+          <div class="roadmap-line reveal"></div>
+          <div class="roadmap-grid">
+            <div class="roadmap-phase reveal">
+              <div class="roadmap-dot"></div>
+              <div class="roadmap-card">
+                <span class="roadmap-badge">① フェーズ名（導入期）</span>
+                <span class="roadmap-period">[ 期間の目安 ]</span>
+                <ul class="roadmap-list">
+                  <li>このフェーズで実施することその1。</li>
+                  <li>このフェーズで実施することその2。</li>
+                  <li>このフェーズで実施することその3。</li>
+                </ul>
+              </div>
+            </div>
+            <div class="roadmap-phase reveal">
+              <div class="roadmap-dot" style="border-color: var(--blue-deep);"></div>
+              <div class="roadmap-card">
+                <span class="roadmap-badge">② フェーズ名（定着期）</span>
+                <span class="roadmap-period">[ 期間の目安 ]</span>
+                <ul class="roadmap-list">
+                  <li>このフェーズで実施することその1。</li>
+                  <li>このフェーズで実施することその2。</li>
+                  <li>このフェーズで実施することその3。</li>
+                </ul>
+              </div>
+            </div>
+            <div class="roadmap-phase reveal">
+              <div class="roadmap-dot" style="border-color: var(--blue-soft);"></div>
+              <div class="roadmap-card">
+                <span class="roadmap-badge">③ フェーズ名（自走期）</span>
+                <span class="roadmap-period">[ 期間の目安 ]</span>
+                <ul class="roadmap-list">
+                  <li>このフェーズで達成される状態その1。</li>
+                  <li>このフェーズで達成される状態その2。</li>
+                  <li>このフェーズで達成される状態その3。</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 実行計画・ご支援ステップのページ（標準ストーリー構成の11番）。<strong>注意:</strong> フェーズは3つまで。各カードの箇条書きは3項目程度に揃え、カードの `min-height` で高さを揃える。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">11 / 33</span>
+        </div>
+      </section>
+      <!-- ==================== SLIDE 12 (PATTERN 07: 横型ステップフロー) ==================== -->
+      <section class="slide slide-light" id="slide-12">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 07</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">横型ステップフロー（ヘッドライン付き）</h2>
+          <p class="slide-subtitle">結論のメッセージを上段に置き、下段でプロセスを5ステップで示します。</p>
+        </div>
+        <div class="slide-body">
+          <div class="flowchart-layout">
+            <div class="flowchart-headline reveal">
+              <div class="flowchart-headline-main">
+                <div class="flowchart-headline-kicker">KEY MESSAGE</div>
+                <div class="flowchart-headline-text">このページで一番伝えたい結論を1〜2行で記述します。</div>
+              </div>
+              <div class="flowchart-headline-note">
+                <span>POINT</span>
+                <strong>補足の要点や前提条件をここに記述します。</strong>
+              </div>
+            </div>
+            <div class="flowchart-steps">
+              <div class="flowchart-step reveal">
+                <div class="flowchart-step-num">1</div>
+                <div class="flowchart-step-title">ステップ名</div>
+                <div class="flowchart-step-desc">このステップで起きること・やることを記述します。</div>
+              </div>
+              <div class="flowchart-step reveal">
+                <div class="flowchart-step-num">2</div>
+                <div class="flowchart-step-title">ステップ名</div>
+                <div class="flowchart-step-desc">このステップで起きること・やることを記述します。</div>
+              </div>
+              <div class="flowchart-step reveal">
+                <div class="flowchart-step-num">3</div>
+                <div class="flowchart-step-title">ステップ名</div>
+                <div class="flowchart-step-desc">このステップで起きること・やることを記述します。</div>
+              </div>
+              <div class="flowchart-step reveal">
+                <div class="flowchart-step-num">4</div>
+                <div class="flowchart-step-title">ステップ名</div>
+                <div class="flowchart-step-desc">このステップで起きること・やることを記述します。</div>
+              </div>
+              <div class="flowchart-step reveal">
+                <div class="flowchart-step-num">5</div>
+                <div class="flowchart-step-title">ステップ名</div>
+                <div class="flowchart-step-desc">このステップで起きること・やることを記述します。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 業務プロセスの可視化、課題が生まれる流れの説明など。<strong>注意:</strong> ステップは4〜5個が上限。6個以上になる場合は次のタイムライン3×2に切り替える。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">12 / 33</span>
+        </div>
+      </section>
+      <!-- ==================== SLIDE 13 (PATTERN 08: タイムライン 3×2) ==================== -->
+      <section class="slide slide-light" id="slide-13">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 08</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">タイムライン 3×2（6ステップ）</h2>
+          <p class="slide-subtitle">6ステップの流れを3列×2段で見せる、ご利用の流れの標準レイアウトです。</p>
+        </div>
+        <div class="slide-body">
+          <div class="timeline-container">
+            <div class="timeline-item reveal">
+              <div class="timeline-head">
+                <span class="timeline-num">1</span>
+                <span class="timeline-title">ステップ名</span>
+              </div>
+              <p class="timeline-desc">このステップの説明を左寄せで記述します。</p>
+            </div>
+            <div class="timeline-item reveal">
+              <div class="timeline-head">
+                <span class="timeline-num">2</span>
+                <span class="timeline-title">ステップ名</span>
+              </div>
+              <p class="timeline-desc">このステップの説明を左寄せで記述します。</p>
+            </div>
+            <div class="timeline-item reveal">
+              <div class="timeline-head">
+                <span class="timeline-num">3</span>
+                <span class="timeline-title">ステップ名</span>
+              </div>
+              <p class="timeline-desc">このステップの説明を左寄せで記述します。</p>
+            </div>
+            <div class="timeline-item reveal">
+              <div class="timeline-head">
+                <span class="timeline-num">4</span>
+                <span class="timeline-title">ステップ名</span>
+              </div>
+              <p class="timeline-desc">このステップの説明を左寄せで記述します。</p>
+            </div>
+            <div class="timeline-item reveal">
+              <div class="timeline-head">
+                <span class="timeline-num">5</span>
+                <span class="timeline-title">ステップ名</span>
+              </div>
+              <p class="timeline-desc">このステップの説明を左寄せで記述します。</p>
+            </div>
+            <div class="timeline-item reveal">
+              <div class="timeline-head">
+                <span class="timeline-num">6</span>
+                <span class="timeline-title">ステップ名</span>
+              </div>
+              <p class="timeline-desc">このステップの説明を左寄せで記述します。</p>
+            </div>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> ご利用の流れなど6ステップ前後のプロセス（STYLE_GUIDE §3のルールを実装したもの）。<strong>注意:</strong> 1列に6個並べない。矢印は `::after` で自動付与され、右端（3n）では非表示になる。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">13 / 33</span>
+        </div>
+      </section>
+      <!-- ==================== SLIDE 14 (PATTERN 21: カスタマージャーニーマップ) ==================== -->
+      <section class="slide slide-light framework-slide" id="slide-14">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 21</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">カスタマージャーニーマップ</h2>
+          <p class="slide-subtitle">顧客行動を時系列で分解し、接点・感情・課題まで含めて体験を可視化する型です。</p>
+        </div>
+        <div class="slide-body">
+          <div class="framework-shell cjm-shell reveal">
+            <div class="cjm-title-row">
+              <div class="cjm-title-main">AsIs カスタマージャーニーマップ</div>
+              <div class="cjm-title-sub">AsIs CUSTOMER JOURNEY MAP</div>
+            </div>
+            <div class="cjm-meta">
+              <div>サービス名 / SERVICE NAME : <strong class="framework-muted">［ サービス名 ］</strong></div>
+              <div>作成日 / DATE : <strong class="framework-muted">［ 作成日 ］</strong></div>
+            </div>
+            <div class="cjm-grid">
+              <div class="cjm-cell cjm-rowhead">01 /<br>状況</div>
+              <div class="cjm-cell cjm-stage"><small>予期的UX</small>利用前</div>
+              <div class="cjm-cell cjm-stage"><small>予期的UX</small>比較・検討</div>
+              <div class="cjm-cell cjm-stage"><small>一時的UX</small>購入する</div>
+              <div class="cjm-cell cjm-stage"><small>一時的UX</small>利用する</div>
+              <div class="cjm-cell cjm-stage"><small>エピソード的UX</small>利用後</div>
+
+              <div class="cjm-cell cjm-rowhead">02 /<br>行動</div>
+              <div class="cjm-cell">・SNSや検索で存在を知る<br>・口コミを確認する</div>
+              <div class="cjm-cell">・実物の見え方を比較する<br>・価格と仕様を見比べる</div>
+              <div class="cjm-cell">・店舗や担当者に確認する<br>・申込や決済を進める</div>
+              <div class="cjm-cell">・商品やサービスを体験する<br>・不明点を調べる</div>
+              <div class="cjm-cell">・友人に共有する<br>・レビューや再利用を検討する</div>
+
+              <div class="cjm-cell cjm-rowhead">03 /<br>タッチポイント</div>
+              <div class="cjm-cell cjm-icon-row">📱 👤 ▶</div>
+              <div class="cjm-cell cjm-icon-row">🖥 📱 👩</div>
+              <div class="cjm-cell cjm-icon-row">👨‍💼 🤝 📘</div>
+              <div class="cjm-cell cjm-icon-row">🏠 🍽 📘</div>
+              <div class="cjm-cell cjm-icon-row">👤 👥 💬</div>
+
+              <div class="cjm-cell cjm-rowhead">04 /<br>思考・感情</div>
+              <div class="cjm-cell">・自分に合うか気になる<br>・失敗したくない</div>
+              <div class="cjm-cell">・比較軸が欲しい<br>・説明資料があると安心</div>
+              <div class="cjm-cell">・購入手続きは簡単か<br>・納期やサポートが気になる</div>
+              <div class="cjm-cell">・使いやすいか<br>・期待通りの効果があるか</div>
+              <div class="cjm-cell">・他人に勧められるか<br>・また使いたいか</div>
+
+              <div class="cjm-cell cjm-rowhead">05 /<br>感情曲線</div>
+              <div class="cjm-cell cjm-emotion">☹️ → 🙂</div>
+              <div class="cjm-cell cjm-emotion">😕 → 😊</div>
+              <div class="cjm-cell cjm-emotion">😐 → 🙂</div>
+              <div class="cjm-cell cjm-emotion">🙂 → 😄</div>
+              <div class="cjm-cell cjm-emotion">😄 → 😄</div>
+
+              <div class="cjm-cell cjm-rowhead row-last">06 /<br>問題・課題・要求</div>
+              <div class="cjm-cell cjm-issues row-last">・入口での理解促進コンテンツが必要<br>・比較前の不安を減らしたい</div>
+              <div class="cjm-cell cjm-issues row-last">・比較しやすい表現に整える<br>・事例やFAQを追加する</div>
+              <div class="cjm-cell cjm-issues row-last">・申込導線を短くする<br>・サポート条件を明確にする</div>
+              <div class="cjm-cell cjm-issues row-last">・初期体験を改善する<br>・利用中の困りごとを拾う</div>
+              <div class="cjm-cell cjm-issues row-last">・共有したくなる体験を設計する<br>・継続接点を用意する</div>
+            </div>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 体験設計、導線改善、顧客理解を深掘りする章。<strong>注意:</strong> 行動だけでなく「思考・感情」と「要求」まで並べると、改善提案につなげやすい。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">14 / 33</span>
+        </div>
+      </section>
+      <!-- ==================== SLIDE 15 (PATTERN 26: ファネル・導線分析) ==================== -->
+      <section class="slide slide-light compact-pattern-slide" id="slide-15">
+        <div class="slide-header"><img src="./logo.svg" alt="ロゴ"><span class="slide-tag">PATTERN 26</span></div>
+        <div class="slide-title-area"><h2 class="slide-title">ファネル・導線分析</h2><p class="slide-subtitle">認知から継続までを数値でつなぎ、最も改善効果の大きい離脱地点を見つける型です。</p></div>
+        <div class="slide-body">
+          <div class="funnel-layout reveal">
+            <div class="funnel-stage"><div class="funnel-head"><strong>認知</strong><span>AWARENESS</span></div><div class="funnel-body"><div class="funnel-number">0,000</div><div class="funnel-rate">到達数</div><div class="funnel-issue">改善論点: 誰に、どの接点で知ってもらうか</div></div></div>
+            <div class="funnel-stage"><div class="funnel-head"><strong>検討</strong><span>CONSIDERATION</span></div><div class="funnel-body"><div class="funnel-number">0,000</div><div class="funnel-rate">遷移率 00%</div><div class="funnel-issue">改善論点: 比較材料と価値訴求を足す</div></div></div>
+            <div class="funnel-stage"><div class="funnel-head"><strong>申込</strong><span>CONVERSION</span></div><div class="funnel-body"><div class="funnel-number">000</div><div class="funnel-rate">遷移率 00%</div><div class="funnel-issue">改善論点: 申込導線と不安を解消する</div></div></div>
+            <div class="funnel-stage"><div class="funnel-head"><strong>継続</strong><span>RETENTION</span></div><div class="funnel-body"><div class="funnel-number">000</div><div class="funnel-rate">継続率 00%</div><div class="funnel-issue">改善論点: 初期体験と継続接点を整える</div></div></div>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> マーケティング、営業導線、CV改善のレビュー。<strong>注意:</strong> 各段階の定義と計測方法を揃えてから比較する。</div>
+        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">15 / 33</span></div>
+      </section>
+
+      <!-- ############### 分析フレーム ############### -->
+      <!-- ==================== SLIDE 16 (PATTERN 15: SWOT分析) ==================== -->
+      <section class="slide slide-light framework-slide" id="slide-16">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 15</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">SWOT分析</h2>
+          <p class="slide-subtitle">内部環境と外部環境を4象限で切り分け、現状整理の起点をつくる型です。</p>
+        </div>
+        <div class="slide-body">
+          <div class="framework-shell reveal">
+            <div class="swot-layout">
+              <div class="swot-axis-main">外部環境</div>
+              <div class="swot-axis-stack">
+                <div class="swot-axis-sub">機会</div>
+                <div class="swot-axis-sub">脅威</div>
+              </div>
+              <div class="swot-main">
+                <div>
+                  <div class="swot-top-band">内部環境</div>
+                  <div class="swot-header-row">
+                    <div class="swot-head">強み</div>
+                    <div class="swot-head">弱み</div>
+                  </div>
+                </div>
+                <div class="swot-cell-grid">
+                  <div class="swot-cell">
+                    <div class="swot-cell-title">強み × 機会</div>
+                    <div class="swot-cell-text">強みを活かして<br>機会を創出する</div>
+                  </div>
+                  <div class="swot-cell">
+                    <div class="swot-cell-title">弱み × 機会</div>
+                    <div class="swot-cell-text">弱みを改善し<br>機会を創出する</div>
+                  </div>
+                  <div class="swot-cell">
+                    <div class="swot-cell-title">強み × 脅威</div>
+                    <div class="swot-cell-text">強みを活かして<br>脅威を回避する</div>
+                  </div>
+                  <div class="swot-cell">
+                    <div class="swot-cell-title">弱み × 脅威</div>
+                    <div class="swot-cell-text">弱みを理解し<br>最悪の事態を回避する</div>
+                  </div>
+                </div>
+                <div class="swot-center">SWOT分析</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 事業診断、競合整理、支援前の現状把握。<strong>注意:</strong> まずは事実の棚卸しに徹し、打ち手の話は次のクロスSWOTに分けると読みやすい。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">16 / 33</span>
+        </div>
+      </section>
+      <!-- ==================== SLIDE 17 (PATTERN 16: クロスSWOT) ==================== -->
+      <section class="slide slide-light framework-slide" id="slide-17">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 16</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">クロスSWOT</h2>
+          <p class="slide-subtitle">SWOTの各要素を掛け合わせ、戦略の方向性まで一歩進める派生パターンです。</p>
+        </div>
+        <div class="slide-body">
+          <div class="framework-shell cross-shell reveal">
+            <div class="cross-layout">
+              <div class="cross-axis-main">外部環境</div>
+              <div class="cross-axis-stack">
+                <div class="cross-axis-sub">機会</div>
+                <div class="cross-axis-sub">脅威</div>
+              </div>
+              <div class="cross-main">
+                <div>
+                  <div class="cross-top-band">内部環境</div>
+                  <div class="cross-header-row">
+                    <div class="cross-head">強み</div>
+                    <div class="cross-head">弱み</div>
+                  </div>
+                </div>
+                <div class="cross-grid">
+                  <div class="cross-cell">
+                    <div class="cross-cell-title">強み×機会</div>
+                    <div class="cross-cell-sub">(SO戦略)</div>
+                    <div class="cross-cell-text">強みを活かし、積極的に挑戦すべきことを定義する。</div>
+                  </div>
+                  <div class="cross-cell">
+                    <div class="cross-cell-title">弱み×機会</div>
+                    <div class="cross-cell-sub">(WO戦略)</div>
+                    <div class="cross-cell-text">弱みを克服することで、新しい機会をつくる施策を考える。</div>
+                  </div>
+                  <div class="cross-cell">
+                    <div class="cross-cell-title">強み×脅威</div>
+                    <div class="cross-cell-sub">(ST戦略)</div>
+                    <div class="cross-cell-text">強みを活かして、外部脅威による影響を抑える方策を置く。</div>
+                  </div>
+                  <div class="cross-cell">
+                    <div class="cross-cell-title">弱み×脅威</div>
+                    <div class="cross-cell-sub">(WT戦略)</div>
+                    <div class="cross-cell-text">弱みと脅威が重なる部分を特定し、防衛策や撤退ラインを決める。</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 分析の後に「何をやるか」までつなげたい提案書。<strong>注意:</strong> 4象限すべてを均等に埋めるより、優先度の高い戦略だけ太らせる方が実務的。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">17 / 33</span>
+        </div>
+      </section>
+      <!-- ==================== SLIDE 18 (PATTERN 17: PEST分析) ==================== -->
+      <section class="slide slide-light framework-slide" id="slide-18">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 17</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">PEST分析</h2>
+          <p class="slide-subtitle">政治・経済・社会・技術の変化を分解して、市場前提の変動をつかむマクロ環境フレームです。</p>
+        </div>
+        <div class="slide-body">
+          <div class="framework-shell reveal">
+            <div class="pest-layout">
+              <div class="pest-box">
+                <div class="pest-heading">
+                  <div class="pest-mark">P<small>POLITICS</small></div>
+                  <div class="pest-ja">政治的要因</div>
+                </div>
+                <div class="pest-list">・法令、認証、条例<br>・税制<br>・政権交代 など</div>
+                <div class="pest-focus">市場競争の前提となる<br>ルールそのものが変化する</div>
+              </div>
+              <div class="pest-box">
+                <div class="pest-heading">
+                  <div class="pest-mark">E<small>ECONOMY</small></div>
+                  <div class="pest-ja">経済的要因</div>
+                </div>
+                <div class="pest-list">・景気状況<br>・経済成長<br>・為替、原油、株価 など</div>
+                <div class="pest-focus">売上やコストなど利益に直結する<br>価格連動に影響を与える</div>
+              </div>
+              <div class="pest-box">
+                <div class="pest-heading">
+                  <div class="pest-mark">S<small>SOCIETY</small></div>
+                  <div class="pest-ja">社会的要因</div>
+                </div>
+                <div class="pest-list">・少子高齢化<br>・流行、世論<br>・家族、教育 など</div>
+                <div class="pest-focus">売上の元になる<br>生活者の需要に影響を与える</div>
+              </div>
+              <div class="pest-box">
+                <div class="pest-heading">
+                  <div class="pest-mark">T<small>TECHNOLOGY</small></div>
+                  <div class="pest-ja">技術的要因</div>
+                </div>
+                <div class="pest-list">・イノベーション<br>・特許<br>・インフラ など</div>
+                <div class="pest-focus">市場競争の<br>成功要因を変えてしまう</div>
+              </div>
+              <div class="pest-center"><span>PEST<br>分析</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 市場の変化を前提条件として置きたい導入パート。<strong>注意:</strong> 自社視点の話に寄りすぎず、「市場全体に起きている変化」を先に置くと整理しやすい。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">18 / 33</span>
+        </div>
+      </section>
+      <!-- ==================== SLIDE 19 (PATTERN 18: VRIO分析) ==================== -->
+      <section class="slide slide-light framework-slide" id="slide-19">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 18</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">VRIO分析</h2>
+          <p class="slide-subtitle">経営資源が競争優位になるかどうかを、4つの観点で判定するリソース評価の型です。</p>
+        </div>
+        <div class="slide-body">
+          <div class="framework-shell vrio-shell reveal">
+            <div class="vrio-title">VRIO分析</div>
+            <div class="vrio-grid">
+              <div class="vrio-card value">
+                <div class="vrio-ja">経済的価値</div>
+                <div class="vrio-en"><span class="accent">V</span>alue</div>
+              </div>
+              <div class="vrio-card rarity">
+                <div class="vrio-ja">希少性</div>
+                <div class="vrio-en"><span class="accent">R</span>arity</div>
+              </div>
+              <div class="vrio-card imitability">
+                <div class="vrio-ja">模倣困難性</div>
+                <div class="vrio-en"><span class="accent">I</span>nimitability</div>
+              </div>
+              <div class="vrio-card organization">
+                <div class="vrio-ja">組織力</div>
+                <div class="vrio-en"><span class="accent">O</span>rganization</div>
+              </div>
+              <div class="vrio-center">経営資源</div>
+            </div>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 自社の強みが持続的な優位性かを見極めたいページ。<strong>注意:</strong> 4項目を説明するだけでなく、最後に「優位の源泉は何か」を1行で結論づけると強い。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">19 / 33</span>
+        </div>
+      </section>
+      <!-- ==================== SLIDE 20 (PATTERN 19: 4C分析) ==================== -->
+      <section class="slide slide-light framework-slide" id="slide-20">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 19</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">4C分析</h2>
+          <p class="slide-subtitle">売り手の都合ではなく、顧客の視点から提供価値を見直すときの基本フレームです。</p>
+        </div>
+        <div class="slide-body">
+          <div class="framework-shell reveal">
+            <div class="fourc-layout">
+              <div class="fourc-card">
+                <div class="fourc-head"><strong>Customer Value</strong><span>顧客価値</span></div>
+                <div class="fourc-copy">顧客が本当に得たい便益は何か。商品スペックではなく、解決される課題や感情価値に寄せて定義します。</div>
+                <div class="fourc-chip-row">
+                  <span class="fourc-chip">便益</span>
+                  <span class="fourc-chip">成果</span>
+                  <span class="fourc-chip">体験</span>
+                </div>
+              </div>
+              <div class="fourc-card">
+                <div class="fourc-head"><strong>Cost</strong><span>顧客コスト</span></div>
+                <div class="fourc-copy">価格だけでなく、導入の手間、学習負荷、比較の面倒さまで含めた負担を洗い出します。</div>
+                <div class="fourc-chip-row">
+                  <span class="fourc-chip">価格</span>
+                  <span class="fourc-chip">時間</span>
+                  <span class="fourc-chip">心理負担</span>
+                </div>
+              </div>
+              <div class="fourc-card">
+                <div class="fourc-head"><strong>Convenience</strong><span>利便性</span></div>
+                <div class="fourc-copy">いつ・どこで・どの導線なら選ばれやすいか。接点や購入体験のスムーズさを検証します。</div>
+                <div class="fourc-chip-row">
+                  <span class="fourc-chip">導線</span>
+                  <span class="fourc-chip">UI</span>
+                  <span class="fourc-chip">入手性</span>
+                </div>
+              </div>
+              <div class="fourc-card">
+                <div class="fourc-head"><strong>Communication</strong><span>コミュニケーション</span></div>
+                <div class="fourc-copy">一方的に売り込むのでなく、比較検討の不安を解消し、継続接点をつくる対話設計を考えます。</div>
+                <div class="fourc-chip-row">
+                  <span class="fourc-chip">対話</span>
+                  <span class="fourc-chip">信頼</span>
+                  <span class="fourc-chip">継続接点</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> サービス訴求の見直し、LP改善、提供価値の再整理。<strong>注意:</strong> 4Pの裏返しではなく、顧客がどう感じるかに言い換えるのがポイント。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">20 / 33</span>
+        </div>
+      </section>
+      <!-- ==================== SLIDE 21 (PATTERN 20: ビジネスモデルキャンバス) ==================== -->
+      <section class="slide slide-light framework-slide" id="slide-21">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 20</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">ビジネスモデルキャンバス</h2>
+          <p class="slide-subtitle">事業の全体構造を1枚に収め、顧客・価値・提供方法・収益のつながりを俯瞰します。</p>
+        </div>
+        <div class="slide-body">
+          <div class="framework-shell reveal">
+            <div class="bmc-grid">
+              <div class="bmc-box kp">
+                <div class="bmc-code">KP</div>
+                <div class="bmc-title">キーパートナー</div>
+                <div class="bmc-sub">委託・仕入れなどのパートナー</div>
+                <div class="bmc-body">提携先の名称を記述します。</div>
+              </div>
+              <div class="bmc-box ka">
+                <div class="bmc-code">KA</div>
+                <div class="bmc-title">キーアクティビティ</div>
+                <div class="bmc-sub">事業で必要となる行動</div>
+                <div class="bmc-body">主要な活動内容を記述します。</div>
+              </div>
+              <div class="bmc-box kr">
+                <div class="bmc-code">KR</div>
+                <div class="bmc-title">キーリソース</div>
+                <div class="bmc-sub">活用できる資産</div>
+                <div class="bmc-body">保有する強み・資産を記述します。</div>
+              </div>
+              <div class="bmc-box vp">
+                <div class="bmc-code">VP</div>
+                <div class="bmc-title">提供価値</div>
+                <div class="bmc-sub">顧客に提供できる価値</div>
+                <div class="bmc-body">顧客に提供する価値を記述します。</div>
+              </div>
+              <div class="bmc-box cr">
+                <div class="bmc-code">CR</div>
+                <div class="bmc-title">顧客との関係</div>
+                <div class="bmc-sub">継続的な接点のつくり方</div>
+                <div class="bmc-body">関係構築の方法を記述します。</div>
+              </div>
+              <div class="bmc-box ch">
+                <div class="bmc-code">CH</div>
+                <div class="bmc-title">チャネル</div>
+                <div class="bmc-sub">どう届けるか</div>
+                <div class="bmc-body">提供チャネルを記述します。</div>
+              </div>
+              <div class="bmc-box cs">
+                <div class="bmc-code">CS</div>
+                <div class="bmc-title">顧客セグメント</div>
+                <div class="bmc-sub">商品・サービスの利用者</div>
+                <div class="bmc-body">対象となる顧客層を記述します。</div>
+              </div>
+              <div class="bmc-box cost">
+                <div class="bmc-code">CS</div>
+                <div class="bmc-title">コスト構造</div>
+                <div class="bmc-sub">事業のための費用</div>
+                <div class="bmc-body">主なコスト項目を記述します。</div>
+              </div>
+              <div class="bmc-box rev">
+                <div class="bmc-code">RS</div>
+                <div class="bmc-title">収益の流れ</div>
+                <div class="bmc-sub">マネタイズ方法、売上の種類</div>
+                <div class="bmc-body">収益の種類を記述します。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 新規事業の検討、既存事業の構造整理、提案の全体像説明。<strong>注意:</strong> 価値提案だけを盛らず、チャネルと収益の整合まで1枚で見せると説得力が出る。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">21 / 33</span>
+        </div>
+      </section>
+      <!-- ==================== SLIDE 22 (PATTERN 05: 4象限マトリクス) ==================== -->
+      <section class="slide slide-light" id="slide-22">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 05</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">4象限マトリクス</h2>
+          <p class="slide-subtitle">2軸で対象を分類し、象限ごとの特徴と方針を整理します。</p>
+        </div>
+        <div class="slide-body">
+          <div class="matrix-layout reveal">
+            <div class="matrix-axis-y">縦軸のラベル（例：牽引タイプ ←→ プレイヤータイプ）</div>
+            <div class="matrix-grid">
+              <div class="matrix-q-card emphasis">
+                <div class="matrix-q-title">象限1のラベル</div>
+                <div class="matrix-q-names">対象A / 対象B</div>
+                <div class="matrix-q-desc">この象限に分類される対象の特徴と、取るべき方針を記述します。</div>
+              </div>
+              <div class="matrix-q-card emphasis">
+                <div class="matrix-q-title">象限2のラベル</div>
+                <div class="matrix-q-names">対象C</div>
+                <div class="matrix-q-desc">この象限に分類される対象の特徴と、取るべき方針を記述します。</div>
+              </div>
+              <div class="matrix-q-card">
+                <div class="matrix-q-title">象限3のラベル</div>
+                <div class="matrix-q-names">対象D</div>
+                <div class="matrix-q-desc">この象限に分類される対象の特徴と、取るべき方針を記述します。</div>
+              </div>
+              <div class="matrix-q-card">
+                <div class="matrix-q-title">象限4のラベル</div>
+                <div class="matrix-q-names">対象E / 対象F</div>
+                <div class="matrix-q-desc">この象限に分類される対象の特徴と、取るべき方針を記述します。</div>
+              </div>
+            </div>
+            <div class="matrix-axis-x">横軸のラベル（例：ソフトスキル ←→ ハードスキル）</div>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> メンバー分析・施策の優先度整理など、2軸分類が伝わりやすいテーマ。<strong>注意:</strong> 強調したい象限のみ `.emphasis` を付ける。ベンチマークでは左側にSVG散布図を併置した2カラム構成もある（ベンチマーク（レポート型））。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">22 / 33</span>
+        </div>
+      </section>
+      <!-- ==================== SLIDE 23 (PATTERN 24: ポジショニングマップ) ==================== -->
+      <section class="slide slide-light compact-pattern-slide" id="slide-23">
+        <div class="slide-header"><img src="./logo.svg" alt="ロゴ"><span class="slide-tag">PATTERN 24</span></div>
+        <div class="slide-title-area"><h2 class="slide-title">ポジショニングマップ</h2><p class="slide-subtitle">顧客が感じる比較軸で市場を見渡し、自社の取るべき立ち位置を定める型です。</p></div>
+        <div class="slide-body">
+          <div class="positioning-map reveal">
+            <div class="positioning-area"></div><div class="positioning-area"></div><div class="positioning-area"></div><div class="positioning-area"></div>
+            <span class="positioning-axis top">高価格</span><span class="positioning-axis bottom">低価格</span><span class="positioning-axis left">手軽</span><span class="positioning-axis right">専門性</span>
+            <div class="brand-bubble competitor-a">競合A</div><div class="brand-bubble competitor-b">競合B</div><div class="brand-bubble competitor-c">競合C</div><div class="brand-bubble client">自社<br>サービス</div>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 競合比較、差別化方針、ブランド戦略。<strong>注意:</strong> 社内視点でなく、顧客が比較に使う2軸を選ぶ。</div>
+        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">23 / 33</span></div>
+      </section>
+      <!-- ==================== SLIDE 24 (PATTERN 23: 課題ツリー) ==================== -->
+      <section class="slide slide-light compact-pattern-slide" id="slide-24">
+        <div class="slide-header"><img src="./logo.svg" alt="ロゴ"><span class="slide-tag">PATTERN 23</span></div>
+        <div class="slide-title-area"><h2 class="slide-title">課題ツリー</h2><p class="slide-subtitle">見えている現象を起点に、原因と打ち手を分けて整理する問題解決の型です。</p></div>
+        <div class="slide-body">
+          <div class="tree-layout reveal">
+            <div class="tree-column"><div class="tree-column-title">現象</div><div class="tree-node">見えている現象を<br>記述します</div></div>
+            <div class="tree-arrow">→</div>
+            <div class="tree-column"><div class="tree-column-title">主な原因</div><div class="tree-node">原因の候補その1を記述します</div><div class="tree-node">原因の候補その2を記述します</div><div class="tree-node">原因の候補その3を記述します</div></div>
+            <div class="tree-arrow">→</div>
+            <div class="tree-column"><div class="tree-column-title">打ち手</div><div class="tree-node">打ち手の候補その1を記述します</div><div class="tree-node">打ち手の候補その2を記述します</div><div class="tree-node">打ち手の候補その3を記述します</div></div>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 課題整理、提案の論点設計、施策の優先順位づけ。<strong>注意:</strong> 原因と打ち手を混ぜず、因果関係を確認してから施策に進む。</div>
+        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">24 / 33</span></div>
+      </section>
+
+      <!-- ############### 関係を描く（構造・つながり） ############### -->
+      <!-- ==================== SLIDE 25 (PATTERN 25: 体制・役割分担) ==================== -->
+      <section class="slide slide-light compact-pattern-slide" id="slide-25">
+        <div class="slide-header"><img src="./logo.svg" alt="ロゴ"><span class="slide-tag">PATTERN 25</span></div>
+        <div class="slide-title-area"><h2 class="slide-title">体制・役割分担</h2><p class="slide-subtitle">意思決定と実務の担当範囲を明確にし、プロジェクトの動き方を一枚で共有する型です。</p></div>
+        <div class="slide-body">
+          <div class="team-layout reveal">
+            <div class="team-lead"><span class="team-chip">PROJECT OWNER</span><div class="team-role-title" style="color:#ffffff">プロジェクト責任者</div><ul class="team-list"><li>方針・優先順位の決定</li><li>重要論点の最終判断</li><li>関係者への共有</li></ul></div>
+            <div class="team-role"><span class="team-chip">STRATEGY</span><div class="team-role-title">企画・戦略</div><ul class="team-list"><li>課題整理</li><li>施策設計</li><li>成果の検証</li></ul></div>
+            <div class="team-role"><span class="team-chip">CREATIVE</span><div class="team-role-title">制作・運用</div><ul class="team-list"><li>コンテンツ制作</li><li>導線の実装</li><li>日々の改善</li></ul></div>
+            <div class="team-role"><span class="team-chip">SALES / CS</span><div class="team-role-title">現場連携</div><ul class="team-list"><li>顧客の声を収集</li><li>商談・支援を実行</li><li>改善をフィードバック</li></ul></div>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> キックオフ、伴走支援の開始時、複数部署をまたぐ施策。<strong>注意:</strong> 人名だけでなく、誰が何を決めるかまで明記する。</div>
+        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">25 / 33</span></div>
+      </section>
+      <!-- ==================== SLIDE 26 (PATTERN 27: コミュニケーション設計図) ==================== -->
+      <section class="slide slide-light compact-pattern-slide" id="slide-26">
+        <div class="slide-header"><img src="./logo.svg" alt="ロゴ"><span class="slide-tag">PATTERN 27</span></div>
+        <div class="slide-title-area"><h2 class="slide-title">コミュニケーション設計図</h2><p class="slide-subtitle">ターゲットの行動導線と、離脱した顧客を戻す打ち手をセットで描く型です。相関図・関係図としても転用できます。</p></div>
+        <div class="slide-body">
+          <div class="commflow reveal">
+            <div class="commflow-summary">
+              <div class="commflow-summary-cell"><span class="commflow-summary-label">ターゲット</span><p>ターゲットの名称を記述します。</p></div>
+              <div class="commflow-summary-cell"><span class="commflow-summary-label">もたらしたい心情変化・行動変容</span><p>心情変化：期待したい感情の変化を記述します。／行動変容：期待したい行動の変化を記述します。</p></div>
+              <div class="commflow-summary-cell"><span class="commflow-summary-label">キャンペーンのゴール</span><p>達成したいゴールを記述します。</p></div>
+            </div>
+            <div class="commflow-main">
+              <div class="commflow-step"><div class="commflow-node commflow-node--start">起点となる<br>状態の要約</div></div>
+              <div class="commflow-arrow"><span class="commflow-arrow-label">ステップ1</span>→</div>
+              <div class="commflow-step">
+                <div class="commflow-node">接点名を<br>記述します</div>
+                <div class="commflow-channel">チャネル名</div>
+                <div class="commflow-drop"><span class="commflow-code">A</span>対象外</div>
+              </div>
+              <div class="commflow-arrow"><span class="commflow-arrow-label">ステップ2</span>→</div>
+              <div class="commflow-step">
+                <div class="commflow-node">接点名を<br>記述します</div>
+                <div class="commflow-channel">チャネル名</div>
+                <div class="commflow-drop"><span class="commflow-code">B</span>未接触</div>
+              </div>
+              <div class="commflow-arrow"><span class="commflow-arrow-label">ステップ3</span>→</div>
+              <div class="commflow-step">
+                <div class="commflow-node">接点名を<br>記述します</div>
+                <div class="commflow-channel">チャネル名</div>
+                <div class="commflow-drop"><span class="commflow-code">C</span>離脱</div>
+              </div>
+              <div class="commflow-arrow"><span class="commflow-arrow-label">ステップ4</span>→</div>
+              <div class="commflow-step">
+                <div class="commflow-node">接点名を<br>記述します</div>
+                <div class="commflow-channel">チャネル名</div>
+                <div class="commflow-drop"><span class="commflow-code">D</span>未完了</div>
+              </div>
+              <div class="commflow-arrow"><span class="commflow-arrow-label">ステップ5</span>→</div>
+              <div class="commflow-step"><div class="commflow-node commflow-node--goal">ゴールとなる<br>状態の要約</div></div>
+            </div>
+            <div class="commflow-recovery-caption">↓ 理想のフローから外れた対象に適切なタイミングで接点を持ち、ゴールに繋げる打ち手</div>
+            <div class="commflow-recovery">
+              <div class="commflow-recovery-item"><div class="commflow-recovery-title"><span class="commflow-code">A</span>打ち手の名称</div><div class="commflow-recovery-channel">チャネル名／対象外 への打ち手</div></div>
+              <div class="commflow-recovery-item"><div class="commflow-recovery-title"><span class="commflow-code">B</span>打ち手の名称</div><div class="commflow-recovery-channel">チャネル名／未接触 への打ち手</div></div>
+              <div class="commflow-recovery-item"><div class="commflow-recovery-title"><span class="commflow-code">C</span>打ち手の名称</div><div class="commflow-recovery-channel">チャネル名／離脱 への打ち手</div></div>
+              <div class="commflow-recovery-item"><div class="commflow-recovery-title"><span class="commflow-code">D</span>打ち手の名称</div><div class="commflow-recovery-channel">チャネル名／未完了 への打ち手</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> キャンペーンやオンボーディングの導線設計、関係者・組織間の相関図への転用。<strong>注意:</strong> 意味色を使わず、強調はグレー＋アクセント色のトーン差（`--blue-soft`〜`--blue-deep`）だけで表現する。</div>
+        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">26 / 33</span></div>
+      </section>
+      <!-- ==================== SLIDE 27 (PATTERN 28: ソース相関図) ==================== -->
+      <section class="slide slide-light compact-pattern-slide" id="slide-27">
+        <div class="slide-header"><img src="./logo.svg" alt="ロゴ"><span class="slide-tag">PATTERN 28</span></div>
+        <div class="slide-title-area"><h2 class="slide-title">ソース相関図（ハブ＆スポーク）</h2><p class="slide-subtitle">「この資料が何からできているか」を1枚で示す型です。提案の出どころを冒頭で開示し、借り物ではないことを伝えます。新規CSSクラスは不要で、インラインSVGだけで構成します。</p></div>
+        <div class="slide-body">
+          <svg viewBox="0 -24 1160 454" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto"
+            role="img" aria-label="本資料が参照した観点の相関図">
+            <g stroke="var(--blue)" stroke-width="1.5" opacity="0.45" fill="none">
+              <path d="M285 50 C 340 50, 350 175, 400 200" />
+              <path d="M285 155 C 345 155, 355 185, 400 203" />
+              <path d="M285 260 C 345 260, 355 230, 400 217" />
+              <path d="M285 365 C 340 365, 350 245, 400 220" />
+              <path d="M875 50 C 820 50, 810 175, 760 200" />
+              <path d="M875 155 C 815 155, 805 185, 760 203" />
+              <path d="M875 260 C 815 260, 805 230, 760 217" />
+              <path d="M875 365 C 820 365, 810 245, 760 220" />
+            </g>
+
+            <text x="0" y="-6" font-size="12" font-weight="900" fill="var(--c-muted)" letter-spacing="1.5">左側グループの見出し</text>
+            <g font-family="'Noto Sans JP', sans-serif">
+              <rect x="0" y="10" width="285" height="80" rx="8" fill="#ffffff" stroke="var(--surface-border)" />
+              <rect x="0" y="10" width="4" height="80" rx="2" fill="var(--blue)" />
+              <text x="18" y="36" font-size="13.5" font-weight="900" fill="var(--c-ink)">ソース名（日付）</text>
+              <text x="18" y="57" font-size="11.5" font-weight="600" fill="var(--text)">そのソースの中身を1行で</text>
+              <text x="18" y="76" font-size="11.5" font-weight="700" fill="var(--blue-deep)">→ 本資料のどこに効いたか</text>
+
+              <rect x="0" y="115" width="285" height="80" rx="8" fill="#ffffff" stroke="var(--surface-border)" />
+              <rect x="0" y="115" width="4" height="80" rx="2" fill="var(--blue)" />
+              <text x="18" y="141" font-size="13.5" font-weight="900" fill="var(--c-ink)">ソース名（日付）</text>
+              <text x="18" y="162" font-size="11.5" font-weight="600" fill="var(--text)">そのソースの中身を1行で</text>
+              <text x="18" y="181" font-size="11.5" font-weight="700" fill="var(--blue-deep)">→ 本資料のどこに効いたか</text>
+
+              <rect x="0" y="220" width="285" height="80" rx="8" fill="#ffffff" stroke="var(--surface-border)" />
+              <rect x="0" y="220" width="4" height="80" rx="2" fill="var(--blue)" />
+              <text x="18" y="246" font-size="13.5" font-weight="900" fill="var(--c-ink)">ソース名（日付）</text>
+              <text x="18" y="267" font-size="11.5" font-weight="600" fill="var(--text)">そのソースの中身を1行で</text>
+              <text x="18" y="286" font-size="11.5" font-weight="700" fill="var(--blue-deep)">→ 本資料のどこに効いたか</text>
+
+              <rect x="0" y="325" width="285" height="80" rx="8" fill="#ffffff" stroke="var(--surface-border)" />
+              <rect x="0" y="325" width="4" height="80" rx="2" fill="var(--blue)" />
+              <text x="18" y="351" font-size="13.5" font-weight="900" fill="var(--c-ink)">ソース名（日付）</text>
+              <text x="18" y="372" font-size="11.5" font-weight="600" fill="var(--text)">そのソースの中身を1行で</text>
+              <text x="18" y="391" font-size="11.5" font-weight="700" fill="var(--blue-deep)">→ 本資料のどこに効いたか</text>
+            </g>
+
+            <rect x="400" y="165" width="360" height="90" rx="10" fill="var(--blue-deep)" />
+            <text x="580" y="199" text-anchor="middle" font-size="12" font-weight="900" fill="#ffffff"
+              letter-spacing="2" font-family="'Inter', sans-serif">THIS DOCUMENT</text>
+            <text x="580" y="226" text-anchor="middle" font-size="19" font-weight="900" fill="#ffffff"
+              font-family="'Noto Sans JP', sans-serif">本資料のタイトル</text>
+            <text x="580" y="245" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--blue-soft)"
+              font-family="'Noto Sans JP', sans-serif">構成や対象期間などの補足</text>
+
+            <text x="1160" y="-6" text-anchor="end" font-size="12" font-weight="900" fill="var(--c-muted)" letter-spacing="1.5">右側グループの見出し</text>
+            <g font-family="'Noto Sans JP', sans-serif">
+              <rect x="875" y="10" width="285" height="80" rx="8" fill="#ffffff" stroke="var(--surface-border)" />
+              <rect x="1156" y="10" width="4" height="80" rx="2" fill="var(--blue)" />
+              <text x="893" y="36" font-size="13.5" font-weight="900" fill="var(--c-ink)">ソース名（日付）</text>
+              <text x="893" y="57" font-size="11.5" font-weight="600" fill="var(--text)">そのソースの中身を1行で</text>
+              <text x="893" y="76" font-size="11.5" font-weight="700" fill="var(--blue-deep)">→ 本資料のどこに効いたか</text>
+
+              <rect x="875" y="115" width="285" height="80" rx="8" fill="#ffffff" stroke="var(--surface-border)" />
+              <rect x="1156" y="115" width="4" height="80" rx="2" fill="var(--blue)" />
+              <text x="893" y="141" font-size="13.5" font-weight="900" fill="var(--c-ink)">ソース名（日付）</text>
+              <text x="893" y="162" font-size="11.5" font-weight="600" fill="var(--text)">そのソースの中身を1行で</text>
+              <text x="893" y="181" font-size="11.5" font-weight="700" fill="var(--blue-deep)">→ 本資料のどこに効いたか</text>
+
+              <rect x="875" y="220" width="285" height="80" rx="8" fill="#ffffff" stroke="var(--surface-border)" />
+              <rect x="1156" y="220" width="4" height="80" rx="2" fill="var(--blue)" />
+              <text x="893" y="246" font-size="13.5" font-weight="900" fill="var(--c-ink)">ソース名（日付）</text>
+              <text x="893" y="267" font-size="11.5" font-weight="600" fill="var(--text)">そのソースの中身を1行で</text>
+              <text x="893" y="286" font-size="11.5" font-weight="700" fill="var(--blue-deep)">→ 本資料のどこに効いたか</text>
+
+              <rect x="875" y="325" width="285" height="80" rx="8" fill="#ffffff" stroke="var(--surface-border)" />
+              <rect x="1156" y="325" width="4" height="80" rx="2" fill="var(--blue)" />
+              <text x="893" y="351" font-size="13.5" font-weight="900" fill="var(--c-ink)">ソース名（日付）</text>
+              <text x="893" y="372" font-size="11.5" font-weight="600" fill="var(--text)">そのソースの中身を1行で</text>
+              <text x="893" y="391" font-size="11.5" font-weight="700" fill="var(--blue-deep)">→ 本資料のどこに効いたか</text>
+            </g>
+          </svg>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 提案・診断資料の2枚目。調査量が多く「何を根拠に言っているのか」を先に示したいとき。左右でグループの意味を分けると強い（例: 左＝先方からいただいたもの／右＝こちらで実測したもの）。<strong>書き方:</strong> 各カードは「ソース名（日付）／中身1行／→ 本資料のどこに効いたか」の3行で固定する。3行目の「→」がないと単なる資料リストになり、相関図として機能しない。<strong>注意:</strong> 片側4件が上限（8件を超えると1件あたりの文字が読めなくなる）。新規CSSクラスは作らず、色は既存変数を参照する。左右見出しは viewBox 外（y=-6）に置くため、viewBox の上に24pxの余白を確保すること。</div>
+        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">27 / 33</span></div>
+      </section>
+      <!-- ==================== SLIDE 28 (PATTERN 22: KPIダッシュボード) ==================== -->
+      <section class="slide slide-light compact-pattern-slide" id="slide-28">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 22</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">KPIダッシュボード</h2>
+          <p class="slide-subtitle">目標・実績・差分・推移を同じ視線で読み、次のアクションを判断する定量報告の型です。</p>
+        </div>
+        <div class="slide-body">
+          <div class="kpi-dashboard reveal">
+            <article class="kpi-card">
+              <div class="kpi-label">指標のラベル</div>
+              <div class="kpi-value-row"><div class="kpi-value">00</div><span class="kpi-unit">件</span></div>
+              <div class="kpi-target">目標 00件</div>
+              <div class="kpi-delta">目標比 ±0%</div>
+              <div class="sparkline" aria-label="推移"><span style="height:35%"></span><span style="height:48%"></span><span style="height:44%"></span><span style="height:64%"></span><span style="height:78%"></span></div>
+            </article>
+            <article class="kpi-card">
+              <div class="kpi-label">指標のラベル</div>
+              <div class="kpi-value-row"><div class="kpi-value">00</div><span class="kpi-unit">%</span></div>
+              <div class="kpi-target">目標 00%</div>
+              <div class="kpi-delta">目標比 ±0pt</div>
+              <div class="sparkline" aria-label="推移"><span style="height:68%"></span><span style="height:56%"></span><span style="height:50%"></span><span style="height:61%"></span><span style="height:58%"></span></div>
+            </article>
+            <article class="kpi-card">
+              <div class="kpi-label">指標のラベル</div>
+              <div class="kpi-value-row"><div class="kpi-value">00</div><span class="kpi-unit">%</span></div>
+              <div class="kpi-target">目標 00%</div>
+              <div class="kpi-delta">目標比 ±0pt</div>
+              <div class="sparkline" aria-label="推移"><span style="height:66%"></span><span style="height:71%"></span><span style="height:73%"></span><span style="height:76%"></span><span style="height:82%"></span></div>
+            </article>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 月次報告、事業レビュー、支援成果の共有。<strong>注意:</strong> 指標を増やしすぎず、判断に直結する3〜5項目に絞る。</div>
+        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">28 / 33</span></div>
+      </section>
+
+      <!-- ############### 締め（人と会社） ############### -->
+      <!-- ==================== SLIDE 29 (PATTERN 13: 人物紹介 複数名) ==================== -->
+      <section class="slide slide-light" id="slide-29">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 13</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">人物紹介（複数名）</h2>
+          <p class="slide-subtitle">支援チームや登壇者など、複数名を1枚で紹介します。</p>
+        </div>
+        <div class="slide-body">
+          <div class="team-grid">
+            <div class="team-card reveal">
+              <div class="team-avatar-placeholder">PHOTO</div>
+              <h3 class="team-name">氏名</h3>
+              <span class="team-role">役割・肩書き</span>
+              <p class="team-bio">経歴や担当領域を2〜3行で記述します。この案件で何を担うかまで書くと具体性が出ます。</p>
+            </div>
+            <div class="team-card reveal">
+              <div class="team-avatar-placeholder">PHOTO</div>
+              <h3 class="team-name">氏名</h3>
+              <span class="team-role">役割・肩書き</span>
+              <p class="team-bio">経歴や担当領域を2〜3行で記述します。この案件で何を担うかまで書くと具体性が出ます。</p>
+            </div>
+            <div class="team-card reveal">
+              <div class="team-avatar-placeholder">PHOTO</div>
+              <h3 class="team-name">氏名</h3>
+              <span class="team-role">役割・肩書き</span>
+              <p class="team-bio">経歴や担当領域を2〜3行で記述します。この案件で何を担うかまで書くと具体性が出ます。</p>
+            </div>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 支援体制の紹介ページ。1名のみ深く紹介する場合は template.html のプロフィールスライドを使う。<strong>注意:</strong> 写真は `.team-avatar`（img）に差し替える。写真がない場合のみプレースホルダーを使い、掲載は本人の了承を得たものに限る（STYLE_GUIDE §7）。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">29 / 33</span>
+        </div>
+      </section>
+      <!-- ==================== SLIDE 30 (PATTERN 14: 担当者・会社概要) ==================== -->
+      <section class="slide slide-light" id="slide-30">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 14</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">担当者・会社概要（1枚統合版）</h2>
+          <p class="slide-subtitle">本サービスを運営する担当者と、会社の基本情報</p>
+        </div>
+        <div class="slide-body">
+          <div class="profile-grid reveal">
+            <div class="card profile-card profile-person-card">
+              <div class="profile-photo-wrap">
+                <img class="profile-photo" src="./profile-photo.svg" alt="担当者の顔写真">
+              </div>
+              <div class="profile-body">
+                <div class="profile-kicker">担当者プロフィール</div>
+                <div class="profile-name">〇〇 太郎</div>
+                <div class="profile-role">〇〇株式会社 代表取締役 / 〇〇株式会社 顧問</div>
+                <p class="profile-copy">ここに担当者の経歴を書く。出身・生年・学歴から始めて、職歴を時系列で並べ、いまの立場に至る流れが1本でつながるようにする。相手が「この人に任せて大丈夫か」を判断する材料になる事実（実績の規模、在籍年数、関わった案件の種類）を具体的な数字で入れる。300字前後が目安。</p>
+              </div>
+            </div>
+            <div class="card profile-card">
+              <div class="profile-kicker">会社概要</div>
+              <div class="profile-name">〇〇株式会社</div>
+              <dl class="company-overview">
+                <dt>英語表記</dt>
+                <dd>〇〇 Inc.</dd>
+                <dt>代表者</dt>
+                <dd>〇〇 太郎</dd>
+                <dt>設立</dt>
+                <dd>20〇〇年〇月〇日</dd>
+                <dt>所在地</dt>
+                <dd>〇〇県〇〇市〇〇 1-2-3</dd>
+                <dt>事業内容</dt>
+                <dd>事業内容をここに書く</dd>
+                <dt>登録番号</dt>
+                <dd>T0000000000000</dd>
+              </dl>
+              <p class="company-clients">主な取引先：〇〇株式会社、〇〇株式会社 ほか</p>
+            </div>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> デッキ終盤の自己紹介。担当者と法人概要を1枚に統合したいとき（2枚使える場合は template.html の法人概要＋プロフィール型を使う）。<strong>注意:</strong> コピー時は `profile-photo.svg` も同じフォルダへ置き、自社の写真に差し替える。肩書き・取引先は提案時点の最新に更新すること。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">30 / 33</span>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 31 (PATTERN 30: 用語集・外部リンク付き) ==================== -->
+      <section class="slide slide-light" id="slide-31">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 30</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">この資料に出てくる言葉と、実物のありか</h2>
+          <p class="slide-subtitle">「これ何のことだっけ？」となったら、ここから飛べます</p>
+        </div>
+        <div class="slide-body">
+          <div class="reveal table-scroll-frame">
+            <table class="slide-table">
+              <thead>
+                <tr>
+                  <th style="width: 22%;">言葉</th>
+                  <th style="width: 44%;">何を指しているか</th>
+                  <th style="width: 34%;">実物</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="font-weight: 700; color: var(--c-ink);">用語A</td>
+                  <td>この資料での意味を1行で。実物を見ないと分からない言葉に絞る</td>
+                  <td><a class="term-link" target="_blank" rel="noopener noreferrer" href="https://example.com/">Notion｜正本ページ名</a></td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 700; color: var(--c-ink);">用語B</td>
+                  <td>数値や条件がある言葉は、そのまま書く（例：2以下が警戒）</td>
+                  <td><a class="term-link" target="_blank" rel="noopener noreferrer" href="https://example.com/">Notion｜正本ページ名</a></td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 700; color: var(--c-ink);">用語C</td>
+                  <td>Notion外にあるものは、リンクを張らず場所だけ書く</td>
+                  <td><span style="color:var(--c-muted)">社内共有Excel「シート名」</span></td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 700; color: var(--c-ink);">用語D</td>
+                  <td>先方の資料が正本なら、先方のURLを張る</td>
+                  <td><a class="term-link" target="_blank" rel="noopener noreferrer" href="https://example.com/">Googleスライド｜資料名</a></td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 700; color: var(--c-ink);">用語E</td>
+                  <td>自社が作ったものは、出所を明示する</td>
+                  <td><span style="color:var(--c-muted)">DiSA｜資料名</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="stat-note">締めの1行は、この一覧が何を意味するかに使う（例：ここに挙げたものは、すべて既にあるものです）。閲覧権限の注意書きも、ここに小さく添える。</p>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 専門用語や社内固有の仕組みが多い資料の巻末。<strong>先方の会議で「これ何のこと？」が繰り返されるのを防ぐ。</strong> <strong>作り方:</strong> 用語は<strong>実物を見ないと分からないものだけ</strong>に絞る（一般用語は載せない）。リンクには必ず <code>target="_blank" rel="noopener noreferrer"</code> を付ける。<strong>PDF書き出し後もリンクは押せる</strong>（headless Chrome の <code>--print-to-pdf</code> でも <code>/Subtype /Link</code> として保持される）。Notion外の資産はリンクを張らず、場所だけ書く。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">31 / 33</span>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 32 (PATTERN 31: ポジション別ロードマップ) ==================== -->
+      <section class="slide slide-light" id="slide-32">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 31</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">ポジション別ロードマップ（スイムレーン）</h2>
+          <p class="slide-subtitle">複数の対象を同じ時間軸の上に並べ、どれが先に終わり、どこが空くかを1枚で見せる型です。</p>
+        </div>
+        <div class="slide-body">
+          <div class="swimlane reveal">
+            <div class="swimlane-row is-head">
+              <div class="swimlane-label"></div>
+              <div class="swimlane-track">
+                <div class="swimlane-col">第1期</div>
+                <div class="swimlane-col">第2期</div>
+                <div class="swimlane-col">第3期</div>
+                <div class="swimlane-col">第4期</div>
+                <div class="swimlane-col">第5期</div>
+              </div>
+            </div>
+            <div class="swimlane-row">
+              <div class="swimlane-label">対象A<span>補足・件数など</span></div>
+              <div class="swimlane-track">
+                <div class="swimlane-bar" style="--from:1;--to:2">工程1</div>
+                <div class="swimlane-bar" style="--from:2;--to:3">工程2</div>
+                <div class="swimlane-bar" style="--from:3;--to:4">工程3</div>
+                <div class="swimlane-bar is-key" style="--from:4;--to:5">締切を作る工程</div>
+                <div class="swimlane-bar" style="--from:5;--to:6">工程5</div>
+              </div>
+            </div>
+            <div class="swimlane-row">
+              <div class="swimlane-label">対象B<span>補足・件数など</span></div>
+              <div class="swimlane-track">
+                <div class="swimlane-bar is-key" style="--from:1;--to:2">締切を作る工程</div>
+                <div class="swimlane-bar" style="--from:2;--to:3">工程2</div>
+                <div class="swimlane-bar" style="--from:3;--to:4">工程3</div>
+              </div>
+            </div>
+            <div class="swimlane-row">
+              <div class="swimlane-label">対象C<span>補足・件数など</span></div>
+              <div class="swimlane-track">
+                <div class="swimlane-bar" style="--from:1;--to:3">2期にまたがる工程</div>
+                <div class="swimlane-bar" style="--from:3;--to:4">工程3</div>
+              </div>
+            </div>
+            <div class="swimlane-row">
+              <div class="swimlane-label">対象D<span>後ろで動き出すもの</span></div>
+              <div class="swimlane-track">
+                <div class="swimlane-bar" style="--from:4;--to:5">工程1</div>
+                <div class="swimlane-bar" style="--from:5;--to:6">工程2</div>
+              </div>
+            </div>
+          </div>
+          <p class="swimlane-hint">図の下に1行、前提や注記を添える。レーンに載らなかった条件はここで拾う。</p>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 採用ポジション別、案件別、チーム別など、<strong>並走する複数の対象を同じ時間軸に載せたいとき。</strong> PATTERN 06（ロードマップ）は全体を1本の時系列で見せる型なので、対象が2つ以上に分かれたらこちらを使う。<strong>作り方:</strong> バーの位置は <code>style="--from:1;--to:3"</code> で列番号を渡す（<code>--to</code> は「その列の左辺」。1列ぶんなら <code>--from:n / --to:n+1</code>）。レーンごとに引かれるレールが「空いている期間」を示すので、<strong>埋めようとしないこと。</strong> <strong>注意:</strong> <code>.is-key</code>（アクセント塗り）は<strong>1枚につき2本まで</strong>。締切を作っている工程だけに付ける（STYLE_GUIDE §0「強調には予算がある」）。バーの文言は1行に収まる長さ（12〜13字目安）にし、折り返させない。レーンは5本、列は5〜6が上限。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">32 / 33</span>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 33 (PATTERN 32: 制作プロセスと役割) ==================== -->
+      <section class="slide slide-light" id="slide-33">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 32</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">制作プロセスと役割（ウォーターフォール／アジャイル）</h2>
+          <p class="slide-subtitle">2つの進め方を上下に並べ、「自分はどの工程のディレクションができるか」を指させる型です。</p>
+        </div>
+        <div class="slide-body">
+          <div class="proc-block reveal">
+            <span class="proc-label">Waterfall：ウォーターフォール</span>
+            <div class="proc-wf">
+              <div class="proc-col">
+                <div class="proc-phase">企画</div>
+                <div class="proc-item is-tall">戦略設計<br>BS、PL<br>要件定義</div>
+              </div>
+              <div class="proc-col">
+                <div class="proc-phase">設計</div>
+                <div class="proc-item">UX、IA、仕様設計</div>
+                <div class="proc-item">プロトタイピング、アートディレクション</div>
+                <div class="proc-item">システム、インフラ設計</div>
+              </div>
+              <div class="proc-col">
+                <div class="proc-phase">進捗管理</div>
+                <div class="proc-item">進捗管理：制作</div>
+                <div class="proc-item">進捗管理：開発</div>
+                <div class="proc-item">進捗管理：デバッグ</div>
+              </div>
+              <div class="proc-col">
+                <div class="proc-phase">運用</div>
+                <div class="proc-item">グロースハック、エンハンス</div>
+                <div class="proc-item">ABテスト→クリエイティブ→PDCA</div>
+                <div class="proc-item">システム運用・保守</div>
+              </div>
+            </div>
+          </div>
+          <div class="proc-block reveal">
+            <span class="proc-label">Agile：アジャイル</span>
+            <div class="proc-agile">
+              <div class="proc-milestone">企画</div>
+              <span class="proc-arrow">→</span>
+              <div class="proc-sprint">
+                <span class="proc-sprint-label">SPRINT 1</span>
+                <div class="proc-item">要件定義</div>
+                <div class="proc-item">設計</div>
+                <div class="proc-item">実装</div>
+                <div class="proc-item">テスト</div>
+              </div>
+              <span class="proc-arrow">→</span>
+              <div class="proc-milestone">リリース</div>
+              <span class="proc-arrow">→</span>
+              <div class="proc-sprint">
+                <span class="proc-sprint-label">SPRINT 2</span>
+                <div class="proc-item">要件定義</div>
+                <div class="proc-item">設計</div>
+                <div class="proc-item">実装</div>
+                <div class="proc-item">テスト</div>
+              </div>
+              <span class="proc-arrow">→</span>
+              <div class="proc-milestone">リリース</div>
+            </div>
+          </div>
+          <p class="proc-hint">今の自分はどの工程のディレクションができるか。次はどこへ広げるか。</p>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> ディレクションの守備範囲を相手に指させたいとき。<strong>キャリア棚卸し、役割分担の合意、見積もりのスコープ確認</strong>など、「どこからどこまでをやるのか」がずれている場面で効く。上下2段にすることで、<strong>同じ工程名でも進め方によって役割の切れ目が変わること</strong>が同時に伝わる。<strong>作り方:</strong> ウォーターフォール側は <code>.proc-wf</code> の <code>grid-template-columns</code> でフェーズの幅を変える（既定は 1.1 : 1.8 : 1 : 1.9。工程の厚みに合わせて調整する）。アジャイル側は <code>.proc-sprint</code> を反復ブロック、<code>.proc-milestone</code> を企画・リリースに使い、<code>→</code> でつなぐ。スプリントは2つまで。<strong>注意:</strong> フェーズ見出しだけをアクセント塗りにし、中身のカードには色を足さない（STYLE_GUIDE §0「強調には予算がある」）。1マスの文言は20字以内。超えるならフェーズを分けるか、言葉を短くする。出典は自社の講義資料（2022年）。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">33 / 33</span>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- NAVIGATION CONTROL BAR -->
+  <div id="nav-controls">
+    <button id="prev-btn" class="nav-btn" disabled aria-label="前のスライド">
+      <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+    </button>
+
+    <div class="toc-select-wrapper">
+      <select id="toc-select" aria-label="スライド選択">
+        <option value="slide-1">1. このカタログについて</option>
+        <option value="slide-2">2. 目次（アジェンダ）</option>
+        <option value="slide-3">3. 中表紙（セクション区切り）</option>
+        <option value="slide-4">4. 比較テーブル</option>
+        <option value="slide-5">5. ダーク面カード</option>
+        <option value="slide-6">6. 詳細3カラム＋インサイト</option>
+        <option value="slide-7">7. 小パネル一覧（4×3グリッド）</option>
+        <option value="slide-8">8. 数値ハイライト（KPI）</option>
+        <option value="slide-9">9. Before/After 横フロー</option>
+        <option value="slide-10">10. As-Is/To-Be/Action 3カラム</option>
+        <option value="slide-11">11. ロードマップ（3フェーズ）</option>
+        <option value="slide-12">12. 横型ステップフロー</option>
+        <option value="slide-13">13. タイムライン 3×2</option>
+        <option value="slide-14">14. カスタマージャーニーマップ</option>
+        <option value="slide-15">15. ファネル・導線分析</option>
+        <option value="slide-16">16. SWOT分析</option>
+        <option value="slide-17">17. クロスSWOT</option>
+        <option value="slide-18">18. PEST分析</option>
+        <option value="slide-19">19. VRIO分析</option>
+        <option value="slide-20">20. 4C分析</option>
+        <option value="slide-21">21. ビジネスモデルキャンバス</option>
+        <option value="slide-22">22. 4象限マトリクス</option>
+        <option value="slide-23">23. ポジショニングマップ</option>
+        <option value="slide-24">24. 課題ツリー</option>
+        <option value="slide-25">25. 体制・役割分担</option>
+        <option value="slide-26">26. コミュニケーション設計図</option>
+        <option value="slide-27">27. ソース相関図（ハブ＆スポーク）</option>
+        <option value="slide-28">28. KPIダッシュボード</option>
+        <option value="slide-29">29. 人物紹介（複数名）</option>
+        <option value="slide-30">30. 担当者・会社概要（統合版）</option>
+        <option value="slide-31">31. 用語集・外部リンク付き</option>
+        <option value="slide-32">32. ポジション別ロードマップ（スイムレーン）</option>
+        <option value="slide-33">33. 制作プロセスと役割（WF／アジャイル）</option>
+      </select>
+    </div>
+
+    <span id="page-indicator">1 / 33</span>
+
+    <button id="next-btn" class="nav-btn" aria-label="次のスライド">
+      <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+    </button>
+
+    <div id="progress-bar">
+      <div id="progress-bar-fill"></div>
+    </div>
+  </div>
+
+  <!-- ------------------------------------------------------------------
+       アクセントカラーの自動生成
+       表紙に data-accent="#xxxxxx" があれば、そこから派生色を計算して
+       CSS変数を上書きする。属性がなければ何もしない（既定色のまま）。
+       ・--accent-deep    ライト面の線・✓記号。白地で3:1を満たすまで暗くする
+       ・--accent-on-dark ダーク面の文字・バー。黒地で4.5:1を満たすまで明るくする
+       ・--on-accent      アクセント塗りの上に乗る文字。明暗どちらか読める方
+       ・--accent-tint    アクセントを8%だけ白に混ぜた面
+       ------------------------------------------------------------------ -->
+  <script>
+    (function () {
+      function lum(c) {
+        var a = c.map(function (v) {
+          v /= 255;
+          return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+        });
+        return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+      }
+      function ratio(x, y) {
+        var a = lum(x), b = lum(y);
+        return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+      }
+      function toHsl(c) {
+        var r = c[0] / 255, g = c[1] / 255, b = c[2] / 255;
+        var mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+        var hh = 0, s = 0, l = (mx + mn) / 2;
+        if (d) {
+          s = l > 0.5 ? d / (2 - mx - mn) : d / (mx + mn);
+          hh = mx === r ? ((g - b) / d + (g < b ? 6 : 0)) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+          hh /= 6;
+        }
+        return [hh, s, l];
+      }
+      function toRgb(hsl) {
+        var hh = hsl[0], s = hsl[1], l = hsl[2];
+        if (!s) { var v = Math.round(l * 255); return [v, v, v]; }
+        var q = l < 0.5 ? l * (1 + s) : l + s - l * s, p = 2 * l - q;
+        function ch(t) {
+          if (t < 0) t += 1; if (t > 1) t -= 1;
+          if (t < 1 / 6) return p + (q - p) * 6 * t;
+          if (t < 1 / 2) return q;
+          if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+          return p;
+        }
+        return [ch(hh + 1 / 3), ch(hh), ch(hh - 1 / 3)].map(function (v) { return Math.round(v * 255); });
+      }
+      function hex(c) {
+        return '#' + c.map(function (v) {
+          return ('0' + Math.max(0, Math.min(255, v)).toString(16)).slice(-2);
+        }).join('');
+      }
+      // 明度を動かしながら、目標背景に対して target 比を超える最初の色を返す
+      function fit(rgb, bg, dir, target) {
+        var hsl = toHsl(rgb);
+        for (var i = 0; i <= 100; i++) {
+          var l = hsl[2] + dir * i / 100;
+          if (l < 0 || l > 1) break;
+          var cand = toRgb([hsl[0], hsl[1], l]);
+          if (ratio(cand, bg) >= target) return cand;
+        }
+        return dir < 0 ? [0, 0, 0] : [255, 255, 255];
+      }
+
+      var DARK = [11, 11, 11];    // --ink-900。ダーク面の背景
+      var LIGHT = [255, 255, 255];
+      var INK = [44, 44, 49];     // --ink-700
+
+      // #abc / #aabbcc を受け付ける。読めなければ false を返して何もしない
+      function apply(raw) {
+        var m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(String(raw == null ? '' : raw).trim());
+        if (!m) return false;
+        var h = m[1];
+        if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+        var base = [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+
+        var deep = ratio(base, LIGHT) >= 3 ? base : fit(base, LIGHT, -1, 3);
+        var onDark = ratio(base, DARK) >= 4.5 ? base : fit(base, DARK, 1, 4.5);
+        var onAccent = ratio(base, INK) >= ratio(base, LIGHT) ? '#2c2c31' : '#ffffff';
+        var tint = base.map(function (v) { return Math.round(v * 0.08 + 255 * 0.92); });
+
+        var s = document.documentElement.style;
+        s.setProperty('--accent', hex(base));
+        s.setProperty('--accent-rgb', base.join(', '));
+        s.setProperty('--accent-deep', hex(deep));
+        s.setProperty('--accent-on-dark', hex(onDark));
+        s.setProperty('--on-accent', onAccent);
+        s.setProperty('--accent-tint', hex(tint));
+        return hex(base);
+      }
+
+      // 現在効いているアクセント色。指定がなければCSSの既定値が返る
+      function current() {
+        return getComputedStyle(document.documentElement)
+          .getPropertyValue('--accent').trim() || '#d7ff00';
+      }
+
+      window.DiSAAccent = { apply: apply, current: current };
+
+      var host = document.querySelector('[data-accent]');
+      if (host && apply(host.getAttribute('data-accent')) === false) {
+        console.warn('[accent] カラーコードが不正です:', host.getAttribute('data-accent'));
+      }
+    })();
+  </script>
+
+  <!-- ▼制作用: 上のピッカーUIを動かすスクリプト。納品前にこの script ごと削除する -->
+  <script>
+    (function () {
+      var box = document.querySelector('.accent-picker');
+      if (!box || !window.DiSAAccent) return;
+
+      var swatch = box.querySelector('input[type="color"]');
+      var code = box.querySelector('input[type="text"]');
+      var host = document.querySelector('[data-accent]') || document.querySelector('.slide-lead');
+
+      function sync(hex) {
+        swatch.value = hex;
+        code.value = hex;
+        code.classList.remove('is-invalid');
+        if (host) host.setAttribute('data-accent', hex);
+      }
+
+      sync(window.DiSAAccent.current());
+
+      swatch.addEventListener('input', function () {
+        var hex = window.DiSAAccent.apply(swatch.value);
+        if (hex) sync(hex);
+      });
+
+      // 打ちかけの値でエラーを出さないよう、正しく読めたときだけ反映する
+      code.addEventListener('input', function () {
+        var hex = window.DiSAAccent.apply(code.value);
+        if (hex) {
+          swatch.value = hex;
+          code.classList.remove('is-invalid');
+          if (host) host.setAttribute('data-accent', hex);
+        } else {
+          code.classList.add('is-invalid');
+        }
+      });
+
+      // 入力を離れたタイミングで #rrggbb 表記に揃える（打っている最中は邪魔しない）
+      code.addEventListener('change', function () {
+        var hex = window.DiSAAccent.apply(code.value);
+        if (hex) sync(hex);
+        else sync(window.DiSAAccent.current());
+      });
+    })();
+  </script>
+
+  <!-- Slide Core Engine Script -->
+  <script>
+    (function () {
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const prevBtn = document.getElementById('prev-btn');
+      const nextBtn = document.getElementById('next-btn');
+      const pageIndicator = document.getElementById('page-indicator');
+      const progressBarFill = document.getElementById('progress-bar-fill');
+      const tocSelect = document.getElementById('toc-select');
+      const wrapper = document.getElementById('presentation-wrapper');
+
+      let currentIndex = 0;
+
+      // Scaling presentation wrapper to fit window
+      const scalePresentation = () => {
+        const targetWidth = 1280;
+        const targetHeight = 720;
+        const scaleX = window.innerWidth / targetWidth;
+        const scaleY = window.innerHeight / targetHeight;
+        const scale = Math.min(scaleX, scaleY, 1.35); // 最大拡大率を少し制限して高精細を保つ
+        wrapper.style.transform = `scale(${scale})`;
+      };
+
+      window.addEventListener('resize', scalePresentation);
+      scalePresentation();
+
+      const updateReveals = (slideEl) => {
+        const reveals = Array.from(slideEl.querySelectorAll('.reveal'));
+        reveals.forEach((el, index) => {
+          setTimeout(() => {
+            el.classList.add('revealed');
+          }, index * 150); // Stagger element entries
+        });
+      };
+
+      const resetReveals = (slideEl) => {
+        const reveals = Array.from(slideEl.querySelectorAll('.reveal'));
+        reveals.forEach(el => el.classList.remove('revealed'));
+      };
+
+      const goToSlide = (index, skipHistory) => {
+        if (index < 0 || index >= slides.length) return;
+
+        resetReveals(slides[currentIndex]);
+        slides[currentIndex].classList.remove('active');
+
+        currentIndex = index;
+
+        slides[currentIndex].classList.add('active');
+        updateReveals(slides[currentIndex]);
+
+        // UI state updates
+        prevBtn.disabled = currentIndex === 0;
+        nextBtn.disabled = currentIndex === slides.length - 1;
+
+        const pageNum = currentIndex + 1;
+        pageIndicator.textContent = `${pageNum} / ${slides.length}`;
+        progressBarFill.style.width = `${(pageNum / slides.length) * 100}%`;
+        tocSelect.value = slides[currentIndex].id;
+
+        // 更新・リロードしても最後に見ていたスライドに戻れるよう、URLハッシュに現在地を保存する
+        if (!skipHistory) {
+          history.replaceState(null, '', '#' + slides[currentIndex].id);
+        }
+      };
+
+      prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
+      nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
+
+      tocSelect.addEventListener('change', (e) => {
+        const targetId = e.target.value;
+        const targetIndex = slides.findIndex(s => s.id === targetId);
+        if (targetIndex !== -1) goToSlide(targetIndex);
+      });
+
+      // Keyboard Controls
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === 'Space') {
+          if (currentIndex < slides.length - 1) goToSlide(currentIndex + 1);
+        } else if (e.key === 'ArrowLeft') {
+          if (currentIndex > 0) goToSlide(currentIndex - 1);
+        }
+      });
+
+      // 初期表示: URLハッシュに前回のスライドIDが残っていれば、そこから再開する
+      const restoreIndex = slides.findIndex(s => s.id === window.location.hash.replace('#', ''));
+      if (restoreIndex > 0) {
+        slides[0].classList.remove('active');
+        goToSlide(restoreIndex, true);
+      } else {
+        setTimeout(() => updateReveals(slides[0]), 300);
+      }
+    })();
+  </script>
+
+</body>
+
+</html>

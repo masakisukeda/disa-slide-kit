@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 差し替え用のプレースホルダ顔写真。自社の担当者の写真に置き換えてください。
+     正方形・1:1 で書き出すと、既存の .profile-photo の枠にそのまま収まります。 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#e6e8ea"/>
+  <circle cx="200" cy="158" r="62" fill="#b8bfc4"/>
+  <path d="M64 400c0-75 61-136 136-136s136 61 136 136z" fill="#b8bfc4"/>
+  <text x="200" y="386" text-anchor="middle"
+        font-family="Inter, 'Noto Sans JP', sans-serif" font-size="20" fill="#7d868c">PHOTO</text>
+</svg>
