@@ -7,6 +7,15 @@ HTMLで提案スライドを作るためのテンプレートとレイアウト�
 PowerPoint も Google スライドも使いません。**HTMLファイル1枚がスライド1式**です。
 ブラウザで開けばそのまま投影でき、印刷ダイアログからPDFにも書き出せます。
 
+## まず見てみる
+
+GitHubのファイル一覧では `.html` がソースコードとして表示されます。**実物はこちら。**
+
+- **[パターン集を見る](https://masakisukeda.github.io/disa-slide-kit/patterns.html)** — 30パターンのカタログ
+- **[テンプレートを見る](https://masakisukeda.github.io/disa-slide-kit/template.html)** — 新規作成の起点
+
+矢印キー（← →）でスライドを送れます。表紙の右下のピッカーで色も試せます。
+
 ## 何が入っているか
 
 | ファイル | 中身 |
