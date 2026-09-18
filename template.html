@@ -80,11 +80,12 @@
       --accent-rose: var(--ink-400);
 
       /* Typography Scale */
-      --fs-title-lead: 50px;
-      --fs-title-slide: 36px;
-      --fs-card-title: 20px;   
-      --fs-body: 15px;         
-      --fs-caption: 13px;      
+      --fs-title-lead: 44px;
+      --fs-title-slide: 32px;
+      --fs-card-title: 18px;   
+      --fs-body: 14px;         
+      --fs-caption: 12px;      
+      --fs-stat: 48px;         /* 主役の数字（PATTERN 12 .stat-value） */
 
       --transition-smooth: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
     }
@@ -274,11 +275,13 @@
       border-radius: 2px;
     }
 
+    /* サブタイトルは添え書き。タイトル（結論）より一段小さく・細く・グレーにして、
+       タイトルと競り合わせない（STYLE_GUIDE §9②） */
     .slide-subtitle {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--blue-deep);
-      margin-top: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-top: 8px;
       letter-spacing: 0.02em;
       text-align: left;
     }
