@@ -2934,8 +2934,9 @@
 
     .commflow-summary {
       display: grid;
-      grid-template-columns: 1.2fr 2fr 1.2fr;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 12px;
+      align-items: stretch;
     }
 
     .commflow-summary-cell {
@@ -2968,7 +2969,8 @@
     .commflow-recovery {
       display: grid;
       grid-template-columns:
-        110px 44px 1fr 44px 1fr 44px 1fr 44px 1fr 44px 110px;
+        minmax(0, 1fr) 40px minmax(0, 1fr) 40px minmax(0, 1fr)
+        40px minmax(0, 1fr) 40px minmax(0, 1fr) 40px minmax(0, 1fr);
       gap: 8px;
     }
 
@@ -2987,7 +2989,7 @@
 
     .commflow-node {
       width: 100%;
-      min-height: 48px;
+      min-height: 56px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -2999,7 +3001,7 @@
       font-weight: 800;
       line-height: 1.35;
       color: var(--c-ink);
-      word-break: break-all;
+      overflow-wrap: anywhere;
     }
 
     .commflow-node--start {
@@ -3020,10 +3022,9 @@
       font-size: 11px;
       font-weight: 700;
       color: var(--c-muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      line-height: 1.3;
       max-width: 100%;
+      overflow-wrap: anywhere;
     }
 
     .commflow-drop {
@@ -3054,14 +3055,14 @@
       flex-shrink: 0;
     }
 
-    /* 矢印はノード（min-height 48px）の垂直中心に合わせる。
+    /* 矢印はノード（min-height 56px）の垂直中心に合わせる。
        ラベルを絶対配置にして、「→」本体の位置がラベル有無に影響されないようにする */
     .commflow-arrow {
       position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 48px;
+      height: 56px;
       color: var(--blue);
       font-size: 16px;
       font-weight: 900;
@@ -3083,13 +3084,14 @@
       font-weight: 800;
       color: var(--blue-deep);
       text-align: center;
-      margin-top: 4px;
+      margin-top: 0;
     }
 
     /* カラム定義は .commflow-main と共有（上の共通ルールを参照）。
        外側の破線囲みは外し、「バッジの真下に来る」という位置関係だけで対応を示す */
     .commflow-recovery {
-      margin-top: 14px;
+      margin-top: 16px;
+      align-items: stretch;
     }
 
     /* 4枚を、対応する離脱バッジと同じカラムに置く */
@@ -3107,7 +3109,7 @@
       background: rgba(var(--accent-rgb), 0.06);
       border: 1px solid var(--surface-border);
       border-radius: 8px;
-      padding: 8px 6px;
+      padding: 12px 8px;
       text-align: center;
       min-width: 0;
     }
@@ -3117,8 +3119,8 @@
       content: '';
       position: absolute;
       left: 50%;
-      top: -14px;
-      height: 14px;
+      top: -16px;
+      height: 16px;
       border-left: 1px dashed var(--ink-300);
     }
 
@@ -3131,16 +3133,15 @@
       font-weight: 900;
       color: var(--c-ink);
       line-height: 1.35;
-      word-break: break-all;
+      overflow-wrap: anywhere;
     }
 
     .commflow-recovery-channel {
       font-size: 10px;
       font-weight: 700;
+      line-height: 1.35;
       color: var(--c-muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      overflow-wrap: anywhere;
     }
 
     /* 外部リンク（用語集などから実物へ飛ばすとき）
@@ -4972,10 +4973,10 @@
             </div>
             <div class="commflow-recovery-caption">↓ 理想のフローから外れた対象に適切なタイミングで接点を持ち、ゴールに繋げる打ち手</div>
             <div class="commflow-recovery">
-              <div class="commflow-recovery-item"><div class="commflow-recovery-title"><span class="commflow-code">A</span>打ち手の名称</div><div class="commflow-recovery-channel">チャネル名／対象外 への打ち手</div></div>
-              <div class="commflow-recovery-item"><div class="commflow-recovery-title"><span class="commflow-code">B</span>打ち手の名称</div><div class="commflow-recovery-channel">チャネル名／未接触 への打ち手</div></div>
-              <div class="commflow-recovery-item"><div class="commflow-recovery-title"><span class="commflow-code">C</span>打ち手の名称</div><div class="commflow-recovery-channel">チャネル名／離脱 への打ち手</div></div>
-              <div class="commflow-recovery-item"><div class="commflow-recovery-title"><span class="commflow-code">D</span>打ち手の名称</div><div class="commflow-recovery-channel">チャネル名／未完了 への打ち手</div></div>
+              <div class="commflow-recovery-item"><div class="commflow-recovery-title"><span class="commflow-code">A</span>打ち手の名称</div><div class="commflow-recovery-channel">チャネル名／対象外 向け</div></div>
+              <div class="commflow-recovery-item"><div class="commflow-recovery-title"><span class="commflow-code">B</span>打ち手の名称</div><div class="commflow-recovery-channel">チャネル名／未接触 向け</div></div>
+              <div class="commflow-recovery-item"><div class="commflow-recovery-title"><span class="commflow-code">C</span>打ち手の名称</div><div class="commflow-recovery-channel">チャネル名／離脱 向け</div></div>
+              <div class="commflow-recovery-item"><div class="commflow-recovery-title"><span class="commflow-code">D</span>打ち手の名称</div><div class="commflow-recovery-channel">チャネル名／未完了 向け</div></div>
             </div>
           </div>
         </div>
