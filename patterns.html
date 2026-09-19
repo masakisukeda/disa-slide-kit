@@ -295,6 +295,11 @@
       text-align: left;
     }
 
+    /* 証拠バッジが入る行だけ、タイトル下のアクセント線と重ならないよう空ける */
+    .slide-subtitle:has(.evidence-tag) {
+      margin-top: 14px;
+    }
+
     /* ダーク面のサブタイトルは白。アクセント色で置くと読みにくく、
        同じ面のアクセント（見出し下のバー等）と役割がぶつかるため */
     .slide-dark .slide-subtitle {
@@ -3656,18 +3661,21 @@
        ============================================================ */
     /* 証拠の種別バッジ。タイトルの上に置き、このページの主張が
        「実測（自分で測った）」「外部調査（借りた数字）」「解釈（仮説）」のどれかを先に宣言する */
+    /* サブタイトルの行頭に置く。タイトルの上に別行で積むと、
+       このページだけ見出しの位置が下がって通しで見たときに揃わないため。 */
     .evidence-tag {
-      display: block;                          /* タイトルが inline-block でも必ず上の行に置く */
-      width: fit-content;
+      display: inline-block;
+      vertical-align: 0.12em;
       font-size: 11px;
       font-weight: 800;
       letter-spacing: 0.08em;
       line-height: 1;
       padding: 5px 10px;
       border-radius: 30px;
-      margin-bottom: 10px;
+      margin-right: 10px;
       background: var(--accent);
       color: var(--on-accent);
+      white-space: nowrap;
     }
     .evidence-tag.tone-external {              /* 外部調査: 塗りをグレーに落とす */
       background: var(--ink-100);
@@ -5398,9 +5406,8 @@
           <span class="slide-tag">PATTERN 33</span>
         </div>
         <div class="slide-title-area">
-          <span class="evidence-tag">実測</span>
           <h2 class="slide-title">上位に入るほど、拾われる確率が段違いに上がる</h2>
-          <p class="slide-subtitle">タイトルは結論の文。サブタイトルは「何と何を比べたか」の補足に徹する</p>
+          <p class="slide-subtitle"><span class="evidence-tag">実測</span>タイトルは結論の文。サブタイトルは「何と何を比べたか」の補足に徹する</p>
         </div>
         <div class="slide-body">
           <div class="stat-grid">
@@ -5422,7 +5429,7 @@
           </div>
           <div class="takeaway-band reveal"><span class="takeaway-kicker">だから</span>狙うのは順位ではなく<strong>「上位群に入っているかどうか」</strong>。ここから先はその境目を何が決めているかを見る</div>
         </div>
-        <div class="pattern-note"><strong>使いどころ:</strong> 数字や調査結果をもとに主張するページ全般。3部品をセットで使う。<strong>① 証拠バッジ（<code>.evidence-tag</code>）:</strong> タイトルの上に置き、そのページの主張が「実測（既定・塗り）」「外部調査（<code>.tone-external</code>・グレー）」「解釈・仮説（<code>.tone-interp</code>・線のみ）」のどれかを先に宣言する。STYLE_GUIDE §9の「事実か仮説か」を1枚単位で見せる仕組み。<strong>② 結論帯（<code>.takeaway-band</code>）:</strong> 図表の下に1行。読み手が図を読まなくても、帯だけ拾えば結論が取れる状態にする。強調は <code>&lt;strong&gt;</code> 1か所まで。ダーク面では面が沈むので使わず、サブタイトルに結論を書く。<strong>③ 出典行（<code>.slide-source</code>）:</strong> フッター直上に置く。「出典：◯◯実測（日付・n=）」「出典：△△調査（年月・n=）」の形で、自分で測ったものと借りたものを分けて書く。数字を載せたページには必ず置く。<strong>注意:</strong> 3部品を足しても本文の量は増やさない。カードの本文は2行まで（STYLE_GUIDE §0）。</div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 数字や調査結果をもとに主張するページ全般。3部品をセットで使う。<strong>① 証拠バッジ（<code>.evidence-tag</code>）:</strong> サブタイトルの行頭に置き、そのページの主張が「実測（既定・塗り）」「外部調査（<code>.tone-external</code>・グレー）」「解釈・仮説（<code>.tone-interp</code>・線のみ）」のどれかを先に宣言する。STYLE_GUIDE §9の「事実か仮説か」を1枚単位で見せる仕組み。<strong>② 結論帯（<code>.takeaway-band</code>）:</strong> 図表の下に1行。読み手が図を読まなくても、帯だけ拾えば結論が取れる状態にする。強調は <code>&lt;strong&gt;</code> 1か所まで。ダーク面では面が沈むので使わず、サブタイトルに結論を書く。<strong>③ 出典行（<code>.slide-source</code>）:</strong> フッター直上に置く。「出典：◯◯実測（日付・n=）」「出典：△△調査（年月・n=）」の形で、自分で測ったものと借りたものを分けて書く。数字を載せたページには必ず置く。<strong>注意:</strong> 3部品を足しても本文の量は増やさない。カードの本文は2行まで（STYLE_GUIDE §0）。</div>
         <div class="slide-source">出典：自社実測（2026.08、250クエリ×3エンジン×3回＝2,250回答）。数値はこのカタログ用の架空値</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
