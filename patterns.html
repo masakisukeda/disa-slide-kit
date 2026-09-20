@@ -80,7 +80,8 @@
       --c-surface-dark: var(--ink-800);
       --surface-border-dark: rgba(var(--accent-rgb), 0.25);
 
-      /* 旧名エイリアス - 既存案件からコピーしたHTMLをそのまま動かすため。新規では使わない */
+      /* 旧名エイリアス - 過去にここからコピーされたHTMLを動かし続けるためだけに残す。
+         正本（patterns.html / template.html）はもう使っていない。新規でも使わない */
       --blue: var(--ink-500);
       --blue-deep: var(--ink-700);
       --blue-soft: var(--ink-100);
@@ -427,7 +428,7 @@
       content: '•';
       position: absolute;
       left: 5px;
-      color: var(--blue);
+      color: var(--ink-500);
       font-size: 18px;
       line-height: 1;
       top: 0px;
@@ -508,7 +509,7 @@
     .pattern-note {
       font-size: 12px;
       line-height: 1.6;
-      color: var(--blue-deep);
+      color: var(--ink-700);
       background: rgba(var(--accent-rgb), 0.07);
       border: 1px dashed rgba(66, 66, 71, 0.35);
       border-radius: 8px;
@@ -518,7 +519,7 @@
     }
 
     .slide-dark .pattern-note {
-      color: var(--blue-soft);
+      color: var(--ink-100);
       background: rgba(255, 255, 255, 0.05);
       border-color: rgba(255, 255, 255, 0.2);
     }
@@ -545,7 +546,7 @@
       font-weight: 700;
       text-align: left;
       padding: 12px 16px;
-      border-bottom: 2px solid var(--blue);
+      border-bottom: 2px solid var(--ink-500);
       position: sticky;
       top: 0;
       z-index: 10;
@@ -630,7 +631,7 @@
       left: 0;
       width: 100%;
       height: 6px;
-      background: var(--blue);
+      background: var(--ink-500);
       border-top-left-radius: 20px;
       border-top-right-radius: 20px;
     }
@@ -664,7 +665,7 @@
     }
 
     .tobe-box .flow-label {
-      color: var(--blue);
+      color: var(--ink-500);
     }
 
     .flow-title {
@@ -709,11 +710,11 @@
     }
 
     .tobe-box .flow-list li::before {
-      color: var(--blue);
+      color: var(--ink-500);
     }
 
     .bridge-box .flow-list li::before {
-      color: var(--blue-soft);
+      color: var(--ink-100);
     }
 
     .flow-arrow {
@@ -721,7 +722,7 @@
       align-items: center;
       justify-content: center;
       font-size: 28px;
-      color: var(--blue);
+      color: var(--ink-500);
       font-weight: 300;
     }
 
@@ -755,12 +756,12 @@
 
     .ato-box.tobe {
       background: #f0f7f8;
-      border: 1px solid var(--blue-soft);
+      border: 1px solid var(--ink-100);
     }
 
     .ato-box.action {
       background: #e9f2f5;
-      border: 1.5px solid var(--blue);
+      border: 1.5px solid var(--ink-500);
     }
 
     .ato-label {
@@ -779,11 +780,11 @@
     }
 
     .tobe .ato-label {
-      color: var(--blue);
+      color: var(--ink-500);
     }
 
     .action .ato-label {
-      color: var(--blue-deep);
+      color: var(--ink-700);
     }
 
     .ato-content {
@@ -808,7 +809,7 @@
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: var(--blue);
+      background: var(--ink-500);
     }
 
     /* ============================================================
@@ -869,7 +870,7 @@
 
     .matrix-q-card.emphasis {
       background: #f0f7f8;
-      border-color: var(--blue-soft);
+      border-color: var(--ink-100);
     }
 
     .matrix-q-title {
@@ -884,7 +885,7 @@
     .matrix-q-names {
       font-size: 15px;
       font-weight: 900;
-      color: var(--blue-deep);
+      color: var(--ink-700);
       margin-bottom: 6px;
     }
 
@@ -913,7 +914,7 @@
       left: 10%;
       width: 80%;
       height: 3px;
-      background: linear-gradient(to right, var(--blue-soft), var(--blue), var(--blue-deep));
+      background: linear-gradient(to right, var(--ink-100), var(--ink-500), var(--ink-700));
       z-index: 1;
       border-radius: 2px;
     }
@@ -939,7 +940,7 @@
       height: 24px;
       border-radius: 50%;
       background: #fff;
-      border: 4px solid var(--blue);
+      border: 4px solid var(--ink-500);
       margin-bottom: 15px;
       box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.3);
       z-index: 3;
@@ -967,15 +968,15 @@
       left: 0;
       width: 100%;
       height: 4px;
-      background: var(--blue);
+      background: var(--ink-500);
     }
 
     .roadmap-badge {
       font-size: 11px;
       font-weight: 900;
       letter-spacing: .15em;
-      color: var(--blue-deep);
-      background: var(--blue-soft);
+      color: var(--ink-700);
+      background: var(--ink-100);
       padding: 3px 10px;
       border-radius: 20px;
       align-self: flex-start;
@@ -983,7 +984,7 @@
 
     .roadmap-period {
       font-size: 12px;
-      color: var(--blue);
+      color: var(--ink-500);
       font-weight: 700;
       margin-top: -5px;
     }
@@ -1006,7 +1007,7 @@
       content: '✔';
       position: absolute;
       left: 0;
-      color: var(--blue);
+      color: var(--ink-500);
     }
 
     /* ============================================================
@@ -1029,7 +1030,7 @@
 
     .flowchart-headline-main {
       background: #ffffff;
-      border: 1.5px solid var(--blue-soft);
+      border: 1.5px solid var(--ink-100);
       border-radius: 6px;
       padding: 15px 20px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
@@ -1039,7 +1040,7 @@
     .flowchart-headline-kicker {
       font-size: 10px;
       font-weight: 900;
-      color: var(--blue);
+      color: var(--ink-500);
       letter-spacing: 1px;
       margin-bottom: 4px;
     }
@@ -1064,7 +1065,7 @@
     }
 
     .flowchart-headline-note span {
-      color: var(--blue-soft);
+      color: var(--ink-100);
       font-size: 10px;
       font-weight: 900;
       letter-spacing: 1px;
@@ -1091,7 +1092,7 @@
       left: 8%;
       right: 8%;
       height: 4px;
-      background: linear-gradient(90deg, var(--blue), var(--blue-deep));
+      background: linear-gradient(90deg, var(--ink-500), var(--ink-700));
       z-index: 0;
     }
 
@@ -1112,7 +1113,7 @@
       width: 32px;
       height: 32px;
       background: #f0f7f8;
-      color: var(--blue-deep);
+      color: var(--ink-700);
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -1122,7 +1123,7 @@
       font-weight: 900;
       align-self: center;
       margin-bottom: 5px;
-      border: 1.5px solid var(--blue);
+      border: 1.5px solid var(--ink-500);
     }
 
     .flowchart-step-title {
@@ -1139,13 +1140,13 @@
 
     .flowchart-step-desc {
       background: #f0f7f8;
-      border: 1px solid var(--blue-soft);
+      border: 1px solid var(--ink-100);
       border-radius: 4px;
       padding: 8px;
       font-size: 10.5px;
       font-weight: 600;
       line-height: 1.45;
-      color: var(--blue-deep);
+      color: var(--ink-700);
       flex: 1;
       text-align: left;
     }
@@ -1177,7 +1178,7 @@
       right: -17px;
       top: 50%;
       transform: translateY(-50%);
-      color: var(--blue);
+      color: var(--ink-500);
       font-size: 18px;
       font-weight: 700;
       z-index: 3;
@@ -1198,7 +1199,7 @@
       width: 28px;
       height: 28px;
       border-radius: 50%;
-      background: var(--blue);
+      background: var(--ink-500);
       color: #ffffff;
       font-family: 'Inter', sans-serif;
       font-size: 13px;
@@ -1257,8 +1258,8 @@
 
     .insight-card {
       background: #f0f7f8;
-      border: 1.5px solid var(--blue-soft);
-      border-left: 5px solid var(--blue);
+      border: 1.5px solid var(--ink-100);
+      border-left: 5px solid var(--ink-500);
       border-radius: 8px;
       padding: 14px 18px;
       display: grid;
@@ -1270,7 +1271,7 @@
     }
 
     .insight-label {
-      color: var(--blue-deep);
+      color: var(--ink-700);
       font-size: 13px;
       font-weight: 900;
       letter-spacing: 0.8px;
@@ -1310,8 +1311,8 @@
       font-family: 'Inter', sans-serif;
       font-size: 15px;
       font-weight: 900;
-      color: var(--blue-deep);
-      background: var(--blue-soft);
+      color: var(--ink-700);
+      background: var(--ink-100);
       width: 34px;
       height: 34px;
       border-radius: 50%;
@@ -1364,7 +1365,7 @@
     .section-lead {
       font-size: 16px;
       font-weight: 700;
-      color: var(--blue-soft);
+      color: var(--ink-100);
       line-height: 1.6;
       max-width: 760px;
     }
@@ -1401,7 +1402,7 @@
       font-family: 'Inter', sans-serif;
       font-size: var(--fs-stat);
       font-weight: 900;
-      color: var(--blue-deep);
+      color: var(--ink-700);
       line-height: 1;
     }
 
@@ -1456,8 +1457,8 @@
       width: 88px;
       height: 88px;
       border-radius: 50%;
-      background: var(--blue-soft);
-      color: var(--blue-deep);
+      background: var(--ink-100);
+      color: var(--ink-700);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1477,8 +1478,8 @@
       font-size: 11px;
       font-weight: 800;
       letter-spacing: 0.08em;
-      color: var(--blue-deep);
-      background: var(--blue-soft);
+      color: var(--ink-700);
+      background: var(--ink-100);
       border-radius: 20px;
       padding: 3px 12px;
       margin: 8px 0 12px 0;
@@ -1540,7 +1541,7 @@
       font-size: 11px;
       font-weight: 800;
       letter-spacing: 0.12em;
-      color: var(--blue-deep);
+      color: var(--ink-700);
       margin-bottom: 8px;
     }
 
@@ -1618,7 +1619,7 @@
       font-size: 11px;
       font-weight: 800;
       letter-spacing: 0.08em;
-      color: var(--blue-deep);
+      color: var(--ink-700);
       text-transform: uppercase;
     }
 
@@ -1646,7 +1647,7 @@
     }
 
     .swot-axis-main {
-      background: var(--blue-deep);
+      background: var(--ink-700);
       color: #ffffff;
       font-size: 17px;
       font-weight: 900;
@@ -1663,8 +1664,8 @@
     }
 
     .swot-axis-sub {
-      background: var(--blue-soft);
-      color: var(--blue-deep);
+      background: var(--ink-100);
+      color: var(--ink-700);
       font-size: 16px;
       font-weight: 900;
       writing-mode: vertical-rl;
@@ -1687,7 +1688,7 @@
 
     .swot-top-band {
       grid-column: 1 / -1;
-      background: var(--blue-deep);
+      background: var(--ink-700);
       color: #ffffff;
       border-radius: 12px;
       display: flex;
@@ -1701,8 +1702,8 @@
     }
 
     .swot-head {
-      background: var(--blue-soft);
-      color: var(--blue-deep);
+      background: var(--ink-100);
+      color: var(--ink-700);
       font-size: 17px;
       font-weight: 900;
       min-height: 72px;
@@ -1720,7 +1721,7 @@
     .swot-cell-title {
       font-size: 17px;
       font-weight: 900;
-      color: var(--blue-deep);
+      color: var(--ink-700);
       line-height: 1.1;
     }
 
@@ -1738,7 +1739,7 @@
       width: 160px;
       height: 160px;
       border-radius: 50%;
-      background: var(--blue);
+      background: var(--ink-500);
       color: #ffffff;
       display: flex;
       align-items: center;
@@ -1772,7 +1773,7 @@
     }
 
     .cross-axis-main {
-      background: var(--blue-deep);
+      background: var(--ink-700);
       color: #ffffff;
       writing-mode: vertical-rl;
       font-size: 17px;
@@ -1787,8 +1788,8 @@
     }
 
     .cross-axis-sub {
-      background: var(--blue-soft);
-      color: var(--blue-deep);
+      background: var(--ink-100);
+      color: var(--ink-700);
       writing-mode: vertical-rl;
       font-size: 16px;
       font-weight: 900;
@@ -1802,7 +1803,7 @@
 
     .cross-top-band {
       grid-column: 1 / -1;
-      background: var(--blue-deep);
+      background: var(--ink-700);
       color: #ffffff;
       border-radius: 8px;
       display: flex;
@@ -1823,8 +1824,8 @@
     }
 
     .cross-head {
-      background: var(--blue-soft);
-      color: var(--blue-deep);
+      background: var(--ink-100);
+      color: var(--ink-700);
       font-size: 17px;
       font-weight: 900;
       min-height: 48px;
@@ -1843,13 +1844,13 @@
       font-size: 17px;
       font-weight: 900;
       line-height: 1.2;
-      color: var(--blue-deep);
+      color: var(--ink-700);
     }
 
     .cross-cell-sub {
       font-size: 13px;
       font-weight: 800;
-      color: var(--blue);
+      color: var(--ink-500);
     }
 
     .cross-cell-text {
@@ -1891,7 +1892,7 @@
       font-size: 42px;
       font-weight: 900;
       line-height: 1;
-      color: var(--blue);
+      color: var(--ink-500);
     }
 
     .pest-mark small {
@@ -1917,7 +1918,7 @@
 
     .pest-focus {
       background: rgba(var(--accent-rgb), 0.1);
-      color: var(--blue-deep);
+      color: var(--ink-700);
       font-size: 13px;
       font-weight: 900;
       line-height: 1.5;
@@ -1943,7 +1944,7 @@
       transform: rotate(-45deg);
       font-size: 15px;
       font-weight: 900;
-      color: var(--blue-deep);
+      color: var(--ink-700);
       text-align: center;
       line-height: 1.2;
     }
@@ -2058,7 +2059,7 @@
       display: flex;
       align-items: baseline;
       gap: 10px;
-      color: var(--blue-deep);
+      color: var(--ink-700);
     }
 
     .fourc-head strong {
@@ -2088,7 +2089,7 @@
     .fourc-chip {
       font-size: 11px;
       font-weight: 800;
-      color: var(--blue-deep);
+      color: var(--ink-700);
       background: rgba(var(--accent-rgb), 0.1);
       border-radius: 999px;
       padding: 5px 10px;
@@ -2147,20 +2148,20 @@
     .bmc-code {
       font-size: 20px;
       font-weight: 900;
-      color: var(--blue-deep);
+      color: var(--ink-700);
     }
 
     .bmc-title {
       font-size: 20px;
       font-weight: 900;
-      color: var(--blue-deep);
+      color: var(--ink-700);
       line-height: 1.3;
     }
 
     .bmc-sub {
       font-size: 13px;
       line-height: 1.4;
-      color: var(--blue);
+      color: var(--ink-500);
       font-weight: 700;
     }
 
@@ -2251,7 +2252,7 @@
     .cjm-stage small {
       display: block;
       font-size: 13px;
-      color: var(--blue);
+      color: var(--ink-500);
       margin-bottom: 4px;
       letter-spacing: 0.08em;
     }
@@ -2395,8 +2396,8 @@
       width: fit-content;
       padding: 4px 8px;
       border-radius: 999px;
-      background: var(--blue-soft);
-      color: var(--blue-deep);
+      background: var(--ink-100);
+      color: var(--ink-700);
       font-size: 13px;
       line-height: 1;
       letter-spacing: 0.04em;
@@ -2618,7 +2619,7 @@
     .metric-label {
       font-size: 13px;
       font-weight: 900;
-      color: var(--blue-deep);
+      color: var(--ink-700);
     }
 
     .kpi-value-row {
@@ -2656,7 +2657,7 @@
       padding: 4px 9px;
       border-radius: 999px;
       background: rgba(var(--accent-rgb), 0.12);
-      color: var(--blue-deep);
+      color: var(--ink-700);
       font-size: 13px;
       font-weight: 900;
     }
@@ -2672,12 +2673,12 @@
 
     .sparkline span {
       flex: 1;
-      background: var(--blue-soft);
+      background: var(--ink-100);
       border-radius: 4px 4px 0 0;
     }
 
     .sparkline span:last-child {
-      background: var(--blue);
+      background: var(--ink-500);
     }
 
     .tree-layout {
@@ -2696,9 +2697,9 @@
     .tree-column-title {
       font-size: 20px;
       font-weight: 900;
-      color: var(--blue-deep);
+      color: var(--ink-700);
       padding-bottom: 8px;
-      border-bottom: 2px solid var(--blue-soft);
+      border-bottom: 2px solid var(--ink-100);
     }
 
     .tree-node {
@@ -2717,15 +2718,15 @@
     }
 
     .tree-column:first-child .tree-node {
-      background: var(--blue-deep);
+      background: var(--ink-700);
       color: #ffffff;
-      border-color: var(--blue-deep);
+      border-color: var(--ink-700);
       font-weight: 900;
     }
 
     .tree-column:last-child .tree-node {
       background: rgba(var(--accent-rgb), 0.08);
-      color: var(--blue-deep);
+      color: var(--ink-700);
       border-color: rgba(66, 66, 71, 0.28);
     }
 
@@ -2733,7 +2734,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--blue);
+      color: var(--ink-500);
       font-size: 28px;
       font-weight: 900;
     }
@@ -2765,7 +2766,7 @@
       position: absolute;
       font-size: 13px;
       font-weight: 900;
-      color: var(--blue-deep);
+      color: var(--ink-700);
       background: #ffffff;
       padding: 3px 7px;
       border-radius: 4px;
@@ -2794,7 +2795,7 @@
       left: 59%;
       top: 27%;
       color: #ffffff;
-      background: var(--blue-deep);
+      background: var(--ink-700);
       box-shadow: 0 8px 20px rgba(66, 66, 71, 0.25);
     }
 
@@ -2817,7 +2818,7 @@
 
     .team-lead {
       color: #ffffff;
-      background: var(--blue-deep);
+      background: var(--ink-700);
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -2831,7 +2832,7 @@
     .team-role-title {
       font-size: 20px;
       font-weight: 900;
-      color: var(--blue-deep);
+      color: var(--ink-700);
       margin-bottom: 10px;
     }
 
@@ -2840,8 +2841,8 @@
       margin-bottom: 12px;
       padding: 4px 8px;
       border-radius: 999px;
-      background: var(--blue-soft);
-      color: var(--blue-deep);
+      background: var(--ink-100);
+      color: var(--ink-700);
       font-size: 11px;
       font-weight: 900;
     }
@@ -2854,7 +2855,7 @@
 
     .team-list li::before {
       content: '•';
-      color: var(--blue);
+      color: var(--ink-500);
       margin-right: 6px;
     }
 
@@ -2956,7 +2957,7 @@
       font-size: 11px;
       font-weight: 900;
       letter-spacing: 0.04em;
-      color: var(--blue-deep);
+      color: var(--ink-700);
       margin-bottom: 4px;
     }
 
@@ -3010,15 +3011,15 @@
     }
 
     .commflow-node--start {
-      border: 2px solid var(--blue);
+      border: 2px solid var(--ink-500);
       background: rgba(var(--accent-rgb), 0.06);
-      color: var(--blue-deep);
+      color: var(--ink-700);
       font-weight: 900;
     }
 
     .commflow-node--goal {
-      background: var(--blue-deep);
-      border-color: var(--blue-deep);
+      background: var(--ink-700);
+      border-color: var(--ink-700);
       color: #ffffff;
       font-weight: 900;
     }
@@ -3038,8 +3039,8 @@
       gap: 4px;
       font-size: 10px;
       font-weight: 800;
-      color: var(--blue-deep);
-      background: var(--blue-soft);
+      color: var(--ink-700);
+      background: var(--ink-100);
       padding: 2px 8px;
       border-radius: 20px;
       white-space: nowrap;
@@ -3068,7 +3069,7 @@
       align-items: center;
       justify-content: center;
       height: 56px;
-      color: var(--blue);
+      color: var(--ink-500);
       font-size: 16px;
       font-weight: 900;
     }
@@ -3087,7 +3088,7 @@
     .commflow-recovery-caption {
       font-size: 12px;
       font-weight: 800;
-      color: var(--blue-deep);
+      color: var(--ink-700);
       text-align: center;
       margin-top: 0;
     }
@@ -3153,7 +3154,7 @@
        PDF書き出し後もリンク注釈として保持され、押せる。
        target="_blank" を付けてスライドから離脱させないこと。 */
     .term-link {
-      color: var(--brand-volt);
+      color: var(--accent);
       text-decoration: underline;
       text-underline-offset: 2px;
     }
@@ -3398,8 +3399,8 @@
     }
 
     .panel-card.emphasis {
-      border-color: var(--blue);
-      box-shadow: inset 3px 0 0 var(--blue);
+      border-color: var(--ink-500);
+      box-shadow: inset 3px 0 0 var(--ink-500);
     }
 
     .panel-card-header {
@@ -3423,12 +3424,12 @@
       padding: 1px 5px;
       border-radius: 2px;
       white-space: nowrap;
-      background: var(--blue-deep);
+      background: var(--ink-700);
       color: #ffffff;
     }
 
-    .panel-badge.tone-mid { background: var(--blue); color: #ffffff; }
-    .panel-badge.tone-soft { background: var(--blue-soft); color: var(--primary-dark); }
+    .panel-badge.tone-mid { background: var(--ink-500); color: #ffffff; }
+    .panel-badge.tone-soft { background: var(--ink-100); color: var(--primary-dark); }
 
     .panel-desc {
       font-size: 11.5px;
@@ -3463,7 +3464,7 @@
       line-height: 1.45;
       width: 100%;
       box-sizing: border-box;
-      color: var(--blue-deep);
+      color: var(--ink-700);
       background: rgba(var(--accent-rgb), 0.07);
       border: 1px solid rgba(66, 66, 71, 0.25);
       border-radius: 8px;
@@ -3473,7 +3474,7 @@
     .slide-dark .panel-title { color: #ffffff; }
     .slide-dark .panel-desc { color: rgba(255, 255, 255, 0.82); }
     .slide-dark .panel-tag { background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.7); }
-    .slide-dark .panel-hint { color: var(--blue-soft); background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.2); }
+    .slide-dark .panel-hint { color: var(--ink-100); background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.2); }
 
     /* ------------------------------------------------------------------
        制作用: アクセントカラー・ピッカー（表紙のみ表示）
@@ -3650,7 +3651,7 @@
     .proc-arrow { align-self: center; font-size: 15px; font-weight: 900; color: var(--ink-300); flex: 0 0 auto; }
     .proc-hint {
       margin-top: 12px; padding: 8px 15px; font-size: 12px; line-height: 1.45; width: 100%;
-      box-sizing: border-box; color: var(--blue-deep); background: rgba(var(--accent-rgb), 0.07);
+      box-sizing: border-box; color: var(--ink-700); background: rgba(var(--accent-rgb), 0.07);
       border: 1px solid rgba(66, 66, 71, 0.25); border-radius: 8px; font-weight: 600;
     }
 
@@ -4184,7 +4185,7 @@
             <div class="flow-arrow reveal">→</div>
             <div class="flow-box tobe-box reveal">
               <span class="flow-label">TO-BE 理想の姿</span>
-              <h3 class="flow-title" style="color: var(--blue-deep);">実現したい状態の要約</h3>
+              <h3 class="flow-title" style="color: var(--ink-700);">実現したい状態の要約</h3>
               <ul class="flow-list">
                 <li>理想の状態その1を記述します。</li>
                 <li>理想の状態その2を記述します。</li>
@@ -4268,7 +4269,7 @@
               </div>
             </div>
             <div class="roadmap-phase reveal">
-              <div class="roadmap-dot" style="border-color: var(--blue-deep);"></div>
+              <div class="roadmap-dot" style="border-color: var(--ink-700);"></div>
               <div class="roadmap-card">
                 <span class="roadmap-badge">② フェーズ名（定着期）</span>
                 <span class="roadmap-period">[ 期間の目安 ]</span>
@@ -4280,7 +4281,7 @@
               </div>
             </div>
             <div class="roadmap-phase reveal">
-              <div class="roadmap-dot" style="border-color: var(--blue-soft);"></div>
+              <div class="roadmap-dot" style="border-color: var(--ink-100);"></div>
               <div class="roadmap-card">
                 <span class="roadmap-badge">③ フェーズ名（自走期）</span>
                 <span class="roadmap-period">[ 期間の目安 ]</span>
@@ -4988,7 +4989,7 @@
             </div>
           </div>
         </div>
-        <div class="pattern-note"><strong>使いどころ:</strong> キャンペーンやオンボーディングの導線設計、関係者・組織間の相関図への転用。<strong>注意:</strong> 意味色を使わず、強調はグレー＋アクセント色のトーン差（`--blue-soft`〜`--blue-deep`）だけで表現する。</div>
+        <div class="pattern-note"><strong>使いどころ:</strong> キャンペーンやオンボーディングの導線設計、関係者・組織間の相関図への転用。<strong>注意:</strong> 意味色を使わず、強調はグレー＋アクセント色のトーン差（<code>--ink-100</code>〜<code>--ink-700</code>）だけで表現する。</div>
         <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">26 / 35</span></div>
       </section>
       <!-- ==================== SLIDE 27 (PATTERN 28: ソース相関図) ==================== -->
@@ -4998,7 +4999,7 @@
         <div class="slide-body">
           <svg viewBox="0 -24 1160 454" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto"
             role="img" aria-label="本資料が参照した観点の相関図">
-            <g stroke="var(--blue)" stroke-width="1.5" opacity="0.45" fill="none">
+            <g stroke="var(--ink-500)" stroke-width="1.5" opacity="0.45" fill="none">
               <path d="M285 50 C 340 50, 350 175, 400 200" />
               <path d="M285 155 C 345 155, 355 185, 400 203" />
               <path d="M285 260 C 345 260, 355 230, 400 217" />
@@ -5012,63 +5013,63 @@
             <text x="0" y="-6" font-size="12" font-weight="900" fill="var(--c-muted)" letter-spacing="1.5">左側グループの見出し</text>
             <g font-family="'Noto Sans JP', sans-serif">
               <rect x="0" y="10" width="285" height="80" rx="8" fill="#ffffff" stroke="var(--surface-border)" />
-              <rect x="0" y="10" width="4" height="80" rx="2" fill="var(--blue)" />
+              <rect x="0" y="10" width="4" height="80" rx="2" fill="var(--ink-500)" />
               <text x="18" y="36" font-size="13.5" font-weight="900" fill="var(--c-ink)">ソース名（日付）</text>
               <text x="18" y="57" font-size="11.5" font-weight="600" fill="var(--text)">そのソースの中身を1行で</text>
-              <text x="18" y="76" font-size="11.5" font-weight="700" fill="var(--blue-deep)">→ 本資料のどこに効いたか</text>
+              <text x="18" y="76" font-size="11.5" font-weight="700" fill="var(--ink-700)">→ 本資料のどこに効いたか</text>
 
               <rect x="0" y="115" width="285" height="80" rx="8" fill="#ffffff" stroke="var(--surface-border)" />
-              <rect x="0" y="115" width="4" height="80" rx="2" fill="var(--blue)" />
+              <rect x="0" y="115" width="4" height="80" rx="2" fill="var(--ink-500)" />
               <text x="18" y="141" font-size="13.5" font-weight="900" fill="var(--c-ink)">ソース名（日付）</text>
               <text x="18" y="162" font-size="11.5" font-weight="600" fill="var(--text)">そのソースの中身を1行で</text>
-              <text x="18" y="181" font-size="11.5" font-weight="700" fill="var(--blue-deep)">→ 本資料のどこに効いたか</text>
+              <text x="18" y="181" font-size="11.5" font-weight="700" fill="var(--ink-700)">→ 本資料のどこに効いたか</text>
 
               <rect x="0" y="220" width="285" height="80" rx="8" fill="#ffffff" stroke="var(--surface-border)" />
-              <rect x="0" y="220" width="4" height="80" rx="2" fill="var(--blue)" />
+              <rect x="0" y="220" width="4" height="80" rx="2" fill="var(--ink-500)" />
               <text x="18" y="246" font-size="13.5" font-weight="900" fill="var(--c-ink)">ソース名（日付）</text>
               <text x="18" y="267" font-size="11.5" font-weight="600" fill="var(--text)">そのソースの中身を1行で</text>
-              <text x="18" y="286" font-size="11.5" font-weight="700" fill="var(--blue-deep)">→ 本資料のどこに効いたか</text>
+              <text x="18" y="286" font-size="11.5" font-weight="700" fill="var(--ink-700)">→ 本資料のどこに効いたか</text>
 
               <rect x="0" y="325" width="285" height="80" rx="8" fill="#ffffff" stroke="var(--surface-border)" />
-              <rect x="0" y="325" width="4" height="80" rx="2" fill="var(--blue)" />
+              <rect x="0" y="325" width="4" height="80" rx="2" fill="var(--ink-500)" />
               <text x="18" y="351" font-size="13.5" font-weight="900" fill="var(--c-ink)">ソース名（日付）</text>
               <text x="18" y="372" font-size="11.5" font-weight="600" fill="var(--text)">そのソースの中身を1行で</text>
-              <text x="18" y="391" font-size="11.5" font-weight="700" fill="var(--blue-deep)">→ 本資料のどこに効いたか</text>
+              <text x="18" y="391" font-size="11.5" font-weight="700" fill="var(--ink-700)">→ 本資料のどこに効いたか</text>
             </g>
 
-            <rect x="400" y="165" width="360" height="90" rx="10" fill="var(--blue-deep)" />
+            <rect x="400" y="165" width="360" height="90" rx="10" fill="var(--ink-700)" />
             <text x="580" y="199" text-anchor="middle" font-size="12" font-weight="900" fill="#ffffff"
               letter-spacing="2" font-family="'Inter', sans-serif">THIS DOCUMENT</text>
             <text x="580" y="226" text-anchor="middle" font-size="19" font-weight="900" fill="#ffffff"
               font-family="'Noto Sans JP', sans-serif">本資料のタイトル</text>
-            <text x="580" y="245" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--blue-soft)"
+            <text x="580" y="245" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--ink-100)"
               font-family="'Noto Sans JP', sans-serif">構成や対象期間などの補足</text>
 
             <text x="1160" y="-6" text-anchor="end" font-size="12" font-weight="900" fill="var(--c-muted)" letter-spacing="1.5">右側グループの見出し</text>
             <g font-family="'Noto Sans JP', sans-serif">
               <rect x="875" y="10" width="285" height="80" rx="8" fill="#ffffff" stroke="var(--surface-border)" />
-              <rect x="1156" y="10" width="4" height="80" rx="2" fill="var(--blue)" />
+              <rect x="1156" y="10" width="4" height="80" rx="2" fill="var(--ink-500)" />
               <text x="893" y="36" font-size="13.5" font-weight="900" fill="var(--c-ink)">ソース名（日付）</text>
               <text x="893" y="57" font-size="11.5" font-weight="600" fill="var(--text)">そのソースの中身を1行で</text>
-              <text x="893" y="76" font-size="11.5" font-weight="700" fill="var(--blue-deep)">→ 本資料のどこに効いたか</text>
+              <text x="893" y="76" font-size="11.5" font-weight="700" fill="var(--ink-700)">→ 本資料のどこに効いたか</text>
 
               <rect x="875" y="115" width="285" height="80" rx="8" fill="#ffffff" stroke="var(--surface-border)" />
-              <rect x="1156" y="115" width="4" height="80" rx="2" fill="var(--blue)" />
+              <rect x="1156" y="115" width="4" height="80" rx="2" fill="var(--ink-500)" />
               <text x="893" y="141" font-size="13.5" font-weight="900" fill="var(--c-ink)">ソース名（日付）</text>
               <text x="893" y="162" font-size="11.5" font-weight="600" fill="var(--text)">そのソースの中身を1行で</text>
-              <text x="893" y="181" font-size="11.5" font-weight="700" fill="var(--blue-deep)">→ 本資料のどこに効いたか</text>
+              <text x="893" y="181" font-size="11.5" font-weight="700" fill="var(--ink-700)">→ 本資料のどこに効いたか</text>
 
               <rect x="875" y="220" width="285" height="80" rx="8" fill="#ffffff" stroke="var(--surface-border)" />
-              <rect x="1156" y="220" width="4" height="80" rx="2" fill="var(--blue)" />
+              <rect x="1156" y="220" width="4" height="80" rx="2" fill="var(--ink-500)" />
               <text x="893" y="246" font-size="13.5" font-weight="900" fill="var(--c-ink)">ソース名（日付）</text>
               <text x="893" y="267" font-size="11.5" font-weight="600" fill="var(--text)">そのソースの中身を1行で</text>
-              <text x="893" y="286" font-size="11.5" font-weight="700" fill="var(--blue-deep)">→ 本資料のどこに効いたか</text>
+              <text x="893" y="286" font-size="11.5" font-weight="700" fill="var(--ink-700)">→ 本資料のどこに効いたか</text>
 
               <rect x="875" y="325" width="285" height="80" rx="8" fill="#ffffff" stroke="var(--surface-border)" />
-              <rect x="1156" y="325" width="4" height="80" rx="2" fill="var(--blue)" />
+              <rect x="1156" y="325" width="4" height="80" rx="2" fill="var(--ink-500)" />
               <text x="893" y="351" font-size="13.5" font-weight="900" fill="var(--c-ink)">ソース名（日付）</text>
               <text x="893" y="372" font-size="11.5" font-weight="600" fill="var(--text)">そのソースの中身を1行で</text>
-              <text x="893" y="391" font-size="11.5" font-weight="700" fill="var(--blue-deep)">→ 本資料のどこに効いたか</text>
+              <text x="893" y="391" font-size="11.5" font-weight="700" fill="var(--ink-700)">→ 本資料のどこに効いたか</text>
             </g>
           </svg>
         </div>
