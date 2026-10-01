@@ -81,12 +81,16 @@
       --accent-rose: var(--ink-400);
 
       /* Typography Scale */
-      --fs-title-lead: 44px;
-      --fs-title-slide: 32px;
-      --fs-card-title: 18px;   
-      --fs-body: 14px;         
-      --fs-caption: 12px;      
-      --fs-stat: 48px;         /* 主役の数字（PATTERN 12 .stat-value） */
+      /* 使ってよいサイズはこの9段だけ。個別に px を書かない（STYLE_GUIDE 9章②） */
+      --fs-display: 96px;     /* 中表紙の章番号（PATTERN 11 .section-num）専用 */
+      --fs-stat: 44px;         /* 主役の数字（PATTERN 33 .stat-value） */
+      --fs-title-lead: 40px;   /* 表紙・中表紙のタイトル */
+      --fs-title-slide: 28px;  /* スライドタイトル、図中の大きな数字 */
+      --fs-card-title: 16px;   /* カード見出し */
+      --fs-subtitle: 14px;     /* サブタイトル、小見出し */
+      --fs-body: 13px;         /* 本文 */
+      --fs-caption: 11px;      /* 補足・注記 */
+      --fs-label: 10px;        /* 英字ラベル・タグ・バッジ。これより小さくしない */
 
       --transition-smooth: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
     }
@@ -225,7 +229,7 @@
 
     .slide-page-number {
       font-family: 'Inter', sans-serif;
-      font-size: 12px;
+      font-size: var(--fs-caption);
       font-weight: 800;
       color: var(--on-accent);
       background: var(--accent);
@@ -279,7 +283,7 @@
     /* サブタイトルは添え書き。タイトル（結論）より一段小さく・細く・グレーにして、
        タイトルと競り合わせない（STYLE_GUIDE §9②） */
     .slide-subtitle {
-      font-size: 16px;
+      font-size: var(--fs-subtitle);
       font-weight: 600;
       color: var(--text);
       margin-top: 8px;
@@ -367,7 +371,7 @@
     }
 
     .card-num {
-      font-size: 11px;
+      font-size: var(--fs-label);
       font-weight: 900;
       color: var(--on-accent);
       letter-spacing: 0.08em;
@@ -377,6 +381,12 @@
       padding: 2px 10px;
       border-radius: 20px;
       align-self: flex-start;
+    }
+
+    /* 見出しの頭に置いたときは、文字と詰まらないよう右に間を空ける */
+    .card-title .card-num {
+      margin: 0 8px 0 0;
+      vertical-align: 2px;
     }
 
     .card-title {
@@ -455,7 +465,7 @@
     
     .pricing-card .plan-badge {
       display: inline-block;
-      font-size: 11px;
+      font-size: var(--fs-label);
       font-weight: 800;
       padding: 4px 8px;
       border-radius: 4px;
@@ -467,14 +477,14 @@
 
     
     .pricing-card .plan-title {
-      font-size: 20px;
+      font-size: var(--fs-card-title);
       font-weight: 800;
       color: var(--c-ink);
       margin-bottom: 8px;
     }
     
     .pricing-card .plan-price {
-      font-size: 28px;
+      font-size: var(--fs-title-slide);
       font-family: 'Inter', sans-serif;
       font-weight: 800;
       color: var(--c-ink);
@@ -484,7 +494,7 @@
     }
     
     .pricing-card .plan-price span {
-      font-size: 13px;
+      font-size: var(--fs-caption);
       font-weight: 500;
       color: var(--c-muted);
       margin-left: 4px;
@@ -501,7 +511,7 @@
     }
     
     .pricing-card .plan-features li {
-      font-size: 13px;
+      font-size: var(--fs-body);
       font-weight: 600;
       color: var(--text);
       line-height: 1.5;
@@ -519,7 +529,7 @@
     
     
     .pricing-card .plan-note {
-      font-size: 11px;
+      font-size: var(--fs-label);
       font-weight: 600;
       color: var(--c-muted);
       border-top: 1px dashed var(--surface-border);
@@ -567,7 +577,7 @@
     }
 
     .profile-kicker {
-      font-size: 11px;
+      font-size: var(--fs-label);
       font-weight: 800;
       letter-spacing: 0.12em;
       color: var(--ink-700);
@@ -575,14 +585,14 @@
     }
 
     .profile-name {
-      font-size: 20px;
+      font-size: var(--fs-card-title);
       font-weight: 900;
       color: var(--c-ink);
       margin-bottom: 8px;
     }
 
     .profile-role {
-      font-size: 11px;
+      font-size: var(--fs-label);
       line-height: 1.55;
       font-weight: 700;
       color: var(--c-muted);
@@ -590,7 +600,7 @@
     }
 
     .profile-copy {
-      font-size: 11px;
+      font-size: var(--fs-label);
       font-weight: 600;
       line-height: 1.62;
       color: var(--text);
@@ -602,7 +612,7 @@
       row-gap: 8px;
       column-gap: 12px;
       margin-top: 6px;
-      font-size: 12px;
+      font-size: var(--fs-caption);
       line-height: 1.45;
     }
 
@@ -620,7 +630,7 @@
       margin-top: 14px;
       padding-top: 12px;
       border-top: 1px solid rgba(var(--accent-rgb), 0.35);
-      font-size: 11px;
+      font-size: var(--fs-label);
       line-height: 1.55;
       color: var(--c-muted);
     }
@@ -656,7 +666,7 @@
     }
 
     .slide-lead .subtitle-lead {
-      font-size: 20px;
+      font-size: var(--fs-card-title);
       font-weight: 700;
       color: var(--accent-on-dark);
       max-width: 800px;
@@ -698,7 +708,7 @@
       position: absolute;
       left: 5px;
       color: var(--ink-500);
-      font-size: 18px;
+      font-size: var(--fs-card-title);
       line-height: 1;
       top: 0px;
     }
@@ -764,7 +774,7 @@
       border: none;
       color: #ffffff;
       font-family: 'Noto Sans JP', sans-serif;
-      font-size: 13px;
+      font-size: var(--fs-caption);
       font-weight: 700;
       padding-right: 20px;
       cursor: pointer;
@@ -780,7 +790,7 @@
     #page-indicator {
       color: rgba(255, 255, 255, 0.6);
       font-family: 'Inter', sans-serif;
-      font-size: 13px;
+      font-size: var(--fs-caption);
       font-weight: 700;
       min-width: 45px;
       text-align: center;
@@ -858,7 +868,7 @@
       outline: none;
       color: #ffffff;
       font-family: 'Inter', sans-serif;
-      font-size: 10px;
+      font-size: var(--fs-label);
       font-weight: 700;
       letter-spacing: 0.03em;
     }
