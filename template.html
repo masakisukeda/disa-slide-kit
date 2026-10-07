@@ -424,6 +424,16 @@
       transform: translateY(0);
     }
 
+    /* クリックで1つずつ出す要素。→キー・スペース・次へボタンで、文書の順に出る */
+    .step {
+      transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1), transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .slide .step:not(.is-shown) {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
     /* Pricing Card Styles */
     .pricing-grid {
       display: grid;
@@ -933,7 +943,8 @@
         break-after: auto !important;
       }
 
-      .reveal {
+      .reveal,
+      .step {
         opacity: 1 !important;
         visibility: visible !important;
         transform: none !important;
@@ -1378,7 +1389,7 @@
       scalePresentation();
 
       const updateReveals = (slideEl) => {
-        const reveals = Array.from(slideEl.querySelectorAll('.reveal'));
+        const reveals = Array.from(slideEl.querySelectorAll('.reveal:not(.step)'));
         reveals.forEach((el, index) => {
           setTimeout(() => {
             el.classList.add('revealed');
@@ -1391,7 +1402,14 @@
         reveals.forEach(el => el.classList.remove('revealed'));
       };
 
-      const goToSlide = (index, skipHistory) => {
+      // .step はクリック（→キー等）で1つずつ出す。showAll が true なら全部出た状態にする
+      const getSteps = (slideEl) => Array.from(slideEl.querySelectorAll('.step'));
+
+      const setSteps = (slideEl, showAll) => {
+        getSteps(slideEl).forEach(el => el.classList.toggle('is-shown', showAll));
+      };
+
+      const goToSlide = (index, skipHistory, showAllSteps) => {
         if (index < 0 || index >= slides.length) return;
 
         resetReveals(slides[currentIndex]);
@@ -1399,6 +1417,7 @@
 
         currentIndex = index;
 
+        setSteps(slides[currentIndex], !!showAllSteps);
         slides[currentIndex].classList.add('active');
         updateReveals(slides[currentIndex]);
 
@@ -1417,8 +1436,28 @@
         }
       };
 
-      prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
-      nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
+      // 次へ: 隠れている .step があれば1つ出す。なければ次のスライドへ
+      const next = () => {
+        const hidden = getSteps(slides[currentIndex]).find(el => !el.classList.contains('is-shown'));
+        if (hidden) {
+          hidden.classList.add('is-shown');
+        } else if (currentIndex < slides.length - 1) {
+          goToSlide(currentIndex + 1);
+        }
+      };
+
+      // 前へ: 出ている .step があれば最後の1つを隠す。なければ前のスライドを全部出た状態で表示
+      const prev = () => {
+        const shown = getSteps(slides[currentIndex]).filter(el => el.classList.contains('is-shown'));
+        if (shown.length) {
+          shown[shown.length - 1].classList.remove('is-shown');
+        } else if (currentIndex > 0) {
+          goToSlide(currentIndex - 1, false, true);
+        }
+      };
+
+      prevBtn.addEventListener('click', prev);
+      nextBtn.addEventListener('click', next);
 
       tocSelect.addEventListener('change', (e) => {
         const targetId = e.target.value;
@@ -1428,10 +1467,16 @@
 
       // Keyboard Controls
       document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowRight' || e.key === 'Space') {
-          if (currentIndex < slides.length - 1) goToSlide(currentIndex + 1);
-        } else if (e.key === 'ArrowLeft') {
-          if (currentIndex > 0) goToSlide(currentIndex - 1);
+        // 目次やアクセント色の入力中はページを送らない
+        if (e.target.closest && e.target.closest('input, select, textarea')) return;
+
+        // PageDown / PageUp はプレゼン用クリッカーが送るキー
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+          e.preventDefault();
+          next();
+        } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+          e.preventDefault();
+          prev();
         }
       });
 
@@ -1439,7 +1484,7 @@
       const restoreIndex = slides.findIndex(s => s.id === window.location.hash.replace('#', ''));
       if (restoreIndex > 0) {
         slides[0].classList.remove('active');
-        goToSlide(restoreIndex, true);
+        goToSlide(restoreIndex, true, true);
       } else {
         setTimeout(() => updateReveals(slides[0]), 300);
       }
