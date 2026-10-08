@@ -460,6 +460,167 @@
       transform: translateY(0);
     }
 
+    /* クリックで1つずつ出す要素。→キー・スペース・次へボタンで、文書の順に出る */
+    .step {
+      transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1), transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .slide .step:not(.is-shown) {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
+    /* クリックで深掘り。data-drill="パネルのid" を付けた要素を押すと、同じスライドの .drill-panel が横から開く */
+    [data-drill] {
+      position: relative;
+      cursor: pointer;
+      transition: opacity 0.3s, box-shadow 0.3s;
+    }
+
+    [data-drill]::after {
+      content: '+';
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--on-accent);
+      font-size: var(--fs-subtitle);
+      font-weight: 900;
+      line-height: 20px;
+      text-align: center;
+    }
+
+    [data-drill]:hover,
+    [data-drill]:focus-visible,
+    [data-drill].is-drill-active {
+      outline: none;
+      box-shadow: 0 0 0 2px var(--accent-deep);
+    }
+
+    .slide-dark [data-drill]:hover,
+    .slide-dark [data-drill]:focus-visible,
+    .slide-dark [data-drill].is-drill-active {
+      box-shadow: 0 0 0 2px var(--accent-on-dark);
+    }
+
+    /* 開いている間は、押した要素以外を薄くして「今どこの話か」を残す */
+    .slide.has-drill-open [data-drill]:not(.is-drill-active) {
+      opacity: 0.35;
+    }
+
+    .drill-panel {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 440px;
+      z-index: 20;
+      box-sizing: border-box;
+      padding: 56px 40px 40px;
+      background: #fff;
+      border-left: 4px solid var(--accent);
+      box-shadow: -12px 0 32px rgba(0, 0, 0, 0.12);
+      color: var(--text);
+      font-size: var(--fs-body);
+      line-height: 1.8;
+      overflow-y: auto;
+      visibility: hidden;
+      transform: translateX(105%);
+      transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.5s;
+    }
+
+    .drill-panel.is-left {
+      right: auto;
+      left: 0;
+      border-left: none;
+      border-right: 4px solid var(--accent);
+      box-shadow: 12px 0 32px rgba(0, 0, 0, 0.12);
+      transform: translateX(-105%);
+    }
+
+    .drill-panel.is-open {
+      visibility: visible;
+      transform: none;
+    }
+
+    .drill-kicker {
+      font-size: var(--fs-label);
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      color: var(--c-muted);
+      margin-bottom: 8px;
+    }
+
+    .drill-title {
+      font-size: var(--fs-title-slide);
+      font-weight: 900;
+      line-height: 1.4;
+      color: var(--c-ink);
+      margin: 0 0 20px;
+    }
+
+    .drill-panel ul {
+      margin: 0;
+      padding-left: 1.2em;
+    }
+
+    .drill-panel li + li {
+      margin-top: 8px;
+    }
+
+    /* 箇条書きの後ろに置く「成果物」「お願いしたいこと」などの1行 */
+    .drill-panel p {
+      margin: 20px 0 0;
+      padding-top: 16px;
+      border-top: 1px solid var(--surface-border);
+      font-weight: 700;
+      color: var(--c-ink);
+    }
+
+    .slide-dark .drill-panel p {
+      border-top-color: var(--ink-600);
+      color: #fff;
+    }
+
+    .drill-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 50%;
+      background: var(--c-surface);
+      color: var(--c-ink);
+      font-size: var(--fs-card-title);
+      cursor: pointer;
+    }
+
+    .drill-panel.is-left .drill-close {
+      right: 20px;
+    }
+
+    .slide-dark .drill-panel {
+      background: var(--ink-800);
+      color: var(--ink-100);
+    }
+
+    .slide-dark .drill-kicker {
+      color: var(--text-muted);
+    }
+
+    .slide-dark .drill-title {
+      color: #fff;
+    }
+
+    .slide-dark .drill-close {
+      background: var(--ink-700);
+      color: #fff;
+    }
+
     /* Lead Slide */
     .slide-lead {
       justify-content: center;
@@ -2958,7 +3119,19 @@
         overflow: visible !important;
       }
 
-      .reveal {
+      /* 深掘りの詳細はPDFに出ない。PDFで渡す資料なら、詳細は別スライドに書く */
+      .drill-panel,
+      [data-drill]::after {
+        display: none !important;
+      }
+
+      [data-drill] {
+        opacity: 1 !important;
+        box-shadow: none !important;
+      }
+
+      .reveal,
+      .step {
         opacity: 1 !important;
         visibility: visible !important;
         transform: none !important;
@@ -3186,7 +3359,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 表紙の直後。ページ数が多い提案（10枚以上）では入れる。<strong>注意:</strong> 項目は4〜6個に収める。7個以上になる場合は構成自体を見直すサイン。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">2 / 28</span>
+          <span class="slide-page-number">2 / 29</span>
         </div>
       </section>
       <!-- ==================== SLIDE 3 (PATTERN 11: 中表紙) ==================== -->
@@ -3203,7 +3376,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 章の切り替え。ダーク⇄ライトのテーマ切り替えと合わせて配置するとリズムが生まれる（STYLE_GUIDE §9①）。<strong>注意:</strong> 番号は目次（PATTERN 10）の番号と必ず一致させる。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">3 / 28</span>
+          <span class="slide-page-number">3 / 29</span>
         </div>
       </section>
 
@@ -3261,7 +3434,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 条件比較・メンバー一覧・仕様整理など、行×列で俯瞰させたい情報。<strong>注意:</strong> 行が多い場合は `.table-scroll-frame` で囲みスクロールさせる（印刷時は自動で全展開）。ヘッダーは `--primary-dark` 背景＋白文字が標準。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">4 / 28</span>
+          <span class="slide-page-number">4 / 29</span>
         </div>
       </section>
       <!-- ==================== SLIDE 5 (PATTERN 02: ダーク面カード) ==================== -->
@@ -3296,7 +3469,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 現状分析・課題定義などダーク面で情報をモジュール化したいページ。<strong>注意:</strong> `:root` に `--c-surface-dark` / `--surface-border-dark` を定義し、`.slide-dark .card` に適用する（STYLE_GUIDE §3）。クライアント色に合わせてダーク面の色相も調整する。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">5 / 28</span>
+          <span class="slide-page-number">5 / 29</span>
         </div>
       </section>
       <!-- ==================== SLIDE 6 (PATTERN 09: 詳細3カラム＋インサイト) ==================== -->
@@ -3352,7 +3525,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 1on1レポートのメンバー詳細、施策別の深掘りページなど、同じ型を複数枚並べる資料。<strong>注意:</strong> カラムの意味（A/B/C）は全ページで固定し、読み手が位置で内容を予測できるようにする。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">6 / 28</span>
+          <span class="slide-page-number">6 / 29</span>
         </div>
       </section>
       <!-- ==================== SLIDE 7 (PATTERN 29: 小パネル一覧 4×3) ==================== -->
@@ -3471,7 +3644,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 選択肢・分類・課題の棚卸しなど、<strong>粒度の揃った項目を一覧で見渡して選ばせたいページ</strong>。カード比較（grid-2/3）が「3案を読み込ませる」型なのに対し、これは「12個を眺めて指させる」型。<strong>注意:</strong> バッジは色の役割を増やさず <code>tone-mid</code> / <code>tone-soft</code> のトーン展開で分類する（アクセント1色ルール）。説明文は2行で自動クランプされるので、1項目40字前後に収める。12個を超えるならページを分ける。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">7 / 28</span>
+          <span class="slide-page-number">7 / 29</span>
         </div>
       </section>
 
@@ -3521,7 +3694,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 提案の「全体像」ページ。課題→支援→理想の因果を一枚で示す。<strong>注意:</strong> 中央の `bridge-box` はダーク塗りで主役化する。左右のリストは3項目程度に絞ると崩れない。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">8 / 28</span>
+          <span class="slide-page-number">8 / 29</span>
         </div>
       </section>
       <!-- ==================== SLIDE 9 (PATTERN 04: As-Is/To-Be/Action アウトライン) ==================== -->
@@ -3577,7 +3750,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 章立てのある提案のサマリー（STYLE_GUIDE §9「As-Is/To-Be/Action型」の3枚目）や報告書の冒頭で、<strong>テーマごとの筋を1枚で先に見せたいとき。</strong> 各テーマを掘り下げるページは別に作り、行の「詳細 → p.◯」でつなぐ。<strong>テーマが1つなら1行だけで使ってよい</strong>（課題1つを打ち手まで落とすページになる）。<strong>作り方:</strong> ISSUE は列にせず、AS-IS のセルに <code>.ato-fact</code>（事実）→ <code>.ato-issue</code>（課題）の2段で書く。課題は必ず右の TO-BE とつながるものだけにする。<strong>注意:</strong> <strong>テーマは4行まで</strong>。5つ以上ならページを分ける。各セルは1文・2行以内（STYLE_GUIDE §0）。テーマの順は本編の章の順と揃える。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">9 / 28</span>
+          <span class="slide-page-number">9 / 29</span>
         </div>
       </section>
       <!-- ==================== SLIDE 10 (PATTERN 07: 横型ステップフロー) ==================== -->
@@ -3634,7 +3807,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 業務プロセスの可視化、課題が生まれる流れの説明など。<strong>注意:</strong> 1段は5ステップまで。6つ以上なら <code>.flowchart-steps</code> に <code>.is-2rows</code> を付けて3列×2段にする（段をまたぐ線は消える。順番はステップ番号で読ませる）。7つ以上はページを分ける。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">10 / 28</span>
+          <span class="slide-page-number">10 / 29</span>
         </div>
       </section>
       <!-- ==================== SLIDE 11 (PATTERN 21: カスタマージャーニーマップ) ==================== -->
@@ -3705,7 +3878,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 体験設計、導線改善、顧客理解を深掘りする章。<strong>注意:</strong> 行動だけでなく「思考・感情」と「要求」まで並べると、改善提案につなげやすい。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">11 / 28</span>
+          <span class="slide-page-number">11 / 29</span>
         </div>
       </section>
       <!-- ==================== SLIDE 12 (PATTERN 26: ファネル・導線分析) ==================== -->
@@ -3721,7 +3894,7 @@
           </div>
         </div>
         <div class="pattern-note"><strong>使いどころ:</strong> マーケティング、営業導線、CV改善のレビュー。<strong>注意:</strong> 各段階の定義と計測方法を揃えてから比較する。</div>
-        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">12 / 28</span></div>
+        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">12 / 29</span></div>
       </section>
 
       <!-- ############### 分析フレーム ############### -->
@@ -3780,7 +3953,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 分析の後に「何をやるか」までつなげたい提案書。<strong>注意:</strong> 4象限すべてを均等に埋めるより、優先度の高い戦略だけ太らせる方が実務的。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">13 / 28</span>
+          <span class="slide-page-number">13 / 29</span>
         </div>
       </section>
       <!-- ==================== SLIDE 14 (PATTERN 18: VRIO分析) ==================== -->
@@ -3820,7 +3993,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 自社の強みが持続的な優位性かを見極めたいページ。<strong>注意:</strong> 4項目を説明するだけでなく、最後に「優位の源泉は何か」を1行で結論づけると強い。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">14 / 28</span>
+          <span class="slide-page-number">14 / 29</span>
         </div>
       </section>
       <!-- ==================== SLIDE 15 (PATTERN 20: ビジネスモデルキャンバス) ==================== -->
@@ -3896,7 +4069,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 新規事業の検討、既存事業の構造整理、提案の全体像説明。<strong>注意:</strong> 価値提案だけを盛らず、チャネルと収益の整合まで1枚で見せると説得力が出る。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">15 / 28</span>
+          <span class="slide-page-number">15 / 29</span>
         </div>
       </section>
       <!-- ==================== SLIDE 16 (PATTERN 05: 4象限マトリクス) ==================== -->
@@ -3940,7 +4113,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> メンバー分析・施策の優先度整理など、2軸分類が伝わりやすいテーマ。<strong>作り方:</strong> 軸は「端の値 ─ 軸の名前 ─ 端の値」で書く。縦は上が高・下が低、横は左が低・右が高にそろえ、象限の見出しにも「縦：高 × 横：低」の形で位置を書く。<strong>注意:</strong> 軸の名前は6字以内（縦書きになるため）。強調したい象限のみ `.emphasis` を付ける。<strong>分析フレームもこの型で作る:</strong> SWOT は縦軸「内部／外部」・横軸「プラス／マイナス」にして、4象限を強み・弱み・機会・脅威にする。PEST・4C のように軸を持たない4分類は <code>.matrix-layout</code> に <code>.is-plain</code> を付けて軸を消し、象限の見出しに分類名（P 政治、Customer Value など）を書く。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">16 / 28</span>
+          <span class="slide-page-number">16 / 29</span>
         </div>
       </section>
       <!-- ==================== SLIDE 17 (PATTERN 24: ポジショニングマップ) ==================== -->
@@ -3955,7 +4128,7 @@
           </div>
         </div>
         <div class="pattern-note"><strong>使いどころ:</strong> 競合比較、差別化方針、ブランド戦略。<strong>注意:</strong> 社内視点でなく、顧客が比較に使う2軸を選ぶ。</div>
-        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">17 / 28</span></div>
+        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">17 / 29</span></div>
       </section>
       <!-- ==================== SLIDE 18 (PATTERN 23: 課題ツリー) ==================== -->
       <section class="slide slide-light compact-pattern-slide" id="slide-18">
@@ -3971,7 +4144,7 @@
           </div>
         </div>
         <div class="pattern-note"><strong>使いどころ:</strong> 課題整理、提案の論点設計、施策の優先順位づけ。<strong>注意:</strong> 原因と打ち手を混ぜず、因果関係を確認してから施策に進む。</div>
-        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">18 / 28</span></div>
+        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">18 / 29</span></div>
       </section>
 
       <!-- ############### 関係を描く（構造・つながり） ############### -->
@@ -3988,7 +4161,7 @@
           </div>
         </div>
         <div class="pattern-note"><strong>使いどころ:</strong> キックオフ、伴走支援の開始時、複数部署をまたぐ施策。<strong>注意:</strong> 人名だけでなく、誰が何を決めるかまで明記する。</div>
-        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">19 / 28</span></div>
+        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">19 / 29</span></div>
       </section>
       <!-- ==================== SLIDE 20 (PATTERN 27: コミュニケーション設計図) ==================== -->
       <section class="slide slide-light compact-pattern-slide" id="slide-20">
@@ -4040,7 +4213,7 @@
           </div>
         </div>
         <div class="pattern-note"><strong>使いどころ:</strong> キャンペーンやオンボーディングの導線設計、関係者・組織間の相関図への転用。<strong>注意:</strong> 意味色を使わず、強調はグレー＋アクセント色のトーン差（<code>--ink-100</code>〜<code>--ink-700</code>）だけで表現する。</div>
-        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">20 / 28</span></div>
+        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">20 / 29</span></div>
       </section>
       <!-- ==================== SLIDE 21 (PATTERN 28: ソース相関図) ==================== -->
       <section class="slide slide-light compact-pattern-slide" id="slide-21">
@@ -4124,7 +4297,7 @@
           </svg>
         </div>
         <div class="pattern-note"><strong>使いどころ:</strong> 提案・診断資料の2枚目。調査量が多く「何を根拠に言っているのか」を先に示したいとき。左右でグループの意味を分けると強い（例: 左＝先方からいただいたもの／右＝こちらで実測したもの）。<strong>書き方:</strong> 各カードは「ソース名（日付）／中身1行／→ 本資料のどこに効いたか」の3行で固定する。3行目の「→」がないと単なる資料リストになり、相関図として機能しない。<strong>注意:</strong> 片側4件が上限（8件を超えると1件あたりの文字が読めなくなる）。新規CSSクラスは作らず、色は既存変数を参照する。左右見出しは viewBox 外（y=-6）に置くため、viewBox の上に24pxの余白を確保すること。</div>
-        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">21 / 28</span></div>
+        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">21 / 29</span></div>
       </section>
       <!-- ==================== SLIDE 22 (PATTERN 22: KPIダッシュボード) ==================== -->
       <section class="slide slide-light compact-pattern-slide" id="slide-22">
@@ -4162,7 +4335,7 @@
           </div>
         </div>
         <div class="pattern-note"><strong>使いどころ:</strong> 月次報告、事業レビュー、支援成果の共有。<strong>注意:</strong> 指標を増やしすぎず、判断に直結する3〜5項目に絞る。</div>
-        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">22 / 28</span></div>
+        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">22 / 29</span></div>
       </section>
 
       <!-- ############### 締め（人と会社） ############### -->
@@ -4213,7 +4386,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> デッキ終盤の自己紹介。担当者と法人概要を1枚に統合したいとき（2枚使える場合は template.html の法人概要＋プロフィール型を使う）。<strong>2名を紹介するとき</strong>は、右の会社概要カードの代わりに人物カード（<code>.profile-person-card</code>）をもう1枚置く。3名以上は1名1枚にする。<strong>注意:</strong> コピー時は `profile-photo.svg` も同じフォルダへ置き、自社の写真に差し替える。肩書き・取引先は提案時点の最新に更新すること。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">23 / 28</span>
+          <span class="slide-page-number">23 / 29</span>
         </div>
       </section>
 
@@ -4271,7 +4444,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 専門用語や社内固有の仕組みが多い資料の巻末。<strong>先方の会議で「これ何のこと？」が繰り返されるのを防ぐ。</strong> <strong>作り方:</strong> 用語は<strong>実物を見ないと分からないものだけ</strong>に絞る（一般用語は載せない）。リンクには必ず <code>target="_blank" rel="noopener noreferrer"</code> を付ける。<strong>PDF書き出し後もリンクは押せる</strong>（headless Chrome の <code>--print-to-pdf</code> でも <code>/Subtype /Link</code> として保持される）。Notion外の資産はリンクを張らず、場所だけ書く。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">24 / 28</span>
+          <span class="slide-page-number">24 / 29</span>
         </div>
       </section>
 
@@ -4335,7 +4508,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 採用ポジション別、案件別、チーム別など、<strong>並走する複数の対象を同じ時間軸に載せたいとき。</strong> <strong>全体を1本の時系列で見せるロードマップもこの型で作る</strong>（レーン1本、バーをフェーズ数だけ並べる）。<strong>作り方:</strong> バーの位置は <code>style="--from:1;--to:3"</code> で列番号を渡す（<code>--to</code> は「その列の左辺」。1列ぶんなら <code>--from:n / --to:n+1</code>）。レーンごとに引かれるレールが「空いている期間」を示すので、<strong>埋めようとしないこと。</strong> <strong>注意:</strong> <code>.is-key</code>（アクセント塗り）は<strong>1枚につき2本まで</strong>。締切を作っている工程だけに付ける（STYLE_GUIDE §0「強調には予算がある」）。バーの文言は1行に収まる長さ（12〜13字目安）にし、折り返させない。レーンは5本、列は5〜6が上限。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">25 / 28</span>
+          <span class="slide-page-number">25 / 29</span>
         </div>
       </section>
 
@@ -4408,7 +4581,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> ディレクションの守備範囲を相手に指させたいとき。<strong>キャリア棚卸し、役割分担の合意、見積もりのスコープ確認</strong>など、「どこからどこまでをやるのか」がずれている場面で効く。上下2段にすることで、<strong>同じ工程名でも進め方によって役割の切れ目が変わること</strong>が同時に伝わる。<strong>作り方:</strong> ウォーターフォール側は <code>.proc-wf</code> の <code>grid-template-columns</code> でフェーズの幅を変える（既定は 1.1 : 1.8 : 1 : 1.9。工程の厚みに合わせて調整する）。アジャイル側は <code>.proc-sprint</code> を反復ブロック、<code>.proc-milestone</code> を企画・リリースに使い、<code>→</code> でつなぐ。スプリントは2つまで。<strong>注意:</strong> フェーズ見出しだけをアクセント塗りにし、中身のカードには色を足さない（STYLE_GUIDE §0「強調には予算がある」）。1マスの文言は20字以内。超えるならフェーズを分けるか、言葉を短くする。出典は自社の講義資料（2022年）。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">26 / 28</span>
+          <span class="slide-page-number">26 / 29</span>
         </div>
       </section>
 
@@ -4446,7 +4619,7 @@
         <div class="slide-source">出典：自社実測（2026.08、250クエリ×3エンジン×3回＝2,250回答）。数値はこのカタログ用の架空値</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">27 / 28</span>
+          <span class="slide-page-number">27 / 29</span>
         </div>
       </section>
 
@@ -4532,7 +4705,115 @@
         <div class="pattern-note"><strong>使いどころ:</strong> キックオフや制度説明の冒頭で、<strong>「誰が・どの順で動いて、結果がどこへ戻るか」を1枚に畳みたいとき。</strong> PATTERN 07（横型ステップフロー）は1本の直線、PATTERN 31（スイムレーン）は時間軸上のバー。<strong>主体が複数あって、かつ最後が起点に戻る（一周する）ならこの型。</strong> <strong>作り方:</strong> レーン帯は <code>y=28 / 124 / 220 / 316</code>（高さ90・間隔96）、カードは <code>x=173 / 419 / 665 / 911</code>（幅214・高さ64、レーン上端+13）に置く。フェーズ見出しの <code>x</code> はカードの中心（280 / 526 / 772 / 1018）に合わせる。レーン名の左側は <strong>x=165 までが上限</strong>（それ以上伸ばすと1列目のカードに潜る）。矢印はカード枠の外側から引き、折れ線は <code>L</code> の直角だけで書く。<strong>注意:</strong> <strong>カードは1レーンに3つまで、レーンは4本まで。</strong> 埋まっていないマスは空けたままにする（空白が「そのレーンは動いていない」を語る）。枠線2pxのアクセント枠は本筋のカードだけ、<strong>1枚につき4つまで</strong>（STYLE_GUIDE §0「強調には予算がある」）。破線は「本筋から外れる動き」専用。カード見出しは9字前後、補足は1行に収まる長さにする。座標直書きなので、<strong>文言を大きく変えたら必ずブラウザで折り返しを確認する。</strong></div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">28 / 28</span>
+          <span class="slide-page-number">28 / 29</span>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 29 (PATTERN 35: クリックで深掘り) ==================== -->
+      <section class="slide slide-light" id="slide-29">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 35</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">クリックで深掘り（フロー図＋詳細パネル）</h2>
+          <p class="slide-subtitle">全体の流れを1枚で見せたまま、聞かれた工程だけをその場で開いて説明します。</p>
+        </div>
+        <div class="slide-body">
+          <div class="flowchart-layout">
+            <div class="flowchart-headline reveal">
+              <div class="flowchart-headline-main">
+                <div class="flowchart-headline-kicker">KEY MESSAGE</div>
+                <div class="flowchart-headline-text">公開まで10週。最初の3週で決めることを決めれば、後半は手戻りなく進みます。</div>
+              </div>
+              <div class="flowchart-headline-note">
+                <span>操作</span>
+                <strong>各ステップを押すと、中身が開きます</strong>
+              </div>
+            </div>
+            <div class="flowchart-steps">
+              <div class="flowchart-step reveal" data-drill="p35-step1">
+                <div class="flowchart-step-num">1</div>
+                <div class="flowchart-step-title">ヒアリング</div>
+                <div class="flowchart-step-desc">目的・対象・制約を聞き取り、判断に要る材料をそろえます。</div>
+              </div>
+              <div class="flowchart-step reveal" data-drill="p35-step2">
+                <div class="flowchart-step-num">2</div>
+                <div class="flowchart-step-title">要件定義</div>
+                <div class="flowchart-step-desc">作るもの・作らないものを決め、見積もりの前提を固めます。</div>
+              </div>
+              <div class="flowchart-step reveal" data-drill="p35-step3">
+                <div class="flowchart-step-num">3</div>
+                <div class="flowchart-step-title">設計</div>
+                <div class="flowchart-step-desc">画面の骨組みと導線を作り、見た目に入る前に合意します。</div>
+              </div>
+              <div class="flowchart-step reveal" data-drill="p35-step4">
+                <div class="flowchart-step-num">4</div>
+                <div class="flowchart-step-title">制作</div>
+                <div class="flowchart-step-desc">デザインと実装を進め、確認の場を週1回設けます。</div>
+              </div>
+              <div class="flowchart-step reveal" data-drill="p35-step5">
+                <div class="flowchart-step-num">5</div>
+                <div class="flowchart-step-title">公開・運用</div>
+                <div class="flowchart-step-desc">公開後1か月は数字を見て、直す箇所を決めます。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <aside class="drill-panel" id="p35-step1">
+          <div class="drill-kicker">STEP 1｜1週目</div>
+          <h3 class="drill-title">ヒアリング</h3>
+          <ul>
+            <li>事業の目的と、今回のサイトで変えたい数字を確かめる</li>
+            <li>社内の決裁者と、確認に要る日数を聞く</li>
+            <li>既存の資料・アクセス解析を預かる</li>
+          </ul>
+          <p>お願いしたいこと：決裁者の方に、初回だけ同席いただく</p>
+        </aside>
+        <aside class="drill-panel" id="p35-step2">
+          <div class="drill-kicker">STEP 2｜2〜3週目</div>
+          <h3 class="drill-title">要件定義</h3>
+          <ul>
+            <li>ページ一覧と、各ページの役割を決める</li>
+            <li>必須の機能と、次回以降に回す機能を分ける</li>
+            <li>スケジュールと確認の回数を決める</li>
+          </ul>
+          <p>成果物：要件定義書、ページ一覧</p>
+        </aside>
+        <aside class="drill-panel" id="p35-step3">
+          <div class="drill-kicker">STEP 3｜4〜5週目</div>
+          <h3 class="drill-title">設計</h3>
+          <ul>
+            <li>主要ページのワイヤーフレームを作る</li>
+            <li>問い合わせまでの導線を確かめる</li>
+            <li>原稿・写真の担当と期限を決める</li>
+          </ul>
+          <p>成果物：ワイヤーフレーム、原稿の割り振り表</p>
+        </aside>
+        <aside class="drill-panel" id="p35-step4">
+          <div class="drill-kicker">STEP 4｜6〜9週目</div>
+          <h3 class="drill-title">制作</h3>
+          <ul>
+            <li>トップページのデザインを先に決める</li>
+            <li>下層ページを順に作り、週次で確認いただく</li>
+            <li>表示速度とスマホ表示を確かめる</li>
+          </ul>
+          <p>お願いしたいこと：確認のお返事は3営業日以内</p>
+        </aside>
+        <aside class="drill-panel" id="p35-step5">
+          <div class="drill-kicker">STEP 5｜10週目〜</div>
+          <h3 class="drill-title">公開・運用</h3>
+          <ul>
+            <li>公開前のチェックリストを一緒に確かめる</li>
+            <li>公開後の数字を週次で報告する</li>
+            <li>社内で更新できるよう操作説明を行う</li>
+          </ul>
+          <p>成果物：運用マニュアル、1か月後の振り返り</p>
+        </aside>
+        <div class="pattern-note"><strong>使いどころ:</strong> 商談・研修・社内会議で、全体の流れを見せたあと「その中身は？」と聞かれそうな工程を、ページを移らずに開いて答えたいとき。<strong>作り方:</strong> 押せる要素に <code>data-drill="パネルのid"</code> を付け、同じ <code>.slide</code> の中に <code>&lt;aside class="drill-panel" id="…"&gt;</code> を置く（中身は <code>.drill-kicker</code>・<code>.drill-title</code>・箇条書き）。閉じるボタンはスクリプトが自動で付ける。押した要素がスライドの右半分にあれば、パネルは左から出る。<strong>注意:</strong> パネルの中身は<strong>PDF・印刷には出ない</strong>。PDFで渡す資料なら、同じ内容を別スライドか付録に書く。パネル1枚の中身は箇条書き3〜4行まで。押せる要素は1枚に6つまで。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">29 / 29</span>
         </div>
       </section>
 
@@ -4575,10 +4856,11 @@
         <option value="slide-26">26. 制作プロセスと役割（WF／アジャイル）</option>
         <option value="slide-27">27. 出典つき主張（証拠バッジ／結論帯／出典行）</option>
         <option value="slide-28">28. 仕組みの全体像（レーン×フェーズ）</option>
+        <option value="slide-29">29. クリックで深掘り</option>
       </select>
     </div>
 
-    <span id="page-indicator">1 / 28</span>
+    <span id="page-indicator">1 / 29</span>
 
     <button id="next-btn" class="nav-btn" aria-label="次のスライド">
       <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
@@ -4749,7 +5031,7 @@
       const progressBarFill = document.getElementById('progress-bar-fill');
       const tocSelect = document.getElementById('toc-select');
       const wrapper = document.getElementById('presentation-wrapper');
-
+      
       let currentIndex = 0;
 
       // Scaling presentation wrapper to fit window
@@ -4761,12 +5043,12 @@
         const scale = Math.min(scaleX, scaleY, 1.35); // 最大拡大率を少し制限して高精細を保つ
         wrapper.style.transform = `scale(${scale})`;
       };
-
+      
       window.addEventListener('resize', scalePresentation);
       scalePresentation();
 
       const updateReveals = (slideEl) => {
-        const reveals = Array.from(slideEl.querySelectorAll('.reveal'));
+        const reveals = Array.from(slideEl.querySelectorAll('.reveal:not(.step)'));
         reveals.forEach((el, index) => {
           setTimeout(() => {
             el.classList.add('revealed');
@@ -4779,14 +5061,75 @@
         reveals.forEach(el => el.classList.remove('revealed'));
       };
 
-      const goToSlide = (index, skipHistory) => {
+      // .step はクリック（→キー等）で1つずつ出す。showAll が true なら全部出た状態にする
+      const getSteps = (slideEl) => Array.from(slideEl.querySelectorAll('.step'));
+
+      const setSteps = (slideEl, showAll) => {
+        getSteps(slideEl).forEach(el => el.classList.toggle('is-shown', showAll));
+      };
+
+      // クリックで深掘り: data-drill="パネルのid" を押すと、同じスライドの .drill-panel が開く
+      const closeDrill = (slideEl) => {
+        slideEl.classList.remove('has-drill-open');
+        slideEl.querySelectorAll('.drill-panel.is-open').forEach(p => p.classList.remove('is-open'));
+        slideEl.querySelectorAll('.is-drill-active').forEach(t => t.classList.remove('is-drill-active'));
+      };
+
+      const openDrill = (trigger) => {
+        const slideEl = trigger.closest('.slide');
+        const panel = slideEl.querySelector('#' + CSS.escape(trigger.dataset.drill));
+        if (!panel) return;
+        const wasActive = trigger.classList.contains('is-drill-active');
+        closeDrill(slideEl);
+        if (wasActive) return; // もう一度押したら閉じるだけ
+
+        // 押した要素がスライドの右半分にあれば、パネルは左から出す（押した要素を隠さない）
+        const t = trigger.getBoundingClientRect();
+        const s = slideEl.getBoundingClientRect();
+        panel.style.transition = 'none';
+        panel.classList.toggle('is-left', t.left + t.width / 2 > s.left + s.width / 2);
+        void panel.offsetWidth;
+        panel.style.transition = '';
+
+        panel.classList.add('is-open');
+        trigger.classList.add('is-drill-active');
+        slideEl.classList.add('has-drill-open');
+      };
+
+      document.querySelectorAll('[data-drill]').forEach(t => {
+        t.setAttribute('role', 'button');
+        t.setAttribute('tabindex', '0');
+        t.setAttribute('aria-controls', t.dataset.drill);
+      });
+
+      document.querySelectorAll('.drill-panel').forEach(panel => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'drill-close';
+        btn.setAttribute('aria-label', '閉じる');
+        btn.textContent = '×';
+        panel.prepend(btn);
+      });
+
+      document.addEventListener('click', (e) => {
+        const trigger = e.target.closest('[data-drill]');
+        if (trigger) {
+          openDrill(trigger);
+        } else if (e.target.closest('.drill-close') || !e.target.closest('.drill-panel, #nav-controls')) {
+          closeDrill(slides[currentIndex]);
+        }
+      });
+
+      const goToSlide = (index, skipHistory, showAllSteps) => {
         if (index < 0 || index >= slides.length) return;
 
+        closeDrill(slides[currentIndex]);
         resetReveals(slides[currentIndex]);
         slides[currentIndex].classList.remove('active');
 
         currentIndex = index;
 
+        setSteps(slides[currentIndex], !!showAllSteps);
         slides[currentIndex].classList.add('active');
         updateReveals(slides[currentIndex]);
 
@@ -4805,8 +5148,36 @@
         }
       };
 
-      prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
-      nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
+      // 次へ: 隠れている .step があれば1つ出す。なければ次のスライドへ
+      const next = () => {
+        if (slides[currentIndex].classList.contains('has-drill-open')) {
+          closeDrill(slides[currentIndex]); // 詳細を開いているときは、まず閉じる
+          return;
+        }
+        const hidden = getSteps(slides[currentIndex]).find(el => !el.classList.contains('is-shown'));
+        if (hidden) {
+          hidden.classList.add('is-shown');
+        } else if (currentIndex < slides.length - 1) {
+          goToSlide(currentIndex + 1);
+        }
+      };
+
+      // 前へ: 出ている .step があれば最後の1つを隠す。なければ前のスライドを全部出た状態で表示
+      const prev = () => {
+        if (slides[currentIndex].classList.contains('has-drill-open')) {
+          closeDrill(slides[currentIndex]);
+          return;
+        }
+        const shown = getSteps(slides[currentIndex]).filter(el => el.classList.contains('is-shown'));
+        if (shown.length) {
+          shown[shown.length - 1].classList.remove('is-shown');
+        } else if (currentIndex > 0) {
+          goToSlide(currentIndex - 1, false, true);
+        }
+      };
+
+      prevBtn.addEventListener('click', prev);
+      nextBtn.addEventListener('click', next);
 
       tocSelect.addEventListener('change', (e) => {
         const targetId = e.target.value;
@@ -4816,10 +5187,25 @@
 
       // Keyboard Controls
       document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowRight' || e.key === 'Space') {
-          if (currentIndex < slides.length - 1) goToSlide(currentIndex + 1);
-        } else if (e.key === 'ArrowLeft') {
-          if (currentIndex > 0) goToSlide(currentIndex - 1);
+        // 目次やアクセント色の入力中はページを送らない
+        if (e.target.closest && e.target.closest('input, select, textarea')) return;
+
+        if (e.key === 'Escape') {
+          closeDrill(slides[currentIndex]);
+          return;
+        }
+        if (e.key === 'Enter' && e.target.closest && e.target.closest('[data-drill]')) {
+          openDrill(e.target.closest('[data-drill]'));
+          return;
+        }
+
+        // PageDown / PageUp はプレゼン用クリッカーが送るキー
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+          e.preventDefault();
+          next();
+        } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+          e.preventDefault();
+          prev();
         }
       });
 
@@ -4827,7 +5213,7 @@
       const restoreIndex = slides.findIndex(s => s.id === window.location.hash.replace('#', ''));
       if (restoreIndex > 0) {
         slides[0].classList.remove('active');
-        goToSlide(restoreIndex, true);
+        goToSlide(restoreIndex, true, true);
       } else {
         setTimeout(() => updateReveals(slides[0]), 300);
       }

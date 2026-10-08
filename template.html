@@ -434,6 +434,157 @@
       transform: translateY(12px);
     }
 
+    /* クリックで深掘り。data-drill="パネルのid" を付けた要素を押すと、同じスライドの .drill-panel が横から開く */
+    [data-drill] {
+      position: relative;
+      cursor: pointer;
+      transition: opacity 0.3s, box-shadow 0.3s;
+    }
+
+    [data-drill]::after {
+      content: '+';
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--on-accent);
+      font-size: var(--fs-subtitle);
+      font-weight: 900;
+      line-height: 20px;
+      text-align: center;
+    }
+
+    [data-drill]:hover,
+    [data-drill]:focus-visible,
+    [data-drill].is-drill-active {
+      outline: none;
+      box-shadow: 0 0 0 2px var(--accent-deep);
+    }
+
+    .slide-dark [data-drill]:hover,
+    .slide-dark [data-drill]:focus-visible,
+    .slide-dark [data-drill].is-drill-active {
+      box-shadow: 0 0 0 2px var(--accent-on-dark);
+    }
+
+    /* 開いている間は、押した要素以外を薄くして「今どこの話か」を残す */
+    .slide.has-drill-open [data-drill]:not(.is-drill-active) {
+      opacity: 0.35;
+    }
+
+    .drill-panel {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 440px;
+      z-index: 20;
+      box-sizing: border-box;
+      padding: 56px 40px 40px;
+      background: #fff;
+      border-left: 4px solid var(--accent);
+      box-shadow: -12px 0 32px rgba(0, 0, 0, 0.12);
+      color: var(--text);
+      font-size: var(--fs-body);
+      line-height: 1.8;
+      overflow-y: auto;
+      visibility: hidden;
+      transform: translateX(105%);
+      transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.5s;
+    }
+
+    .drill-panel.is-left {
+      right: auto;
+      left: 0;
+      border-left: none;
+      border-right: 4px solid var(--accent);
+      box-shadow: 12px 0 32px rgba(0, 0, 0, 0.12);
+      transform: translateX(-105%);
+    }
+
+    .drill-panel.is-open {
+      visibility: visible;
+      transform: none;
+    }
+
+    .drill-kicker {
+      font-size: var(--fs-label);
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      color: var(--c-muted);
+      margin-bottom: 8px;
+    }
+
+    .drill-title {
+      font-size: var(--fs-title-slide);
+      font-weight: 900;
+      line-height: 1.4;
+      color: var(--c-ink);
+      margin: 0 0 20px;
+    }
+
+    .drill-panel ul {
+      margin: 0;
+      padding-left: 1.2em;
+    }
+
+    .drill-panel li + li {
+      margin-top: 8px;
+    }
+
+    /* 箇条書きの後ろに置く「成果物」「お願いしたいこと」などの1行 */
+    .drill-panel p {
+      margin: 20px 0 0;
+      padding-top: 16px;
+      border-top: 1px solid var(--surface-border);
+      font-weight: 700;
+      color: var(--c-ink);
+    }
+
+    .slide-dark .drill-panel p {
+      border-top-color: var(--ink-600);
+      color: #fff;
+    }
+
+    .drill-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 50%;
+      background: var(--c-surface);
+      color: var(--c-ink);
+      font-size: var(--fs-card-title);
+      cursor: pointer;
+    }
+
+    .drill-panel.is-left .drill-close {
+      right: 20px;
+    }
+
+    .slide-dark .drill-panel {
+      background: var(--ink-800);
+      color: var(--ink-100);
+    }
+
+    .slide-dark .drill-kicker {
+      color: var(--text-muted);
+    }
+
+    .slide-dark .drill-title {
+      color: #fff;
+    }
+
+    .slide-dark .drill-close {
+      background: var(--ink-700);
+      color: #fff;
+    }
+
     /* Pricing Card Styles */
     .pricing-grid {
       display: grid;
@@ -943,6 +1094,17 @@
         break-after: auto !important;
       }
 
+      /* 深掘りの詳細はPDFに出ない。PDFで渡す資料なら、詳細は別スライドに書く */
+      .drill-panel,
+      [data-drill]::after {
+        display: none !important;
+      }
+
+      [data-drill] {
+        opacity: 1 !important;
+        box-shadow: none !important;
+      }
+
       .reveal,
       .step {
         opacity: 1 !important;
@@ -1409,9 +1571,62 @@
         getSteps(slideEl).forEach(el => el.classList.toggle('is-shown', showAll));
       };
 
+      // クリックで深掘り: data-drill="パネルのid" を押すと、同じスライドの .drill-panel が開く
+      const closeDrill = (slideEl) => {
+        slideEl.classList.remove('has-drill-open');
+        slideEl.querySelectorAll('.drill-panel.is-open').forEach(p => p.classList.remove('is-open'));
+        slideEl.querySelectorAll('.is-drill-active').forEach(t => t.classList.remove('is-drill-active'));
+      };
+
+      const openDrill = (trigger) => {
+        const slideEl = trigger.closest('.slide');
+        const panel = slideEl.querySelector('#' + CSS.escape(trigger.dataset.drill));
+        if (!panel) return;
+        const wasActive = trigger.classList.contains('is-drill-active');
+        closeDrill(slideEl);
+        if (wasActive) return; // もう一度押したら閉じるだけ
+
+        // 押した要素がスライドの右半分にあれば、パネルは左から出す（押した要素を隠さない）
+        const t = trigger.getBoundingClientRect();
+        const s = slideEl.getBoundingClientRect();
+        panel.style.transition = 'none';
+        panel.classList.toggle('is-left', t.left + t.width / 2 > s.left + s.width / 2);
+        void panel.offsetWidth;
+        panel.style.transition = '';
+
+        panel.classList.add('is-open');
+        trigger.classList.add('is-drill-active');
+        slideEl.classList.add('has-drill-open');
+      };
+
+      document.querySelectorAll('[data-drill]').forEach(t => {
+        t.setAttribute('role', 'button');
+        t.setAttribute('tabindex', '0');
+        t.setAttribute('aria-controls', t.dataset.drill);
+      });
+
+      document.querySelectorAll('.drill-panel').forEach(panel => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'drill-close';
+        btn.setAttribute('aria-label', '閉じる');
+        btn.textContent = '×';
+        panel.prepend(btn);
+      });
+
+      document.addEventListener('click', (e) => {
+        const trigger = e.target.closest('[data-drill]');
+        if (trigger) {
+          openDrill(trigger);
+        } else if (e.target.closest('.drill-close') || !e.target.closest('.drill-panel, #nav-controls')) {
+          closeDrill(slides[currentIndex]);
+        }
+      });
+
       const goToSlide = (index, skipHistory, showAllSteps) => {
         if (index < 0 || index >= slides.length) return;
 
+        closeDrill(slides[currentIndex]);
         resetReveals(slides[currentIndex]);
         slides[currentIndex].classList.remove('active');
 
@@ -1438,6 +1653,10 @@
 
       // 次へ: 隠れている .step があれば1つ出す。なければ次のスライドへ
       const next = () => {
+        if (slides[currentIndex].classList.contains('has-drill-open')) {
+          closeDrill(slides[currentIndex]); // 詳細を開いているときは、まず閉じる
+          return;
+        }
         const hidden = getSteps(slides[currentIndex]).find(el => !el.classList.contains('is-shown'));
         if (hidden) {
           hidden.classList.add('is-shown');
@@ -1448,6 +1667,10 @@
 
       // 前へ: 出ている .step があれば最後の1つを隠す。なければ前のスライドを全部出た状態で表示
       const prev = () => {
+        if (slides[currentIndex].classList.contains('has-drill-open')) {
+          closeDrill(slides[currentIndex]);
+          return;
+        }
         const shown = getSteps(slides[currentIndex]).filter(el => el.classList.contains('is-shown'));
         if (shown.length) {
           shown[shown.length - 1].classList.remove('is-shown');
@@ -1469,6 +1692,15 @@
       document.addEventListener('keydown', (e) => {
         // 目次やアクセント色の入力中はページを送らない
         if (e.target.closest && e.target.closest('input, select, textarea')) return;
+
+        if (e.key === 'Escape') {
+          closeDrill(slides[currentIndex]);
+          return;
+        }
+        if (e.key === 'Enter' && e.target.closest && e.target.closest('[data-drill]')) {
+          openDrill(e.target.closest('[data-drill]'));
+          return;
+        }
 
         // PageDown / PageUp はプレゼン用クリッカーが送るキー
         if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
