@@ -11,7 +11,7 @@ PowerPoint も Google スライドも使いません。**HTMLファイル1枚が
 
 GitHubのファイル一覧では `.html` がソースコードとして表示されます。**実物はこちら。**
 
-- **[パターン集を見る](https://masakisukeda.github.io/disa-slide-kit/patterns.html)** — 30パターンのカタログ
+- **[パターン集を見る](https://masakisukeda.github.io/disa-slide-kit/patterns.html)** — 33パターンのカタログ
 - **[テンプレートを見る](https://masakisukeda.github.io/disa-slide-kit/template.html)** — 新規作成の起点
 
 矢印キー（← →）でスライドを送れます。表紙の右下のピッカーで色も試せます。
@@ -21,7 +21,7 @@ GitHubのファイル一覧では `.html` がソースコードとして表示�
 | ファイル | 中身 |
 | --- | --- |
 | `template.html` | 新規作成の起点。1ページ=1スライドの構造、ナビゲーション、印刷レイアウト込みで6枚ぶん |
-| `patterns.html` | レイアウト部品のカタログ。比較テーブル、Before/Afterフロー、4象限、ロードマップ、タイムライン、目次、中表紙、数値ハイライト、人物紹介など30パターン |
+| `patterns.html` | レイアウト部品のカタログ。比較テーブル、Before/Afterフロー、4象限、ロードマップ、タイムライン、目次、中表紙、数値ハイライト、人物紹介など33パターン |
 | `STYLE_GUIDE.md` | 作成ルール。構成の決め方、配色、文字サイズ、PDF書き出しの手順と失敗例まで |
 | `logo.svg` | 差し替え用のプレースホルダロゴ |
 | `profile-photo.svg` | 差し替え用のプレースホルダ顔写真 |

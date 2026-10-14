@@ -81,8 +81,9 @@
       --accent-rose: var(--ink-400);
 
       /* Typography Scale */
-      /* 使ってよいサイズはこの9段だけ。個別に px を書かない（STYLE_GUIDE 9章②） */
+      /* 使ってよいサイズはこの10段だけ。個別に px を書かない（STYLE_GUIDE 9章②） */
       --fs-display: 96px;     /* 中表紙の章番号（PATTERN 11 .section-num）専用 */
+      --fs-statement: 76px;   /* 言葉を1枚で見せる（PATTERN 36 .statement-text）専用 */
       --fs-stat: 44px;         /* 主役の数字（PATTERN 33 .stat-value） */
       --fs-title-lead: 40px;   /* 表紙・中表紙のタイトル */
       --fs-title-slide: 28px;  /* スライドタイトル、図中の大きな数字 */
@@ -395,6 +396,8 @@
       color: var(--c-ink);
       margin-bottom: 8px;
       line-height: 1.35;
+      /* 外部のサイト用CSSを読み込んだとき、.card 内の h3 が中央寄せになるのを打ち消す */
+      text-align: left;
     }
 
     .slide-dark .card-title {

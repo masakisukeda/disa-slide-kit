@@ -90,8 +90,9 @@
       --accent-rose: var(--ink-400);
 
       /* Typography Scale */
-      /* 使ってよいサイズはこの9段だけ。個別に px を書かない（STYLE_GUIDE 9章②） */
+      /* 使ってよいサイズはこの10段だけ。個別に px を書かない（STYLE_GUIDE 9章②） */
       --fs-display: 96px;     /* 中表紙の章番号（PATTERN 11 .section-num）専用 */
+      --fs-statement: 76px;   /* 言葉を1枚で見せる（PATTERN 36 .statement-text）専用 */
       --fs-stat: 44px;         /* 主役の数字（PATTERN 33 .stat-value） */
       --fs-title-lead: 40px;   /* 表紙・中表紙のタイトル */
       --fs-title-slide: 28px;  /* スライドタイトル、図中の大きな数字 */
@@ -3263,6 +3264,51 @@
     }
     .slide-dark .slide-source { color: var(--text-muted, rgba(255,255,255,0.6)); border-top-color: rgba(255,255,255,0.12); }
 
+    /* ============================================================
+       PATTERN 36: ステートメント（言葉を1枚で見せる）
+       出典: コンセプト提案スライドの実案件（2026-10-12）
+       ============================================================ */
+    .statement .slide-body {
+      justify-content: center;
+      align-items: flex-start;
+      text-align: left;
+    }
+    .statement-kicker {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: var(--fs-card-title);
+      font-weight: 900;
+      color: var(--accent-deep);
+      letter-spacing: 0.08em;
+      margin-bottom: 20px;
+    }
+    .statement-kicker::before {
+      content: "";
+      width: 40px;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--accent-deep);
+    }
+    .statement-text {
+      font-size: var(--fs-statement);
+      font-weight: 900;
+      color: var(--c-ink);
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+      margin: 0;
+      text-align: left;
+      align-self: stretch;
+    }
+    .statement-text .accent { color: var(--accent-deep); }
+    .statement-note {
+      font-size: var(--fs-subtitle);
+      font-weight: 700;
+      color: var(--ink-500);
+      line-height: 1.6;
+      margin-top: 28px;
+      max-width: 900px;
+    }
   </style>
 </head>
 
@@ -3359,7 +3405,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 表紙の直後。ページ数が多い提案（10枚以上）では入れる。<strong>注意:</strong> 項目は4〜6個に収める。7個以上になる場合は構成自体を見直すサイン。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">2 / 29</span>
+          <span class="slide-page-number">2 / 33</span>
         </div>
       </section>
       <!-- ==================== SLIDE 3 (PATTERN 11: 中表紙) ==================== -->
@@ -3376,7 +3422,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 章の切り替え。ダーク⇄ライトのテーマ切り替えと合わせて配置するとリズムが生まれる（STYLE_GUIDE §9①）。<strong>注意:</strong> 番号は目次（PATTERN 10）の番号と必ず一致させる。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">3 / 29</span>
+          <span class="slide-page-number">3 / 33</span>
         </div>
       </section>
 
@@ -3434,7 +3480,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 条件比較・メンバー一覧・仕様整理など、行×列で俯瞰させたい情報。<strong>注意:</strong> 行が多い場合は `.table-scroll-frame` で囲みスクロールさせる（印刷時は自動で全展開）。ヘッダーは `--primary-dark` 背景＋白文字が標準。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">4 / 29</span>
+          <span class="slide-page-number">4 / 33</span>
         </div>
       </section>
       <!-- ==================== SLIDE 5 (PATTERN 02: ダーク面カード) ==================== -->
@@ -3469,7 +3515,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 現状分析・課題定義などダーク面で情報をモジュール化したいページ。<strong>注意:</strong> `:root` に `--c-surface-dark` / `--surface-border-dark` を定義し、`.slide-dark .card` に適用する（STYLE_GUIDE §3）。クライアント色に合わせてダーク面の色相も調整する。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">5 / 29</span>
+          <span class="slide-page-number">5 / 33</span>
         </div>
       </section>
       <!-- ==================== SLIDE 6 (PATTERN 09: 詳細3カラム＋インサイト) ==================== -->
@@ -3525,7 +3571,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 1on1レポートのメンバー詳細、施策別の深掘りページなど、同じ型を複数枚並べる資料。<strong>注意:</strong> カラムの意味（A/B/C）は全ページで固定し、読み手が位置で内容を予測できるようにする。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">6 / 29</span>
+          <span class="slide-page-number">6 / 33</span>
         </div>
       </section>
       <!-- ==================== SLIDE 7 (PATTERN 29: 小パネル一覧 4×3) ==================== -->
@@ -3644,7 +3690,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 選択肢・分類・課題の棚卸しなど、<strong>粒度の揃った項目を一覧で見渡して選ばせたいページ</strong>。カード比較（grid-2/3）が「3案を読み込ませる」型なのに対し、これは「12個を眺めて指させる」型。<strong>注意:</strong> バッジは色の役割を増やさず <code>tone-mid</code> / <code>tone-soft</code> のトーン展開で分類する（アクセント1色ルール）。説明文は2行で自動クランプされるので、1項目40字前後に収める。12個を超えるならページを分ける。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">7 / 29</span>
+          <span class="slide-page-number">7 / 33</span>
         </div>
       </section>
 
@@ -3694,7 +3740,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 提案の「全体像」ページ。課題→支援→理想の因果を一枚で示す。<strong>注意:</strong> 中央の `bridge-box` はダーク塗りで主役化する。左右のリストは3項目程度に絞ると崩れない。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">8 / 29</span>
+          <span class="slide-page-number">8 / 33</span>
         </div>
       </section>
       <!-- ==================== SLIDE 9 (PATTERN 04: As-Is/To-Be/Action アウトライン) ==================== -->
@@ -3750,7 +3796,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 章立てのある提案のサマリー（STYLE_GUIDE §9「As-Is/To-Be/Action型」の3枚目）や報告書の冒頭で、<strong>テーマごとの筋を1枚で先に見せたいとき。</strong> 各テーマを掘り下げるページは別に作り、行の「詳細 → p.◯」でつなぐ。<strong>テーマが1つなら1行だけで使ってよい</strong>（課題1つを打ち手まで落とすページになる）。<strong>作り方:</strong> ISSUE は列にせず、AS-IS のセルに <code>.ato-fact</code>（事実）→ <code>.ato-issue</code>（課題）の2段で書く。課題は必ず右の TO-BE とつながるものだけにする。<strong>注意:</strong> <strong>テーマは4行まで</strong>。5つ以上ならページを分ける。各セルは1文・2行以内（STYLE_GUIDE §0）。テーマの順は本編の章の順と揃える。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">9 / 29</span>
+          <span class="slide-page-number">9 / 33</span>
         </div>
       </section>
       <!-- ==================== SLIDE 10 (PATTERN 07: 横型ステップフロー) ==================== -->
@@ -3807,7 +3853,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 業務プロセスの可視化、課題が生まれる流れの説明など。<strong>注意:</strong> 1段は5ステップまで。6つ以上なら <code>.flowchart-steps</code> に <code>.is-2rows</code> を付けて3列×2段にする（段をまたぐ線は消える。順番はステップ番号で読ませる）。7つ以上はページを分ける。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">10 / 29</span>
+          <span class="slide-page-number">10 / 33</span>
         </div>
       </section>
       <!-- ==================== SLIDE 11 (PATTERN 21: カスタマージャーニーマップ) ==================== -->
@@ -3878,7 +3924,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 体験設計、導線改善、顧客理解を深掘りする章。<strong>注意:</strong> 行動だけでなく「思考・感情」と「要求」まで並べると、改善提案につなげやすい。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">11 / 29</span>
+          <span class="slide-page-number">11 / 33</span>
         </div>
       </section>
       <!-- ==================== SLIDE 12 (PATTERN 26: ファネル・導線分析) ==================== -->
@@ -3894,7 +3940,7 @@
           </div>
         </div>
         <div class="pattern-note"><strong>使いどころ:</strong> マーケティング、営業導線、CV改善のレビュー。<strong>注意:</strong> 各段階の定義と計測方法を揃えてから比較する。</div>
-        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">12 / 29</span></div>
+        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">12 / 33</span></div>
       </section>
 
       <!-- ############### 分析フレーム ############### -->
@@ -3953,7 +3999,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 分析の後に「何をやるか」までつなげたい提案書。<strong>注意:</strong> 4象限すべてを均等に埋めるより、優先度の高い戦略だけ太らせる方が実務的。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">13 / 29</span>
+          <span class="slide-page-number">13 / 33</span>
         </div>
       </section>
       <!-- ==================== SLIDE 14 (PATTERN 18: VRIO分析) ==================== -->
@@ -3993,7 +4039,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 自社の強みが持続的な優位性かを見極めたいページ。<strong>注意:</strong> 4項目を説明するだけでなく、最後に「優位の源泉は何か」を1行で結論づけると強い。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">14 / 29</span>
+          <span class="slide-page-number">14 / 33</span>
         </div>
       </section>
       <!-- ==================== SLIDE 15 (PATTERN 20: ビジネスモデルキャンバス) ==================== -->
@@ -4069,7 +4115,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 新規事業の検討、既存事業の構造整理、提案の全体像説明。<strong>注意:</strong> 価値提案だけを盛らず、チャネルと収益の整合まで1枚で見せると説得力が出る。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">15 / 29</span>
+          <span class="slide-page-number">15 / 33</span>
         </div>
       </section>
       <!-- ==================== SLIDE 16 (PATTERN 05: 4象限マトリクス) ==================== -->
@@ -4113,7 +4159,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> メンバー分析・施策の優先度整理など、2軸分類が伝わりやすいテーマ。<strong>作り方:</strong> 軸は「端の値 ─ 軸の名前 ─ 端の値」で書く。縦は上が高・下が低、横は左が低・右が高にそろえ、象限の見出しにも「縦：高 × 横：低」の形で位置を書く。<strong>注意:</strong> 軸の名前は6字以内（縦書きになるため）。強調したい象限のみ `.emphasis` を付ける。<strong>分析フレームもこの型で作る:</strong> SWOT は縦軸「内部／外部」・横軸「プラス／マイナス」にして、4象限を強み・弱み・機会・脅威にする。PEST・4C のように軸を持たない4分類は <code>.matrix-layout</code> に <code>.is-plain</code> を付けて軸を消し、象限の見出しに分類名（P 政治、Customer Value など）を書く。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">16 / 29</span>
+          <span class="slide-page-number">16 / 33</span>
         </div>
       </section>
       <!-- ==================== SLIDE 17 (PATTERN 24: ポジショニングマップ) ==================== -->
@@ -4128,7 +4174,7 @@
           </div>
         </div>
         <div class="pattern-note"><strong>使いどころ:</strong> 競合比較、差別化方針、ブランド戦略。<strong>注意:</strong> 社内視点でなく、顧客が比較に使う2軸を選ぶ。</div>
-        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">17 / 29</span></div>
+        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">17 / 33</span></div>
       </section>
       <!-- ==================== SLIDE 18 (PATTERN 23: 課題ツリー) ==================== -->
       <section class="slide slide-light compact-pattern-slide" id="slide-18">
@@ -4144,7 +4190,7 @@
           </div>
         </div>
         <div class="pattern-note"><strong>使いどころ:</strong> 課題整理、提案の論点設計、施策の優先順位づけ。<strong>注意:</strong> 原因と打ち手を混ぜず、因果関係を確認してから施策に進む。</div>
-        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">18 / 29</span></div>
+        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">18 / 33</span></div>
       </section>
 
       <!-- ############### 関係を描く（構造・つながり） ############### -->
@@ -4161,7 +4207,7 @@
           </div>
         </div>
         <div class="pattern-note"><strong>使いどころ:</strong> キックオフ、伴走支援の開始時、複数部署をまたぐ施策。<strong>注意:</strong> 人名だけでなく、誰が何を決めるかまで明記する。</div>
-        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">19 / 29</span></div>
+        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">19 / 33</span></div>
       </section>
       <!-- ==================== SLIDE 20 (PATTERN 27: コミュニケーション設計図) ==================== -->
       <section class="slide slide-light compact-pattern-slide" id="slide-20">
@@ -4213,7 +4259,7 @@
           </div>
         </div>
         <div class="pattern-note"><strong>使いどころ:</strong> キャンペーンやオンボーディングの導線設計、関係者・組織間の相関図への転用。<strong>注意:</strong> 意味色を使わず、強調はグレー＋アクセント色のトーン差（<code>--ink-100</code>〜<code>--ink-700</code>）だけで表現する。</div>
-        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">20 / 29</span></div>
+        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">20 / 33</span></div>
       </section>
       <!-- ==================== SLIDE 21 (PATTERN 28: ソース相関図) ==================== -->
       <section class="slide slide-light compact-pattern-slide" id="slide-21">
@@ -4297,7 +4343,7 @@
           </svg>
         </div>
         <div class="pattern-note"><strong>使いどころ:</strong> 提案・診断資料の2枚目。調査量が多く「何を根拠に言っているのか」を先に示したいとき。左右でグループの意味を分けると強い（例: 左＝先方からいただいたもの／右＝こちらで実測したもの）。<strong>書き方:</strong> 各カードは「ソース名（日付）／中身1行／→ 本資料のどこに効いたか」の3行で固定する。3行目の「→」がないと単なる資料リストになり、相関図として機能しない。<strong>注意:</strong> 片側4件が上限（8件を超えると1件あたりの文字が読めなくなる）。新規CSSクラスは作らず、色は既存変数を参照する。左右見出しは viewBox 外（y=-6）に置くため、viewBox の上に24pxの余白を確保すること。</div>
-        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">21 / 29</span></div>
+        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">21 / 33</span></div>
       </section>
       <!-- ==================== SLIDE 22 (PATTERN 22: KPIダッシュボード) ==================== -->
       <section class="slide slide-light compact-pattern-slide" id="slide-22">
@@ -4335,7 +4381,7 @@
           </div>
         </div>
         <div class="pattern-note"><strong>使いどころ:</strong> 月次報告、事業レビュー、支援成果の共有。<strong>注意:</strong> 指標を増やしすぎず、判断に直結する3〜5項目に絞る。</div>
-        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">22 / 29</span></div>
+        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">22 / 33</span></div>
       </section>
 
       <!-- ############### 締め（人と会社） ############### -->
@@ -4386,7 +4432,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> デッキ終盤の自己紹介。担当者と法人概要を1枚に統合したいとき（2枚使える場合は template.html の法人概要＋プロフィール型を使う）。<strong>2名を紹介するとき</strong>は、右の会社概要カードの代わりに人物カード（<code>.profile-person-card</code>）をもう1枚置く。3名以上は1名1枚にする。<strong>注意:</strong> コピー時は `profile-photo.svg` も同じフォルダへ置き、自社の写真に差し替える。肩書き・取引先は提案時点の最新に更新すること。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">23 / 29</span>
+          <span class="slide-page-number">23 / 33</span>
         </div>
       </section>
 
@@ -4444,7 +4490,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 専門用語や社内固有の仕組みが多い資料の巻末。<strong>先方の会議で「これ何のこと？」が繰り返されるのを防ぐ。</strong> <strong>作り方:</strong> 用語は<strong>実物を見ないと分からないものだけ</strong>に絞る（一般用語は載せない）。リンクには必ず <code>target="_blank" rel="noopener noreferrer"</code> を付ける。<strong>PDF書き出し後もリンクは押せる</strong>（headless Chrome の <code>--print-to-pdf</code> でも <code>/Subtype /Link</code> として保持される）。Notion外の資産はリンクを張らず、場所だけ書く。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">24 / 29</span>
+          <span class="slide-page-number">24 / 33</span>
         </div>
       </section>
 
@@ -4508,7 +4554,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 採用ポジション別、案件別、チーム別など、<strong>並走する複数の対象を同じ時間軸に載せたいとき。</strong> <strong>全体を1本の時系列で見せるロードマップもこの型で作る</strong>（レーン1本、バーをフェーズ数だけ並べる）。<strong>作り方:</strong> バーの位置は <code>style="--from:1;--to:3"</code> で列番号を渡す（<code>--to</code> は「その列の左辺」。1列ぶんなら <code>--from:n / --to:n+1</code>）。レーンごとに引かれるレールが「空いている期間」を示すので、<strong>埋めようとしないこと。</strong> <strong>注意:</strong> <code>.is-key</code>（アクセント塗り）は<strong>1枚につき2本まで</strong>。締切を作っている工程だけに付ける（STYLE_GUIDE §0「強調には予算がある」）。バーの文言は1行に収まる長さ（12〜13字目安）にし、折り返させない。レーンは5本、列は5〜6が上限。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">25 / 29</span>
+          <span class="slide-page-number">25 / 33</span>
         </div>
       </section>
 
@@ -4581,7 +4627,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> ディレクションの守備範囲を相手に指させたいとき。<strong>キャリア棚卸し、役割分担の合意、見積もりのスコープ確認</strong>など、「どこからどこまでをやるのか」がずれている場面で効く。上下2段にすることで、<strong>同じ工程名でも進め方によって役割の切れ目が変わること</strong>が同時に伝わる。<strong>作り方:</strong> ウォーターフォール側は <code>.proc-wf</code> の <code>grid-template-columns</code> でフェーズの幅を変える（既定は 1.1 : 1.8 : 1 : 1.9。工程の厚みに合わせて調整する）。アジャイル側は <code>.proc-sprint</code> を反復ブロック、<code>.proc-milestone</code> を企画・リリースに使い、<code>→</code> でつなぐ。スプリントは2つまで。<strong>注意:</strong> フェーズ見出しだけをアクセント塗りにし、中身のカードには色を足さない（STYLE_GUIDE §0「強調には予算がある」）。1マスの文言は20字以内。超えるならフェーズを分けるか、言葉を短くする。出典は自社の講義資料（2022年）。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">26 / 29</span>
+          <span class="slide-page-number">26 / 33</span>
         </div>
       </section>
 
@@ -4619,7 +4665,7 @@
         <div class="slide-source">出典：自社実測（2026.08、250クエリ×3エンジン×3回＝2,250回答）。数値はこのカタログ用の架空値</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">27 / 29</span>
+          <span class="slide-page-number">27 / 33</span>
         </div>
       </section>
 
@@ -4705,7 +4751,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> キックオフや制度説明の冒頭で、<strong>「誰が・どの順で動いて、結果がどこへ戻るか」を1枚に畳みたいとき。</strong> PATTERN 07（横型ステップフロー）は1本の直線、PATTERN 31（スイムレーン）は時間軸上のバー。<strong>主体が複数あって、かつ最後が起点に戻る（一周する）ならこの型。</strong> <strong>作り方:</strong> レーン帯は <code>y=28 / 124 / 220 / 316</code>（高さ90・間隔96）、カードは <code>x=173 / 419 / 665 / 911</code>（幅214・高さ64、レーン上端+13）に置く。フェーズ見出しの <code>x</code> はカードの中心（280 / 526 / 772 / 1018）に合わせる。レーン名の左側は <strong>x=165 までが上限</strong>（それ以上伸ばすと1列目のカードに潜る）。矢印はカード枠の外側から引き、折れ線は <code>L</code> の直角だけで書く。<strong>注意:</strong> <strong>カードは1レーンに3つまで、レーンは4本まで。</strong> 埋まっていないマスは空けたままにする（空白が「そのレーンは動いていない」を語る）。枠線2pxのアクセント枠は本筋のカードだけ、<strong>1枚につき4つまで</strong>（STYLE_GUIDE §0「強調には予算がある」）。破線は「本筋から外れる動き」専用。カード見出しは9字前後、補足は1行に収まる長さにする。座標直書きなので、<strong>文言を大きく変えたら必ずブラウザで折り返しを確認する。</strong></div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">28 / 29</span>
+          <span class="slide-page-number">28 / 33</span>
         </div>
       </section>
 
@@ -4813,10 +4859,195 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 商談・研修・社内会議で、全体の流れを見せたあと「その中身は？」と聞かれそうな工程を、ページを移らずに開いて答えたいとき。<strong>作り方:</strong> 押せる要素に <code>data-drill="パネルのid"</code> を付け、同じ <code>.slide</code> の中に <code>&lt;aside class="drill-panel" id="…"&gt;</code> を置く（中身は <code>.drill-kicker</code>・<code>.drill-title</code>・箇条書き）。閉じるボタンはスクリプトが自動で付ける。押した要素がスライドの右半分にあれば、パネルは左から出る。<strong>注意:</strong> パネルの中身は<strong>PDF・印刷には出ない</strong>。PDFで渡す資料なら、同じ内容を別スライドか付録に書く。パネル1枚の中身は箇条書き3〜4行まで。押せる要素は1枚に6つまで。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">29 / 29</span>
+          <span class="slide-page-number">29 / 33</span>
         </div>
       </section>
 
+      <!-- ==================== SLIDE 30 (PATTERN 36: ステートメント) ==================== -->
+      <section class="slide slide-light statement" id="slide-30">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 36</span>
+        </div>
+        <div class="slide-body">
+          <div class="statement-kicker reveal">店がある理由（コンセプト）</div>
+          <h2 class="statement-text reveal">送料なしで、<span class="accent">1個から。</span><br>まとめ買いは<span class="accent">店で預かる。</span></h2>
+          <p class="statement-note reveal">言葉の意味や使う場所を1〜2行で添える。大きな言葉の説明を繰り返さない</p>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> コンセプト・合言葉・添え書きなど、読み手に覚えて帰ってほしい言葉を1枚に1つだけ大きく見せる。<strong>注意:</strong> 1行は12字まで（76pxで1行に収まる上限）。アクセント色にするのは言葉の中の1〜2か所だけ（明るい面では --accent-deep で読める濃さにする）。結論の説明が要るページには使わず、出典つき主張（PATTERN 33）を使う。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">30 / 33</span>
+        </div>
+      </section>
+
+
+      <!-- ############### グラフ（数字を図で見せる） ############### -->
+      <!-- ==================== SLIDE 31 (PATTERN 37: 棒グラフ（パレート図）) ==================== -->
+      <section class="slide slide-light" id="slide-31">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 37</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">問い合わせの7割は上位2つの内容に集まる</h2>
+          <p class="slide-subtitle"><span class="evidence-tag tone-interp">架空の例</span>問い合わせ104件を内容別に数え、多い順に並べた。線は多い順に足した割合</p>
+        </div>
+        <div class="slide-body">
+          <div class="reveal" style="width:100%">
+            <svg viewBox="0 0 1120 290" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;font-family:'Noto Sans JP',sans-serif" role="img" aria-label="問い合わせの内容別件数のパレート図">
+            <line x1="64" y1="238" x2="1096" y2="238" stroke="var(--c-muted)" stroke-width="1"/>
+            <rect x="95.0" y="59.0" width="144.5" height="179.0" rx="3" fill="var(--accent)"/>
+            <text x="167.2" y="53.0" text-anchor="middle" font-size="13" font-weight="900" fill="var(--c-ink)">46件</text>
+            <text x="167.2" y="256" text-anchor="middle" font-size="11" fill="var(--text)">料金・プラン</text>
+            <rect x="301.4" y="129.1" width="144.5" height="108.9" rx="3" fill="var(--accent)"/>
+            <text x="373.6" y="123.1" text-anchor="middle" font-size="13" font-weight="900" fill="var(--c-ink)">28件</text>
+            <text x="373.6" y="256" text-anchor="middle" font-size="11" fill="var(--text)">使い方</text>
+            <rect x="507.8" y="175.7" width="144.5" height="62.3" rx="3" fill="var(--ink-300)"/>
+            <text x="580.0" y="169.7" text-anchor="middle" font-size="13" font-weight="900" fill="var(--c-ink)">16件</text>
+            <text x="580.0" y="256" text-anchor="middle" font-size="11" fill="var(--text)">不具合</text>
+            <rect x="714.2" y="203.0" width="144.5" height="35.0" rx="3" fill="var(--ink-300)"/>
+            <text x="786.4" y="197.0" text-anchor="middle" font-size="13" font-weight="900" fill="var(--c-ink)">9件</text>
+            <text x="786.4" y="256" text-anchor="middle" font-size="11" fill="var(--text)">契約・解約</text>
+            <rect x="920.6" y="218.5" width="144.5" height="19.5" rx="3" fill="var(--ink-300)"/>
+            <text x="992.8" y="212.5" text-anchor="middle" font-size="13" font-weight="900" fill="var(--c-ink)">5件</text>
+            <text x="992.8" y="256" text-anchor="middle" font-size="11" fill="var(--text)">その他</text>
+            <polyline points="167.2,143.8 373.6,86.1 580.0,51.8 786.4,34.7 992.8,24.0" fill="none" stroke="var(--ink-700)" stroke-width="2"/>
+            <circle cx="167.2" cy="143.8" r="4" fill="var(--ink-700)"/>
+            <text x="175.2" y="137.8" font-size="11" font-weight="700" fill="var(--ink-700)">44%</text>
+            <circle cx="373.6" cy="86.1" r="4" fill="var(--ink-700)"/>
+            <text x="381.6" y="80.1" font-size="11" font-weight="700" fill="var(--ink-700)">71%</text>
+            <circle cx="580.0" cy="51.8" r="4" fill="var(--ink-700)"/>
+            <text x="588.0" y="45.8" font-size="11" font-weight="700" fill="var(--ink-700)">87%</text>
+            <circle cx="786.4" cy="34.7" r="4" fill="var(--ink-700)"/>
+            <text x="794.4" y="28.7" font-size="11" font-weight="700" fill="var(--ink-700)">95%</text>
+            <circle cx="992.8" cy="24.0" r="4" fill="var(--ink-700)"/>
+            <text x="1000.8" y="18.0" font-size="11" font-weight="700" fill="var(--ink-700)">100%</text>
+            </svg>
+          </div>
+          <div class="takeaway-band reveal"><span class="takeaway-kicker">だから</span>上位2つで<strong>71%（74件 ÷ 104件）</strong>。まずこの2つの案内を見直す</div>
+        </div>
+        <div class="slide-source">出典：説明用の架空データ（割合は四捨五入）</div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 件数や費用を項目別に比べ、「どこから手を付けるか」を決めたいとき。<strong>手を付ける項目だけをアクセント色にし、残りはグレーに落とす</strong>（強調の予算は1つ）。累積の線（<code>cum</code>）を外せば、ふつうの棒グラフとして使える。<strong>作り方:</strong> 新規CSSは不要で、インラインSVGだけで描く。色はトークン（<code>--accent</code>・<code>--ink-*</code>）だけ、文字は 11／13px だけを使う（STYLE_GUIDE §9②）。棒の高さや点の位置は座標の直書きなので、<strong>数字を変えたら座標も計算し直す</strong>（手で直すより、表計算で座標を出すほうが早い）。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">31 / 33</span>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 32 (PATTERN 38: 推移グラフ（中心線・管理限界つき）) ==================== -->
+      <section class="slide slide-light" id="slide-32">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 38</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">いつもの幅を超えた週だけを調べる</h2>
+          <p class="slide-subtitle"><span class="evidence-tag tone-interp">架空の例</span>週ごとのCVR（問い合わせに進んだ訪問の割合）の12週分。破線はいつもの幅の上限と下限</p>
+        </div>
+        <div class="slide-body">
+          <div class="reveal" style="width:100%">
+            <svg viewBox="0 0 1120 290" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;font-family:'Noto Sans JP',sans-serif" role="img" aria-label="週ごとのCVRの推移">
+            <line x1="64" y1="238" x2="1096" y2="238" stroke="var(--c-muted)" stroke-width="1"/>
+            <text x="56" y="28" text-anchor="end" font-size="11" fill="var(--c-muted)">%</text>
+            <line x1="64" y1="85.1" x2="1096" y2="85.1" stroke="var(--ink-500)" stroke-width="1.5" stroke-dasharray="6 4"/>
+            <text x="1096" y="79.1" text-anchor="end" font-size="11" font-weight="700" fill="var(--ink-500)">上方管理限界 3.0</text>
+            <line x1="64" y1="146.3" x2="1096" y2="146.3" stroke="var(--ink-500)" stroke-width="1.5" stroke-dasharray=""/>
+            <text x="1096" y="140.3" text-anchor="end" font-size="11" font-weight="700" fill="var(--ink-500)">中心線 2.2</text>
+            <line x1="64" y1="207.4" x2="1096" y2="207.4" stroke="var(--ink-500)" stroke-width="1.5" stroke-dasharray="6 4"/>
+            <text x="1096" y="201.4" text-anchor="end" font-size="11" font-weight="700" fill="var(--ink-500)">下方管理限界 1.4</text>
+            <polyline points="107.0,153.9 193.0,138.6 279.0,169.2 365.0,146.3 451.0,161.6 537.0,131.0 623.0,153.9 709.0,54.6 795.0,146.3 881.0,161.6 967.0,138.6 1053.0,153.9" fill="none" stroke="var(--ink-700)" stroke-width="2"/>
+            <circle cx="107.0" cy="153.9" r="4" fill="#ffffff" stroke="var(--ink-700)" stroke-width="2"/>
+            <text x="107.0" y="256" text-anchor="middle" font-size="11" fill="var(--text)">1週</text>
+            <circle cx="193.0" cy="138.6" r="4" fill="#ffffff" stroke="var(--ink-700)" stroke-width="2"/>
+            <text x="193.0" y="256" text-anchor="middle" font-size="11" fill="var(--text)">2週</text>
+            <circle cx="279.0" cy="169.2" r="4" fill="#ffffff" stroke="var(--ink-700)" stroke-width="2"/>
+            <text x="279.0" y="256" text-anchor="middle" font-size="11" fill="var(--text)">3週</text>
+            <circle cx="365.0" cy="146.3" r="4" fill="#ffffff" stroke="var(--ink-700)" stroke-width="2"/>
+            <text x="365.0" y="256" text-anchor="middle" font-size="11" fill="var(--text)">4週</text>
+            <circle cx="451.0" cy="161.6" r="4" fill="#ffffff" stroke="var(--ink-700)" stroke-width="2"/>
+            <text x="451.0" y="256" text-anchor="middle" font-size="11" fill="var(--text)">5週</text>
+            <circle cx="537.0" cy="131.0" r="4" fill="#ffffff" stroke="var(--ink-700)" stroke-width="2"/>
+            <text x="537.0" y="256" text-anchor="middle" font-size="11" fill="var(--text)">6週</text>
+            <circle cx="623.0" cy="153.9" r="4" fill="#ffffff" stroke="var(--ink-700)" stroke-width="2"/>
+            <text x="623.0" y="256" text-anchor="middle" font-size="11" fill="var(--text)">7週</text>
+            <circle cx="709.0" cy="54.6" r="7" fill="var(--accent)" stroke="var(--ink-700)" stroke-width="2"/>
+            <text x="709.0" y="256" text-anchor="middle" font-size="11" fill="var(--text)">8週</text>
+            <circle cx="795.0" cy="146.3" r="4" fill="#ffffff" stroke="var(--ink-700)" stroke-width="2"/>
+            <text x="795.0" y="256" text-anchor="middle" font-size="11" fill="var(--text)">9週</text>
+            <circle cx="881.0" cy="161.6" r="4" fill="#ffffff" stroke="var(--ink-700)" stroke-width="2"/>
+            <text x="881.0" y="256" text-anchor="middle" font-size="11" fill="var(--text)">10週</text>
+            <circle cx="967.0" cy="138.6" r="4" fill="#ffffff" stroke="var(--ink-700)" stroke-width="2"/>
+            <text x="967.0" y="256" text-anchor="middle" font-size="11" fill="var(--text)">11週</text>
+            <circle cx="1053.0" cy="153.9" r="4" fill="#ffffff" stroke="var(--ink-700)" stroke-width="2"/>
+            <text x="1053.0" y="256" text-anchor="middle" font-size="11" fill="var(--text)">12週</text>
+            </svg>
+          </div>
+          <div class="takeaway-band reveal"><span class="takeaway-kicker">だから</span>8週目だけが上限を超えた。<strong>その週に何があったか</strong>（掲載・キャンペーンなど）を調べる。ほかの上下はいつもの揺れ</div>
+        </div>
+        <div class="slide-source">出典：説明用の架空データ。上限と下限は「平均 ± 3 × 標準偏差」で引く管理図の考え方による</div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 数字の上下に一喜一憂しないために、「いつもの揺れ」と「何か起きた週」を見分けたいとき。中心線と上下の限界線（<code>cl</code>・<code>ucl</code>・<code>lcl</code>）は省略できるので、<strong>ふつうの推移グラフにも使える</strong>。目立たせる点は1つまで。<strong>作り方:</strong> 新規CSSは不要で、インラインSVGだけで描く。色はトークン（<code>--accent</code>・<code>--ink-*</code>）だけ、文字は 11／13px だけを使う（STYLE_GUIDE §9②）。棒の高さや点の位置は座標の直書きなので、<strong>数字を変えたら座標も計算し直す</strong>（手で直すより、表計算で座標を出すほうが早い）。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">32 / 33</span>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 33 (PATTERN 39: 散布図（回帰直線つき）) ==================== -->
+      <section class="slide slide-light" id="slide-33">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 39</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">広告費の多い月ほど問い合わせも多い</h2>
+          <p class="slide-subtitle"><span class="evidence-tag tone-interp">架空の例</span>月ごとの広告費と問い合わせ件数の12か月分。線は最小二乗法で引いた直線（問い合わせ ≒ 7.5 ＋ 0.59 × 広告費）</p>
+        </div>
+        <div class="slide-body">
+          <div class="reveal" style="width:100%">
+            <svg viewBox="0 0 1120 290" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;font-family:'Noto Sans JP',sans-serif" role="img" aria-label="広告費と問い合わせ件数の散布図">
+            <line x1="64" y1="238" x2="1096" y2="238" stroke="var(--c-muted)"/>
+            <line x1="64" y1="24" x2="64" y2="238" stroke="var(--c-muted)"/>
+            <text x="143.4" y="256" text-anchor="middle" font-size="11" fill="var(--text)">10</text>
+            <text x="302.2" y="256" text-anchor="middle" font-size="11" fill="var(--text)">20</text>
+            <text x="460.9" y="256" text-anchor="middle" font-size="11" fill="var(--text)">30</text>
+            <text x="619.7" y="256" text-anchor="middle" font-size="11" fill="var(--text)">40</text>
+            <text x="778.5" y="256" text-anchor="middle" font-size="11" fill="var(--text)">50</text>
+            <text x="937.2" y="256" text-anchor="middle" font-size="11" fill="var(--text)">60</text>
+            <line x1="64" y1="195.2" x2="1096" y2="195.2" stroke="var(--surface-border)"/>
+            <text x="56" y="199.2" text-anchor="end" font-size="11" fill="var(--text)">10</text>
+            <line x1="64" y1="152.4" x2="1096" y2="152.4" stroke="var(--surface-border)"/>
+            <text x="56" y="156.4" text-anchor="end" font-size="11" fill="var(--text)">20</text>
+            <line x1="64" y1="109.6" x2="1096" y2="109.6" stroke="var(--surface-border)"/>
+            <text x="56" y="113.6" text-anchor="end" font-size="11" fill="var(--text)">30</text>
+            <line x1="64" y1="66.8" x2="1096" y2="66.8" stroke="var(--surface-border)"/>
+            <text x="56" y="70.8" text-anchor="end" font-size="11" fill="var(--text)">40</text>
+            <line x1="64.0" y1="193.3" x2="1096.0" y2="28.6" stroke="var(--accent-deep)" stroke-width="3"/>
+            <circle cx="143.4" cy="186.6" r="6" fill="var(--ink-500)" fill-opacity="0.75"/>
+            <circle cx="222.8" cy="169.5" r="6" fill="var(--ink-500)" fill-opacity="0.75"/>
+            <circle cx="302.2" cy="148.1" r="6" fill="var(--ink-500)" fill-opacity="0.75"/>
+            <circle cx="381.5" cy="135.3" r="6" fill="var(--ink-500)" fill-opacity="0.75"/>
+            <circle cx="460.9" cy="126.7" r="6" fill="var(--ink-500)" fill-opacity="0.75"/>
+            <circle cx="540.3" cy="131.0" r="6" fill="var(--ink-500)" fill-opacity="0.75"/>
+            <circle cx="619.7" cy="96.8" r="6" fill="var(--ink-500)" fill-opacity="0.75"/>
+            <circle cx="699.1" cy="88.2" r="6" fill="var(--ink-500)" fill-opacity="0.75"/>
+            <circle cx="778.5" cy="96.8" r="6" fill="var(--ink-500)" fill-opacity="0.75"/>
+            <circle cx="857.8" cy="62.5" r="6" fill="var(--ink-500)" fill-opacity="0.75"/>
+            <circle cx="937.2" cy="49.7" r="6" fill="var(--ink-500)" fill-opacity="0.75"/>
+            <circle cx="1016.6" cy="41.1" r="6" fill="var(--ink-500)" fill-opacity="0.75"/>
+            <text x="580.0" y="284" text-anchor="middle" font-size="11" fill="var(--c-muted)">広告費（万円）</text>
+            <text x="64" y="16" text-anchor="start" font-size="11" fill="var(--c-muted)">問い合わせ件数</text>
+            </svg>
+          </div>
+          <div class="takeaway-band reveal"><span class="takeaway-kicker">だから</span>相関係数は0.98で、10万円あたり約6件の傾き。直線から外れた月を見ると、<strong>広告費以外に効いているもの</strong>が見つかる</div>
+        </div>
+        <div class="slide-source">出典：説明用の架空データ</div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 2つの数字の関係の強さを見せたいとき。直線（<code>line</code>）を外せば散布図だけになる。<strong>相関は原因の証明ではない</strong>ので、タイトルで因果を言い切るときは根拠を添える。点が多いときは半透明のまま重ねて、密度で見せる。<strong>作り方:</strong> 新規CSSは不要で、インラインSVGだけで描く。色はトークン（<code>--accent</code>・<code>--ink-*</code>）だけ、文字は 11／13px だけを使う（STYLE_GUIDE §9②）。棒の高さや点の位置は座標の直書きなので、<strong>数字を変えたら座標も計算し直す</strong>（手で直すより、表計算で座標を出すほうが早い）。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">33 / 33</span>
+        </div>
+      </section>
     </div>
   </div>
 
@@ -4857,10 +5088,14 @@
         <option value="slide-27">27. 出典つき主張（証拠バッジ／結論帯／出典行）</option>
         <option value="slide-28">28. 仕組みの全体像（レーン×フェーズ）</option>
         <option value="slide-29">29. クリックで深掘り</option>
+        <option value="slide-30">30. ステートメント（言葉を1枚で見せる）</option>
+        <option value="slide-31">31. 棒グラフ（パレート図）</option>
+        <option value="slide-32">32. 推移グラフ（中心線・管理限界つき）</option>
+        <option value="slide-33">33. 散布図（回帰直線つき）</option>
       </select>
     </div>
 
-    <span id="page-indicator">1 / 29</span>
+    <span id="page-indicator">1 / 33</span>
 
     <button id="next-btn" class="nav-btn" aria-label="次のスライド">
       <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
