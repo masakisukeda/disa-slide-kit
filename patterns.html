@@ -748,6 +748,20 @@
       border-radius: 6px;
     }
 
+    /* 注目する列（今期・提案する案など）を1列だけ色付けする。見出しと各セルに .is-focus を付ける。
+       アクセントはこの1列だけに使い、ほかの列には付けない */
+    .slide-table th.is-focus {
+      background: var(--accent);
+      color: var(--on-accent);
+      border-bottom-color: var(--accent-deep);
+    }
+
+    .slide-table td.is-focus {
+      background: var(--accent-tint);
+      color: var(--c-ink);
+      font-weight: 800;
+    }
+
     /* ============================================================
        PATTERN 03: Before/After 横フロー（AS-IS → 伴走 → TO-BE）
        出典: ベンチマーク（提案型）
@@ -3360,6 +3374,88 @@
       color: rgba(255, 255, 255, 0.5) !important;
     }
     .tbd-inline { color: var(--ink-400); font-weight: 700; }
+
+    /* ============================================================
+       PATTERN 41: 右の章ナビ（今いる章を本文の横に出し続ける）
+       出典: 上場企業の統合レポート（右端に章の一覧を常に出し、今の章だけ濃くする作り）
+       本文のスライドの <section> に .has-chapter-nav を足し、末尾に <nav class="chapter-nav"> を置く。
+       全スライドに同じ <nav> を置き、.is-current を付ける <li> だけを変える。
+       表紙・中表紙（PATTERN 11）には付けない
+       ============================================================ */
+    .slide.has-chapter-nav {
+      padding-right: 260px;
+    }
+
+    .chapter-nav {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 200px;
+      background: #ffffff;
+      border-left: 1px solid var(--surface-border);
+      padding: 100px 24px 35px;
+      text-align: left;
+    }
+
+    .chapter-nav-label {
+      font-family: 'Inter', sans-serif;
+      font-size: var(--fs-label);
+      font-weight: 900;
+      letter-spacing: 0.15em;
+      color: var(--c-muted);
+      margin-bottom: 16px;
+    }
+
+    .chapter-nav ol {
+      list-style: none;
+    }
+
+    .chapter-nav li {
+      font-size: var(--fs-caption);
+      font-weight: 700;
+      color: var(--ink-400);
+      line-height: 1.5;
+      padding: 6px 0 6px 12px;
+      border-left: 3px solid transparent;
+    }
+
+    .chapter-nav li .chapter-nav-num {
+      font-family: 'Inter', sans-serif;
+      margin-right: 8px;
+    }
+
+    .chapter-nav li.is-current {
+      color: var(--c-ink);
+      font-weight: 900;
+      border-left-color: var(--accent);
+    }
+
+    /* 章の中の項目は、今いる章の下にだけ出す */
+    .chapter-nav .chapter-nav-sub {
+      margin: 4px 0 2px;
+    }
+
+    .chapter-nav .chapter-nav-sub li {
+      font-size: var(--fs-label);
+      font-weight: 700;
+      color: var(--c-muted);
+      padding: 3px 0 3px 10px;
+      border-left: none;
+    }
+
+    .chapter-nav .chapter-nav-sub li.is-current {
+      color: var(--c-ink);
+      font-weight: 900;
+    }
+
+    .slide-dark .chapter-nav {
+      background: var(--ink-800);
+      border-left-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .slide-dark .chapter-nav li { color: rgba(255, 255, 255, 0.4); }
+    .slide-dark .chapter-nav li.is-current { color: #ffffff; border-left-color: var(--accent-on-dark); }
   </style>
 </head>
 
@@ -3456,7 +3552,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 表紙の直後。ページ数が多い提案（10枚以上）では入れる。<strong>注意:</strong> 項目は4〜6個に収める。7個以上になる場合は構成自体を見直すサイン。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">2 / 34</span>
+          <span class="slide-page-number">2 / 36</span>
         </div>
       </section>
       <!-- ==================== SLIDE 3 (PATTERN 11: 中表紙) ==================== -->
@@ -3473,7 +3569,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 章の切り替え。ダーク⇄ライトのテーマ切り替えと合わせて配置するとリズムが生まれる（STYLE_GUIDE §9①）。<strong>注意:</strong> 番号は目次（PATTERN 10）の番号と必ず一致させる。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">3 / 34</span>
+          <span class="slide-page-number">3 / 36</span>
         </div>
       </section>
 
@@ -3495,7 +3591,7 @@
                 <tr>
                   <th style="width: 18%;">項目</th>
                   <th style="width: 28%;">現状</th>
-                  <th style="width: 28%;">導入後</th>
+                  <th class="is-focus" style="width: 28%;">導入後</th>
                   <th style="width: 26%;">備考</th>
                 </tr>
               </thead>
@@ -3503,35 +3599,35 @@
                 <tr>
                   <td style="font-weight: 700; color: var(--c-ink);">項目A</td>
                   <td>現状の状態や課題を記述します。</td>
-                  <td>導入後に期待できる状態を記述します。</td>
+                  <td class="is-focus">導入後に期待できる状態を記述します。</td>
                   <td>補足や条件をここに書きます。</td>
                 </tr>
                 <tr>
                   <td style="font-weight: 700; color: var(--c-ink);">項目B</td>
                   <td>現状の状態や課題を記述します。</td>
-                  <td>導入後に期待できる状態を記述します。</td>
+                  <td class="is-focus">導入後に期待できる状態を記述します。</td>
                   <td>補足や条件をここに書きます。</td>
                 </tr>
                 <tr>
                   <td style="font-weight: 700; color: var(--c-ink);">項目C</td>
                   <td>現状の状態や課題を記述します。</td>
-                  <td>導入後に期待できる状態を記述します。</td>
+                  <td class="is-focus">導入後に期待できる状態を記述します。</td>
                   <td>補足や条件をここに書きます。</td>
                 </tr>
                 <tr>
                   <td style="font-weight: 700; color: var(--c-ink);">項目D</td>
                   <td>現状の状態や課題を記述します。</td>
-                  <td>導入後に期待できる状態を記述します。</td>
+                  <td class="is-focus">導入後に期待できる状態を記述します。</td>
                   <td>補足や条件をここに書きます。</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
-        <div class="pattern-note"><strong>使いどころ:</strong> 条件比較・メンバー一覧・仕様整理など、行×列で俯瞰させたい情報。<strong>注意:</strong> 行が多い場合は `.table-scroll-frame` で囲みスクロールさせる（印刷時は自動で全展開）。ヘッダーは `--primary-dark` 背景＋白文字が標準。</div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 条件比較・メンバー一覧・仕様整理など、行×列で俯瞰させたい情報。<strong>注意:</strong> 行が多い場合は `.table-scroll-frame` で囲みスクロールさせる（印刷時は自動で全展開）。ヘッダーは `--primary-dark` 背景＋白文字が標準。<strong>注目列:</strong> 実績・今期計画・目標のように並べて「今見てほしい列」が1つあるときは、その列の <code>th</code> と各 <code>td</code> に <code>.is-focus</code> を付ける（例では「導入後」）。色を付けるのは1列だけ。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">4 / 34</span>
+          <span class="slide-page-number">4 / 36</span>
         </div>
       </section>
       <!-- ==================== SLIDE 5 (PATTERN 02: ダーク面カード) ==================== -->
@@ -3566,7 +3662,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 現状分析・課題定義などダーク面で情報をモジュール化したいページ。<strong>注意:</strong> `:root` に `--c-surface-dark` / `--surface-border-dark` を定義し、`.slide-dark .card` に適用する（STYLE_GUIDE §3）。クライアント色に合わせてダーク面の色相も調整する。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">5 / 34</span>
+          <span class="slide-page-number">5 / 36</span>
         </div>
       </section>
       <!-- ==================== SLIDE 6 (PATTERN 09: 詳細3カラム＋インサイト) ==================== -->
@@ -3622,7 +3718,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 1on1レポートのメンバー詳細、施策別の深掘りページなど、同じ型を複数枚並べる資料。<strong>注意:</strong> カラムの意味（A/B/C）は全ページで固定し、読み手が位置で内容を予測できるようにする。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">6 / 34</span>
+          <span class="slide-page-number">6 / 36</span>
         </div>
       </section>
       <!-- ==================== SLIDE 7 (PATTERN 29: 小パネル一覧 4×3) ==================== -->
@@ -3741,7 +3837,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 選択肢・分類・課題の棚卸しなど、<strong>粒度の揃った項目を一覧で見渡して選ばせたいページ</strong>。カード比較（grid-2/3）が「3案を読み込ませる」型なのに対し、これは「12個を眺めて指させる」型。<strong>注意:</strong> バッジは色の役割を増やさず <code>tone-mid</code> / <code>tone-soft</code> のトーン展開で分類する（アクセント1色ルール）。説明文は2行で自動クランプされるので、1項目40字前後に収める。12個を超えるならページを分ける。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">7 / 34</span>
+          <span class="slide-page-number">7 / 36</span>
         </div>
       </section>
 
@@ -3791,7 +3887,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 提案の「全体像」ページ。課題→支援→理想の因果を一枚で示す。<strong>注意:</strong> 中央の `bridge-box` はダーク塗りで主役化する。左右のリストは3項目程度に絞ると崩れない。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">8 / 34</span>
+          <span class="slide-page-number">8 / 36</span>
         </div>
       </section>
       <!-- ==================== SLIDE 9 (PATTERN 04: As-Is/To-Be/Action アウトライン) ==================== -->
@@ -3847,7 +3943,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 章立てのある提案のサマリー（STYLE_GUIDE §9「As-Is/To-Be/Action型」の3枚目）や報告書の冒頭で、<strong>テーマごとの筋を1枚で先に見せたいとき。</strong> 各テーマを掘り下げるページは別に作り、行の「詳細 → p.◯」でつなぐ。<strong>テーマが1つなら1行だけで使ってよい</strong>（課題1つを打ち手まで落とすページになる）。<strong>作り方:</strong> ISSUE は列にせず、AS-IS のセルに <code>.ato-fact</code>（事実）→ <code>.ato-issue</code>（課題）の2段で書く。課題は必ず右の TO-BE とつながるものだけにする。<strong>注意:</strong> <strong>テーマは4行まで</strong>。5つ以上ならページを分ける。各セルは1文・2行以内（STYLE_GUIDE §0）。テーマの順は本編の章の順と揃える。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">9 / 34</span>
+          <span class="slide-page-number">9 / 36</span>
         </div>
       </section>
       <!-- ==================== SLIDE 10 (PATTERN 07: 横型ステップフロー) ==================== -->
@@ -3904,7 +4000,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 業務プロセスの可視化、課題が生まれる流れの説明など。<strong>注意:</strong> 1段は5ステップまで。6つ以上なら <code>.flowchart-steps</code> に <code>.is-2rows</code> を付けて3列×2段にする（段をまたぐ線は消える。順番はステップ番号で読ませる）。7つ以上はページを分ける。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">10 / 34</span>
+          <span class="slide-page-number">10 / 36</span>
         </div>
       </section>
       <!-- ==================== SLIDE 11 (PATTERN 21: カスタマージャーニーマップ) ==================== -->
@@ -3975,7 +4071,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 体験設計、導線改善、顧客理解を深掘りする章。<strong>注意:</strong> 行動だけでなく「思考・感情」と「要求」まで並べると、改善提案につなげやすい。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">11 / 34</span>
+          <span class="slide-page-number">11 / 36</span>
         </div>
       </section>
       <!-- ==================== SLIDE 12 (PATTERN 26: ファネル・導線分析) ==================== -->
@@ -3991,7 +4087,7 @@
           </div>
         </div>
         <div class="pattern-note"><strong>使いどころ:</strong> マーケティング、営業導線、CV改善のレビュー。<strong>注意:</strong> 各段階の定義と計測方法を揃えてから比較する。</div>
-        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">12 / 34</span></div>
+        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">12 / 36</span></div>
       </section>
 
       <!-- ############### 分析フレーム ############### -->
@@ -4050,7 +4146,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 分析の後に「何をやるか」までつなげたい提案書。<strong>注意:</strong> 4象限すべてを均等に埋めるより、優先度の高い戦略だけ太らせる方が実務的。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">13 / 34</span>
+          <span class="slide-page-number">13 / 36</span>
         </div>
       </section>
       <!-- ==================== SLIDE 14 (PATTERN 18: VRIO分析) ==================== -->
@@ -4090,7 +4186,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 自社の強みが持続的な優位性かを見極めたいページ。<strong>注意:</strong> 4項目を説明するだけでなく、最後に「優位の源泉は何か」を1行で結論づけると強い。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">14 / 34</span>
+          <span class="slide-page-number">14 / 36</span>
         </div>
       </section>
       <!-- ==================== SLIDE 15 (PATTERN 20: ビジネスモデルキャンバス) ==================== -->
@@ -4166,7 +4262,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 新規事業の検討、既存事業の構造整理、提案の全体像説明。<strong>注意:</strong> 価値提案だけを盛らず、チャネルと収益の整合まで1枚で見せると説得力が出る。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">15 / 34</span>
+          <span class="slide-page-number">15 / 36</span>
         </div>
       </section>
       <!-- ==================== SLIDE 16 (PATTERN 05: 4象限マトリクス) ==================== -->
@@ -4210,7 +4306,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> メンバー分析・施策の優先度整理など、2軸分類が伝わりやすいテーマ。<strong>作り方:</strong> 軸は「端の値 ─ 軸の名前 ─ 端の値」で書く。縦は上が高・下が低、横は左が低・右が高にそろえ、象限の見出しにも「縦：高 × 横：低」の形で位置を書く。<strong>注意:</strong> 軸の名前は6字以内（縦書きになるため）。強調したい象限のみ `.emphasis` を付ける。<strong>分析フレームもこの型で作る:</strong> SWOT は縦軸「内部／外部」・横軸「プラス／マイナス」にして、4象限を強み・弱み・機会・脅威にする。PEST・4C のように軸を持たない4分類は <code>.matrix-layout</code> に <code>.is-plain</code> を付けて軸を消し、象限の見出しに分類名（P 政治、Customer Value など）を書く。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">16 / 34</span>
+          <span class="slide-page-number">16 / 36</span>
         </div>
       </section>
       <!-- ==================== SLIDE 17 (PATTERN 24: ポジショニングマップ) ==================== -->
@@ -4225,7 +4321,7 @@
           </div>
         </div>
         <div class="pattern-note"><strong>使いどころ:</strong> 競合比較、差別化方針、ブランド戦略。<strong>注意:</strong> 社内視点でなく、顧客が比較に使う2軸を選ぶ。</div>
-        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">17 / 34</span></div>
+        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">17 / 36</span></div>
       </section>
       <!-- ==================== SLIDE 18 (PATTERN 23: 課題ツリー) ==================== -->
       <section class="slide slide-light compact-pattern-slide" id="slide-18">
@@ -4241,7 +4337,7 @@
           </div>
         </div>
         <div class="pattern-note"><strong>使いどころ:</strong> 課題整理、提案の論点設計、施策の優先順位づけ。<strong>注意:</strong> 原因と打ち手を混ぜず、因果関係を確認してから施策に進む。</div>
-        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">18 / 34</span></div>
+        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">18 / 36</span></div>
       </section>
 
       <!-- ############### 関係を描く（構造・つながり） ############### -->
@@ -4258,7 +4354,7 @@
           </div>
         </div>
         <div class="pattern-note"><strong>使いどころ:</strong> キックオフ、伴走支援の開始時、複数部署をまたぐ施策。<strong>注意:</strong> 人名だけでなく、誰が何を決めるかまで明記する。</div>
-        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">19 / 34</span></div>
+        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">19 / 36</span></div>
       </section>
       <!-- ==================== SLIDE 20 (PATTERN 27: コミュニケーション設計図) ==================== -->
       <section class="slide slide-light compact-pattern-slide" id="slide-20">
@@ -4310,7 +4406,7 @@
           </div>
         </div>
         <div class="pattern-note"><strong>使いどころ:</strong> キャンペーンやオンボーディングの導線設計、関係者・組織間の相関図への転用。<strong>注意:</strong> 意味色を使わず、強調はグレー＋アクセント色のトーン差（<code>--ink-100</code>〜<code>--ink-700</code>）だけで表現する。</div>
-        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">20 / 34</span></div>
+        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">20 / 36</span></div>
       </section>
       <!-- ==================== SLIDE 21 (PATTERN 28: ソース相関図) ==================== -->
       <section class="slide slide-light compact-pattern-slide" id="slide-21">
@@ -4394,7 +4490,7 @@
           </svg>
         </div>
         <div class="pattern-note"><strong>使いどころ:</strong> 提案・診断資料の2枚目。調査量が多く「何を根拠に言っているのか」を先に示したいとき。左右でグループの意味を分けると強い（例: 左＝先方からいただいたもの／右＝こちらで実測したもの）。<strong>書き方:</strong> 各カードは「ソース名（日付）／中身1行／→ 本資料のどこに効いたか」の3行で固定する。3行目の「→」がないと単なる資料リストになり、相関図として機能しない。<strong>注意:</strong> 片側4件が上限（8件を超えると1件あたりの文字が読めなくなる）。新規CSSクラスは作らず、色は既存変数を参照する。左右見出しは viewBox 外（y=-6）に置くため、viewBox の上に24pxの余白を確保すること。</div>
-        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">21 / 34</span></div>
+        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">21 / 36</span></div>
       </section>
       <!-- ==================== SLIDE 22 (PATTERN 22: KPIダッシュボード) ==================== -->
       <section class="slide slide-light compact-pattern-slide" id="slide-22">
@@ -4432,7 +4528,7 @@
           </div>
         </div>
         <div class="pattern-note"><strong>使いどころ:</strong> 月次報告、事業レビュー、支援成果の共有。<strong>注意:</strong> 指標を増やしすぎず、判断に直結する3〜5項目に絞る。</div>
-        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">22 / 34</span></div>
+        <div class="slide-footer"><span>〇〇株式会社</span><span class="slide-page-number">22 / 36</span></div>
       </section>
 
       <!-- ############### 締め（人と会社） ############### -->
@@ -4483,7 +4579,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> デッキ終盤の自己紹介。担当者と法人概要を1枚に統合したいとき（2枚使える場合は template.html の法人概要＋プロフィール型を使う）。<strong>2名を紹介するとき</strong>は、右の会社概要カードの代わりに人物カード（<code>.profile-person-card</code>）をもう1枚置く。3名以上は1名1枚にする。<strong>注意:</strong> コピー時は `profile-photo.svg` も同じフォルダへ置き、自社の写真に差し替える。肩書き・取引先は提案時点の最新に更新すること。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">23 / 34</span>
+          <span class="slide-page-number">23 / 36</span>
         </div>
       </section>
 
@@ -4541,7 +4637,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 専門用語や社内固有の仕組みが多い資料の巻末。<strong>先方の会議で「これ何のこと？」が繰り返されるのを防ぐ。</strong> <strong>作り方:</strong> 用語は<strong>実物を見ないと分からないものだけ</strong>に絞る（一般用語は載せない）。リンクには必ず <code>target="_blank" rel="noopener noreferrer"</code> を付ける。<strong>PDF書き出し後もリンクは押せる</strong>（headless Chrome の <code>--print-to-pdf</code> でも <code>/Subtype /Link</code> として保持される）。Notion外の資産はリンクを張らず、場所だけ書く。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">24 / 34</span>
+          <span class="slide-page-number">24 / 36</span>
         </div>
       </section>
 
@@ -4605,7 +4701,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 採用ポジション別、案件別、チーム別など、<strong>並走する複数の対象を同じ時間軸に載せたいとき。</strong> <strong>全体を1本の時系列で見せるロードマップもこの型で作る</strong>（レーン1本、バーをフェーズ数だけ並べる）。<strong>作り方:</strong> バーの位置は <code>style="--from:1;--to:3"</code> で列番号を渡す（<code>--to</code> は「その列の左辺」。1列ぶんなら <code>--from:n / --to:n+1</code>）。レーンごとに引かれるレールが「空いている期間」を示すので、<strong>埋めようとしないこと。</strong> <strong>注意:</strong> <code>.is-key</code>（アクセント塗り）は<strong>1枚につき2本まで</strong>。締切を作っている工程だけに付ける（STYLE_GUIDE §0「強調には予算がある」）。バーの文言は1行に収まる長さ（12〜13字目安）にし、折り返させない。レーンは5本、列は5〜6が上限。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">25 / 34</span>
+          <span class="slide-page-number">25 / 36</span>
         </div>
       </section>
 
@@ -4678,7 +4774,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> ディレクションの守備範囲を相手に指させたいとき。<strong>キャリア棚卸し、役割分担の合意、見積もりのスコープ確認</strong>など、「どこからどこまでをやるのか」がずれている場面で効く。上下2段にすることで、<strong>同じ工程名でも進め方によって役割の切れ目が変わること</strong>が同時に伝わる。<strong>作り方:</strong> ウォーターフォール側は <code>.proc-wf</code> の <code>grid-template-columns</code> でフェーズの幅を変える（既定は 1.1 : 1.8 : 1 : 1.9。工程の厚みに合わせて調整する）。アジャイル側は <code>.proc-sprint</code> を反復ブロック、<code>.proc-milestone</code> を企画・リリースに使い、<code>→</code> でつなぐ。スプリントは2つまで。<strong>注意:</strong> フェーズ見出しだけをアクセント塗りにし、中身のカードには色を足さない（STYLE_GUIDE §0「強調には予算がある」）。1マスの文言は20字以内。超えるならフェーズを分けるか、言葉を短くする。出典は自社の講義資料（2022年）。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">26 / 34</span>
+          <span class="slide-page-number">26 / 36</span>
         </div>
       </section>
 
@@ -4716,7 +4812,7 @@
         <div class="slide-source">出典：自社実測（2026.08、250クエリ×3エンジン×3回＝2,250回答）。数値はこのカタログ用の架空値</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">27 / 34</span>
+          <span class="slide-page-number">27 / 36</span>
         </div>
       </section>
 
@@ -4802,7 +4898,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> キックオフや制度説明の冒頭で、<strong>「誰が・どの順で動いて、結果がどこへ戻るか」を1枚に畳みたいとき。</strong> PATTERN 07（横型ステップフロー）は1本の直線、PATTERN 31（スイムレーン）は時間軸上のバー。<strong>主体が複数あって、かつ最後が起点に戻る（一周する）ならこの型。</strong> <strong>作り方:</strong> レーン帯は <code>y=28 / 124 / 220 / 316</code>（高さ90・間隔96）、カードは <code>x=173 / 419 / 665 / 911</code>（幅214・高さ64、レーン上端+13）に置く。フェーズ見出しの <code>x</code> はカードの中心（280 / 526 / 772 / 1018）に合わせる。レーン名の左側は <strong>x=165 までが上限</strong>（それ以上伸ばすと1列目のカードに潜る）。矢印はカード枠の外側から引き、折れ線は <code>L</code> の直角だけで書く。<strong>注意:</strong> <strong>カードは1レーンに3つまで、レーンは4本まで。</strong> 埋まっていないマスは空けたままにする（空白が「そのレーンは動いていない」を語る）。枠線2pxのアクセント枠は本筋のカードだけ、<strong>1枚につき4つまで</strong>（STYLE_GUIDE §0「強調には予算がある」）。破線は「本筋から外れる動き」専用。カード見出しは9字前後、補足は1行に収まる長さにする。座標直書きなので、<strong>文言を大きく変えたら必ずブラウザで折り返しを確認する。</strong></div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">28 / 34</span>
+          <span class="slide-page-number">28 / 36</span>
         </div>
       </section>
 
@@ -4910,7 +5006,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 商談・研修・社内会議で、全体の流れを見せたあと「その中身は？」と聞かれそうな工程を、ページを移らずに開いて答えたいとき。<strong>作り方:</strong> 押せる要素に <code>data-drill="パネルのid"</code> を付け、同じ <code>.slide</code> の中に <code>&lt;aside class="drill-panel" id="…"&gt;</code> を置く（中身は <code>.drill-kicker</code>・<code>.drill-title</code>・箇条書き）。閉じるボタンはスクリプトが自動で付ける。押した要素がスライドの右半分にあれば、パネルは左から出る。<strong>注意:</strong> パネルの中身は<strong>PDF・印刷には出ない</strong>。PDFで渡す資料なら、同じ内容を別スライドか付録に書く。パネル1枚の中身は箇条書き3〜4行まで。押せる要素は1枚に6つまで。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">29 / 34</span>
+          <span class="slide-page-number">29 / 36</span>
         </div>
       </section>
 
@@ -4928,7 +5024,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> コンセプト・合言葉・添え書きなど、読み手に覚えて帰ってほしい言葉を1枚に1つだけ大きく見せる。<strong>注意:</strong> 1行は12字まで（76pxで1行に収まる上限）。アクセント色にするのは言葉の中の1〜2か所だけ（明るい面では --accent-deep で読める濃さにする）。結論の説明が要るページには使わず、出典つき主張（PATTERN 33）を使う。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">30 / 34</span>
+          <span class="slide-page-number">30 / 36</span>
         </div>
       </section>
 
@@ -4982,7 +5078,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 件数や費用を項目別に比べ、「どこから手を付けるか」を決めたいとき。<strong>手を付ける項目だけをアクセント色にし、残りはグレーに落とす</strong>（強調の予算は1つ）。累積の線（<code>cum</code>）を外せば、ふつうの棒グラフとして使える。<strong>作り方:</strong> 新規CSSは不要で、インラインSVGだけで描く。色はトークン（<code>--accent</code>・<code>--ink-*</code>）だけ、文字は 11／13px だけを使う（STYLE_GUIDE §9②）。棒の高さや点の位置は座標の直書きなので、<strong>数字を変えたら座標も計算し直す</strong>（手で直すより、表計算で座標を出すほうが早い）。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">31 / 34</span>
+          <span class="slide-page-number">31 / 36</span>
         </div>
       </section>
 
@@ -5040,7 +5136,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 数字の上下に一喜一憂しないために、「いつもの揺れ」と「何か起きた週」を見分けたいとき。中心線と上下の限界線（<code>cl</code>・<code>ucl</code>・<code>lcl</code>）は省略できるので、<strong>ふつうの推移グラフにも使える</strong>。目立たせる点は1つまで。<strong>作り方:</strong> 新規CSSは不要で、インラインSVGだけで描く。色はトークン（<code>--accent</code>・<code>--ink-*</code>）だけ、文字は 11／13px だけを使う（STYLE_GUIDE §9②）。棒の高さや点の位置は座標の直書きなので、<strong>数字を変えたら座標も計算し直す</strong>（手で直すより、表計算で座標を出すほうが早い）。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">32 / 34</span>
+          <span class="slide-page-number">32 / 36</span>
         </div>
       </section>
 
@@ -5096,7 +5192,7 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 2つの数字の関係の強さを見せたいとき。直線（<code>line</code>）を外せば散布図だけになる。<strong>相関は原因の証明ではない</strong>ので、タイトルで因果を言い切るときは根拠を添える。点が多いときは半透明のまま重ねて、密度で見せる。<strong>作り方:</strong> 新規CSSは不要で、インラインSVGだけで描く。色はトークン（<code>--accent</code>・<code>--ink-*</code>）だけ、文字は 11／13px だけを使う（STYLE_GUIDE §9②）。棒の高さや点の位置は座標の直書きなので、<strong>数字を変えたら座標も計算し直す</strong>（手で直すより、表計算で座標を出すほうが早い）。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">33 / 34</span>
+          <span class="slide-page-number">33 / 36</span>
         </div>
       </section>
 
@@ -5159,7 +5255,148 @@
         <div class="pattern-note"><strong>使いどころ:</strong> 事業設計や企画書のように、<strong>全項目を先に並べ、決まっていないところを空けたままMTGごとに埋めていく資料。</strong> 項目を消すと「まだ決めていない」ことが見えなくなるので、点線で残す。<strong>作り方:</strong> 本文の下に置く一言は <code>.tbd</code>（「未定（論点N）」を <code>&lt;strong&gt;</code> で書く）。既存の部品を未定にするときは <code>.is-tbd</code> を足す（カード・パネル・課題ツリーの箱・スイムレーンのバー・ポジショニングマップの丸・数値カードなど）。表のセルは <code>.tbd-inline</code>。<strong>決定前の案（過去の提案書の数字など）は未定と分けて、PATTERN 33 の <code>.evidence-tag.tone-interp</code> に「仮」と書く。</strong> 論点の番号は資料の最後の空欄の一覧（PATTERN 29。<code>.panel-grid</code> に <code>.tbd-index</code> を付け、各パネルのタイトルを「N. 論点名」にする）と1対1にし、一覧は次回MTGの議題として使う。決まったら点線を外して中身を書き、一覧から消す。<strong>注意:</strong> 背景は <code>--bg-light</code>（明るい面の地の色）で塗っている。透明にすると後ろの線が透ける。<code>check_slide.py</code> は「論点の番号が一覧に無い」「一覧が無い」を WARN で出す。</div>
         <div class="slide-footer">
           <span>〇〇株式会社</span>
-          <span class="slide-page-number">34 / 34</span>
+          <span class="slide-page-number">34 / 36</span>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 35 (PATTERN 41: 右の章ナビ) ==================== -->
+      <section class="slide slide-light has-chapter-nav" id="slide-35">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 41</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">今いる章を右の一覧で示し続ける</h2>
+          <p class="slide-subtitle">20枚を超える資料で、読み手が全体のどこにいるかを本文のページでも見失わないようにします。</p>
+        </div>
+        <div class="slide-body">
+          <div class="grid-2">
+            <div class="card reveal">
+              <span class="card-num">POINT 01</span>
+              <h3 class="card-title">章は目次と同じ番号・同じ名前にする</h3>
+              <p class="card-text">右の一覧は目次（PATTERN 10）と中表紙（PATTERN 11）の写しです。番号と名前がずれると、読み手は別の資料を見ている気分になります。</p>
+            </div>
+            <div class="card reveal">
+              <span class="card-num">POINT 02</span>
+              <h3 class="card-title">章の中の項目は今いる章の下にだけ出す</h3>
+              <p class="card-text">全章の項目を出すと一覧が長くなり、今いる場所が埋もれます。開くのは今の章だけにします。</p>
+            </div>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 章が4つ以上あり、本文が20枚を超える資料（事業設計・長めの提案・研修資料）。<strong>作り方:</strong> 本文のスライドの <code>&lt;section&gt;</code> に <code>.has-chapter-nav</code> を足し、末尾に <code>&lt;nav class="chapter-nav"&gt;</code> を置く。全スライドに同じ <code>&lt;nav&gt;</code> をコピーし、<code>.is-current</code> を付ける <code>&lt;li&gt;</code> だけを変える。<strong>注意:</strong> 本文の幅が200px狭くなる（1,120px → 920px）。横に広い図や表のページでは外してよい。表紙と中表紙には付けない。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">35 / 36</span>
+        </div>
+        <nav class="chapter-nav" aria-label="章の一覧">
+          <p class="chapter-nav-label">CONTENTS</p>
+          <ol>
+            <li><span class="chapter-nav-num">01</span>現状</li>
+            <li><span class="chapter-nav-num">02</span>課題</li>
+            <li class="is-current"><span class="chapter-nav-num">03</span>理想の姿
+              <ol class="chapter-nav-sub">
+                <li>全体像</li>
+                <li class="is-current">進め方</li>
+                <li>体制</li>
+              </ol>
+            </li>
+            <li><span class="chapter-nav-num">04</span>実行計画</li>
+            <li><span class="chapter-nav-num">05</span>費用</li>
+          </ol>
+        </nav>
+      </section>
+
+      <!-- ==================== SLIDE 36 (PATTERN 42: 価値をつくる流れ) ==================== -->
+      <section class="slide slide-light" id="slide-36">
+        <div class="slide-header">
+          <img src="./logo.svg" alt="ロゴ">
+          <span class="slide-tag">PATTERN 42</span>
+        </div>
+        <div class="slide-title-area">
+          <h2 class="slide-title">投じたものが成果になって次の元手に戻る</h2>
+          <p class="slide-subtitle"><span class="evidence-tag tone-interp">架空の例</span>INPUT → 強み → OUTPUT → OUTCOME の順に、事業の一周を1枚で見せる</p>
+        </div>
+        <div class="slide-body">
+          <div class="reveal" style="width:100%">
+            <svg viewBox="0 0 1120 396" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;font-family:'Noto Sans JP',sans-serif"
+              role="img" aria-label="投じるものから強みを通して成果が生まれ、次の投資に戻る流れの図">
+              <defs>
+                <marker id="p42-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" fill="var(--accent-deep)"/>
+                </marker>
+              </defs>
+
+              <!-- 目指す姿（MISSION や事業の目的を1文で） -->
+              <text x="560" y="20" text-anchor="middle" fill="var(--c-ink)"><tspan font-size="11" font-weight="900" fill="var(--c-muted)" letter-spacing="0.1em">目指す姿　</tspan><tspan font-size="16" font-weight="900">ここに事業の目的を1文で書く</tspan></text>
+
+              <!-- 列の見出し -->
+              <text x="95" y="48" text-anchor="middle" font-size="11" font-weight="900" fill="var(--c-muted)" letter-spacing="0.1em">INPUT｜投じるもの</text>
+              <text x="440" y="48" text-anchor="middle" font-size="11" font-weight="900" fill="var(--c-muted)" letter-spacing="0.1em">強み｜何で価値をつくるか</text>
+              <text x="780" y="48" text-anchor="middle" font-size="11" font-weight="900" fill="var(--c-muted)" letter-spacing="0.1em">OUTPUT｜生み出すもの</text>
+              <text x="1015" y="48" text-anchor="middle" font-size="11" font-weight="900" fill="var(--c-muted)" letter-spacing="0.1em">OUTCOME｜相手に起きる変化</text>
+
+              <!-- INPUT: 元手を数字で -->
+              <rect x="0" y="62" width="190" height="280" rx="10" fill="#ffffff" stroke="var(--surface-border)"/>
+              <text x="20" y="92" font-size="11" font-weight="700" fill="var(--text)">メンバー</text>
+              <text x="20" y="116" font-size="16" font-weight="900" fill="var(--c-ink)">12名</text>
+              <text x="20" y="158" font-size="11" font-weight="700" fill="var(--text)">支援した案件</text>
+              <text x="20" y="182" font-size="16" font-weight="900" fill="var(--c-ink)">48件</text>
+              <text x="20" y="224" font-size="11" font-weight="700" fill="var(--text)">取引先</text>
+              <text x="20" y="248" font-size="16" font-weight="900" fill="var(--c-ink)">30社</text>
+              <text x="20" y="290" font-size="11" font-weight="700" fill="var(--text)">ためた事例</text>
+              <text x="20" y="314" font-size="16" font-weight="900" fill="var(--c-ink)">200件</text>
+              <line x1="196" y1="202" x2="224" y2="202" stroke="var(--accent-deep)" stroke-width="2" marker-end="url(#p42-arrow)"/>
+
+              <!-- 強み: 3つの重なり。重なった部分が他社に真似されにくいところ -->
+              <rect x="230" y="62" width="420" height="280" rx="10" fill="#ffffff" stroke="var(--surface-border)"/>
+              <circle cx="440" cy="150" r="66" fill="none" stroke="var(--ink-500)" stroke-width="1.5"/>
+              <circle cx="398" cy="222" r="66" fill="none" stroke="var(--ink-500)" stroke-width="1.5"/>
+              <circle cx="482" cy="222" r="66" fill="none" stroke="var(--ink-500)" stroke-width="1.5"/>
+              <text x="440" y="118" text-anchor="middle" font-size="16" font-weight="900" fill="var(--c-ink)">強みA</text>
+              <text x="440" y="135" text-anchor="middle" font-size="11" font-weight="700" fill="var(--text)">〇〇する力</text>
+              <text x="372" y="240" text-anchor="middle" font-size="16" font-weight="900" fill="var(--c-ink)">強みB</text>
+              <text x="372" y="257" text-anchor="middle" font-size="11" font-weight="700" fill="var(--text)">〇〇する力</text>
+              <text x="508" y="240" text-anchor="middle" font-size="16" font-weight="900" fill="var(--c-ink)">強みC</text>
+              <text x="508" y="257" text-anchor="middle" font-size="11" font-weight="700" fill="var(--text)">〇〇する力</text>
+              <text x="440" y="200" text-anchor="middle" font-size="11" font-weight="900" fill="var(--accent-deep)">掛け合わせ</text>
+              <rect x="246" y="300" width="388" height="30" rx="6" fill="var(--bg-light)"/>
+              <text x="440" y="319" text-anchor="middle" font-size="11" font-weight="700" fill="var(--text)">土台：品質の決まりごと・体制・仕組み</text>
+              <line x1="656" y1="202" x2="684" y2="202" stroke="var(--accent-deep)" stroke-width="2" marker-end="url(#p42-arrow)"/>
+
+              <!-- OUTPUT: 提供するもの -->
+              <rect x="690" y="62" width="180" height="280" rx="10" fill="#ffffff" stroke="var(--surface-border)"/>
+              <rect x="706" y="82" width="148" height="56" rx="8" fill="var(--bg-light)"/>
+              <text x="780" y="106" text-anchor="middle" font-size="13" font-weight="900" fill="var(--c-ink)">提供するものA</text>
+              <text x="780" y="124" text-anchor="middle" font-size="11" font-weight="700" fill="var(--text)">例：提案書</text>
+              <rect x="706" y="152" width="148" height="56" rx="8" fill="var(--bg-light)"/>
+              <text x="780" y="176" text-anchor="middle" font-size="13" font-weight="900" fill="var(--c-ink)">提供するものB</text>
+              <text x="780" y="194" text-anchor="middle" font-size="11" font-weight="700" fill="var(--text)">例：研修</text>
+              <rect x="706" y="222" width="148" height="56" rx="8" fill="var(--bg-light)"/>
+              <text x="780" y="246" text-anchor="middle" font-size="13" font-weight="900" fill="var(--c-ink)">提供するものC</text>
+              <text x="780" y="264" text-anchor="middle" font-size="11" font-weight="700" fill="var(--text)">例：伴走支援</text>
+              <line x1="876" y1="202" x2="904" y2="202" stroke="var(--accent-deep)" stroke-width="2" marker-end="url(#p42-arrow)"/>
+
+              <!-- OUTCOME: 関わる人ごとの変化。アクセントの薄い面はここだけ -->
+              <rect x="910" y="62" width="210" height="280" rx="10" fill="var(--accent-tint)" stroke="var(--surface-border)"/>
+              <text x="930" y="92" font-size="13" font-weight="900" fill="var(--c-ink)">顧客</text>
+              <text x="930" y="110" font-size="11" font-weight="700" fill="var(--text)">判断が早くなる</text>
+              <text x="930" y="158" font-size="13" font-weight="900" fill="var(--c-ink)">メンバー</text>
+              <text x="930" y="176" font-size="11" font-weight="700" fill="var(--text)">できる仕事が増える</text>
+              <text x="930" y="224" font-size="13" font-weight="900" fill="var(--c-ink)">取引先</text>
+              <text x="930" y="242" font-size="11" font-weight="700" fill="var(--text)">一緒に受けられる案件が増える</text>
+              <text x="930" y="290" font-size="13" font-weight="900" fill="var(--c-ink)">業界</text>
+              <text x="930" y="308" font-size="11" font-weight="700" fill="var(--text)">事例が共有され、同じ失敗が減る</text>
+
+              <!-- 戻りの矢印: 成果が次の INPUT になる -->
+              <path d="M1015,342 V368 H95 V348" fill="none" stroke="var(--accent-deep)" stroke-width="2" marker-end="url(#p42-arrow)"/>
+              <text x="555" y="390" text-anchor="middle" font-size="11" font-weight="700" fill="var(--c-muted)">成果が実績・知見・関係として、次の INPUT に戻る</text>
+            </svg>
+          </div>
+        </div>
+        <div class="pattern-note"><strong>使いどころ:</strong> 事業紹介・事業設計の冒頭で「何を元手に、何を強みに、誰に何が起きるか」を1枚で見せる。<strong>作り方:</strong> 新規CSSクラスは不要で、インラインSVGだけで構成する（PATTERN 34 と同じ作り）。INPUTは数字で書き、OUTCOMEは関わる人ごとに1行ずつ書く。最後の戻りの矢印で「一周すると元手が増える」ことを示す。<strong>注意:</strong> 強みは3つまで。4つ以上ならPATTERN 29 で一覧にする。PATTERN 34 は「誰が・どの順で動くか」、この型は「何が何に変わるか」を見せる。</div>
+        <div class="slide-footer">
+          <span>〇〇株式会社</span>
+          <span class="slide-page-number">36 / 36</span>
         </div>
       </section>
     </div>
@@ -5207,10 +5444,12 @@
         <option value="slide-32">32. 推移グラフ（中心線・管理限界つき）</option>
         <option value="slide-33">33. 散布図（回帰直線つき）</option>
         <option value="slide-34">34. 空欄（未定）の見せ方</option>
+        <option value="slide-35">35. 右の章ナビ</option>
+        <option value="slide-36">36. 価値をつくる流れ（INPUT→OUTCOME）</option>
       </select>
     </div>
 
-    <span id="page-indicator">1 / 34</span>
+    <span id="page-indicator">1 / 36</span>
 
     <button id="next-btn" class="nav-btn" aria-label="次のスライド">
       <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
