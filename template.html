@@ -1653,6 +1653,8 @@
         if (!skipHistory) {
           history.replaceState(null, '', '#' + slides[currentIndex].id);
         }
+        // URLのハッシュを消して開き直すビューア（プレビュー画面の自動更新など）向けに、ブラウザにも現在地を残す
+        try { localStorage.setItem('slide-pos:' + location.pathname, slides[currentIndex].id); } catch (e) {}
       };
 
       // 次へ: 隠れている .step があれば1つ出す。なければ次のスライドへ
@@ -1717,7 +1719,9 @@
       });
 
       // 初期表示: URLハッシュに前回のスライドIDが残っていれば、そこから再開する
-      const restoreIndex = slides.findIndex(s => s.id === window.location.hash.replace('#', ''));
+      let savedId = window.location.hash.replace('#', '');
+      if (!savedId) { try { savedId = localStorage.getItem('slide-pos:' + location.pathname) || ''; } catch (e) {} }
+      const restoreIndex = slides.findIndex(s => s.id === savedId);
       if (restoreIndex > 0) {
         slides[0].classList.remove('active');
         goToSlide(restoreIndex, true, true);
