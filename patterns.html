@@ -2930,7 +2930,7 @@
       background: #ffffff;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: flex-start; /* 本文の上端をそろえ、タグだけ下端へ（.panel-tags の margin-top: auto） */
       height: 104px;
     }
 
@@ -2983,6 +2983,7 @@
       display: flex;
       gap: 4px;
       flex-wrap: wrap;
+      margin-top: auto;
     }
 
     .panel-tag {
