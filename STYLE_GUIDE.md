@@ -85,7 +85,7 @@
 - **色の役割を増やさない**: 優先度、担当者名、ツール名などの補助情報に別色を割り当てません。アクセントは見出し、罫線、重要な数値など、情報階層を作る箇所に限定します。
 - **使用フォント**: 欧文は `Inter`、和文は `Noto Sans JP` を使用します。他のフォント（Outfitなど）は原則使用しません。
 - **アイコン**: 図形や絵文字で意味を補う必要がある箇所には、[Google Material Symbols](https://fonts.google.com/icons) を使用します。アイコンは見出し・数値・ステップなどの内容を補助する目的に限り、装飾のために多用しません。同一デッキ内では `Outlined` を基本スタイルとして統一し、アクセントカラーは文字・罫線と同じクライアントカラー1色のルールに従います。
-  - HTMLの `<head>` で、必要なアイコンだけを指定したGoogle Fontsのstylesheetを読み込みます。例: `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=block">`
+  - HTMLの `<head>` で、必要なアイコンだけを指定したGoogle Fontsのstylesheetを読み込みます。例: `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=groups,lightbulb,trending_up&display=block">`（`icon_names` は使うアイコンだけをアルファベット順に並べる。足したらURLがHTTP 200を返すことを確かめる）
   - 本文では `<span class="material-symbols-outlined" aria-hidden="true">insights</span>` のように、[Material Symbolsの名称](https://fonts.google.com/icons)をテキストとして指定します。アイコン単体で意味を伝える場合は `aria-hidden` を外し、代わりに `aria-label` を付けます。
   - 原則 `font-size: 20px` を基準とし、見出し横などはテキストの行高に合わせて調整します。絵文字・Unicode記号・個別のSVGアイコンを混在させず、ブランドロゴや図解に固有のアイコンが必要な場合のみ例外とします。
 
@@ -419,6 +419,14 @@ AIツール／エディタ内蔵のPDF書き出し機能を使うと、**1枚目
         | **ダーク面の文字・バー・記号** | `--accent-on-dark` |
         | ごく薄いウォッシュ（面） | `rgba(var(--accent-rgb), 0.05〜0.12)` |
         | アクセントを薄く敷いた不透明な面 | `--accent-tint` |
+*   **装飾の決まり（AIで作ったように見せない。2026-11-19）**:
+    色の付け方がページごとにばらばらだと、AIで作った資料に見えます。次の4つにそろえます。
+    1.  **カードは白地と細い枠線だけ。** 左端や上端に色の線（`::before` の4px罫）を付けません。ダーク面のカードの枠は `rgba(255,255,255,0.12)`
+    2.  **番号・区分のラベル（`TARGET 01`・`Q1`・`PLAN A`・年など）は、塗りのピルにせず色文字にする。** ライト面は `--accent-deep`、ダーク面は `--accent-on-dark`。字間 `0.12em`・11px・太字。塗りのピルを使うのは、ヘッダーの `.slide-tag` とページ番号だけ
+    3.  **色の面を使うのはチップと、1枚に1つの強調だけ。** チップ（`--accent-tint` の地に薄い枠）は使ってよい。強調は濃いグレーの帯（`--c-ink` の地に白文字）を1枚に1つまで
+    4.  **補足の帯（`.panel-hint` など）は薄いグレーの地にする。** 見出しの文字だけをアクセントの色にする。薄いピンクや薄い青の帯を何本も並べない
+    5.  **番号ラベルのあるカードには、Material Symbols のアイコンを1つずつ置く。** 番号ラベルの上に `.card-icon`（28px・`--accent-deep`、ダーク面は `--accent-on-dark`）で置き、カードの中身を表すものを選ぶ。よくある質問・料金プラン・チップの中には置かない。subgrid でそろえているカードは、`grid-row: span` と `grid-template-rows` の行数を1つ増やす
+    横に並ぶカードは、カード内の各行の上端を横でそろえます（`grid-template-rows: subgrid`）。直したら各行の位置を測って確かめます。
 *   **テーマ切り替えによるリズム感**:
     スライドを連続でめくる際のメリハリ（リズム）を重視します。ダークとライトを交互に配置するか、あるいは「現状分析・課題（ダーク）」から「理想・解決策（ライト）」へ移行するタイミングなど、論理展開の切れ目でテーマを大きく切り替えてください。
 

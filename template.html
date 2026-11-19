@@ -13,6 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Noto+Sans+JP:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&amp;icon_names=lightbulb,trending_up&amp;display=block" rel="stylesheet">
   
   <meta name="robots" content="noindex,nofollow">
   <meta name="googlebot" content="noindex,nofollow">
@@ -338,33 +339,20 @@
       text-align: left;
     }
 
-    .card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 4px;
-      height: 100%;
-      background: var(--accent);
-      opacity: 0.9;
-    }
+    .card::before { display: none; /* カードに左の色線は付けない（2026-11-19） */ }
 
     .slide-dark .card {
       background: var(--ink-800);
-      border: 1px solid rgba(var(--accent-rgb), 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.12);
     }
 
-    .slide-dark .card::before {
-      background: var(--accent-on-dark);
-    }
+    .slide-dark .card::before { display: none; }
 
     .card.card-accent {
       background: var(--accent-tint);
     }
 
-    .card.card-accent::before {
-      background: var(--accent);
-    }
+    .card.card-accent::before { display: none; }
 
     .card:hover {
       transform: translateY(-2px);
@@ -372,18 +360,12 @@
       border-color: var(--accent);
     }
 
-    .card-num {
-      font-size: var(--fs-label);
-      font-weight: 900;
-      color: var(--on-accent);
-      letter-spacing: 0.08em;
-      margin-bottom: 8px;
-      display: inline-block;
-      background: var(--accent);
-      padding: 2px 10px;
-      border-radius: 20px;
-      align-self: flex-start;
-    }
+    .card-num { font-size: var(--fs-label); font-weight: 800; color: var(--accent-deep); letter-spacing: 0.12em; margin-bottom: 8px; display: inline-block; align-self: flex-start; /* 番号・区分は塗りのピルにせず色文字にする（2026-11-19） */ }
+
+    .slide-dark .card-num { color: var(--accent-on-dark); }
+    /* カード見出しのアイコン（Material Symbols Outlined。番号ラベルの上に置く） */
+    .card-icon { display: block; font-size: 28px; line-height: 1; color: var(--accent-deep); margin-bottom: 10px; }
+    .slide-dark .card-icon { color: var(--accent-on-dark); }
 
     /* 見出しの頭に置いたときは、文字と詰まらないよう右に間を空ける */
     .card-title .card-num {
@@ -612,15 +594,7 @@
       height: 100%;
     }
     
-    .pricing-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: var(--accent);
-    }
+    .pricing-card::before { display: none; /* 上の色線は付けない */ }
 
     
     .pricing-card:hover {
@@ -628,17 +602,7 @@
       box-shadow: 0 8px 24px rgba(31, 64, 75, 0.04);
     }
     
-    .pricing-card .plan-badge {
-      display: inline-block;
-      font-size: var(--fs-label);
-      font-weight: 800;
-      padding: 4px 8px;
-      border-radius: 4px;
-      background: var(--accent);
-      color: var(--on-accent);
-      margin-bottom: 12px;
-      letter-spacing: 0.05em;
-    }
+    .pricing-card .plan-badge { display: inline-block; font-size: var(--fs-label); font-weight: 800; color: var(--accent-deep); margin-bottom: 12px; letter-spacing: 0.12em; /* 色文字のラベル */ }
 
     
     .pricing-card .plan-title {
@@ -1174,14 +1138,14 @@
           <div class="grid-2">
             <div class="card reveal">
               <div>
-                <span class="card-num">POINT 01</span>
+                <span class="material-symbols-outlined card-icon" aria-hidden="true">lightbulb</span><span class="card-num">POINT 01</span>
                 <h3 class="card-title">課題の整理</h3>
                 <p class="card-text">ここに左側のポイント説明が入ります。簡潔に箇条書きや文章で記述します。</p>
               </div>
             </div>
             <div class="card card-accent reveal">
               <div>
-                <span class="card-num">POINT 02</span>
+                <span class="material-symbols-outlined card-icon" aria-hidden="true">trending_up</span><span class="card-num">POINT 02</span>
                 <h3 class="card-title">解決策の提示</h3>
                 <p class="card-text">ここに右側のポイント説明が入ります。強調カード（accent）を使用して視線を集めることができます。</p>
               </div>
