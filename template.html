@@ -1085,6 +1085,35 @@
         display: none !important;
       }
     }
+
+    /* ===================================================================
+       共通パーツ（2026-11-19 4資料をペルソナとこーちゃんに見てもらってそろえた）
+       案件側でこのパーツの見た目を上書きしない。
+       =================================================================== */
+
+    /* 1. 本文の開始位置: 中央寄せにせず、見出しの下から始める */
+    .slide-body { justify-content: flex-start; padding-top: 12px; }
+    .slide-lead .slide-body { justify-content: center; padding-top: 0; }
+
+    /* 2. 補足の帯: 白地・実線の枠・ラベルはアクセント色。暗いスライドは半透明の白 */
+    .panel-hint { background: #fff; border: 1px solid var(--surface-border); border-radius: 10px; padding: 10px 16px; font-size: 13px; line-height: 1.55; color: var(--c-ink); }
+    .panel-hint strong { color: var(--accent-deep); font-weight: 800; margin-right: 10px; }
+    .slide-dark .panel-hint { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.16); color: #fff; }
+    .slide-dark .panel-hint strong { color: var(--accent-on-dark); }
+
+    /* 3. タグ: 淡いアクセント色の地・角丸 */
+    .panel-tag, .tag { background: var(--accent-tint); color: var(--accent-deep); border: 1px solid rgba(var(--accent-rgb), 0.3); border-radius: 999px; font-weight: 700; }
+    .panel-tag { font-size: 10px; padding: 1px 8px; }
+
+    /* 4. 推奨のバッジ */
+    .plan-rec { display: inline-block; vertical-align: middle; margin-left: 8px; padding: 2px 9px; border-radius: 999px; background: var(--accent); color: var(--on-accent); font-size: 10.5px; font-weight: 900; letter-spacing: 0.08em; line-height: 1.5; }
+
+    /* 5. チェック記号: ✓ をアクセント色で */
+    .roadmap-list li::before { content: "✓"; color: var(--accent-deep); font-weight: 900; }
+    .slide-dark .roadmap-list li::before { color: var(--accent-deep); }
+
+    /* 7. 暗いスライドのフッターを読める明るさに */
+    .slide-dark .slide-footer { color: rgba(255, 255, 255, 0.7); }
   </style>
 </head>
 
@@ -1276,7 +1305,7 @@
             <div class="pricing-card">
               <div>
                 <span class="plan-badge">PLAN B</span>
-                <h3 class="plan-title">スタンダードプラン（推奨パッケージ）</h3>
+                <h3 class="plan-title">スタンダードプラン<span class="plan-rec">推奨</span></h3>
                 <div class="plan-price">¥200,000<span>/ 月 (税別)</span></div>
                 <ul class="plan-features">
                   <li>週1回のオンラインミーティング</li>
