@@ -51,17 +51,18 @@
          以下は data-accent を指定しなかったときの既定値。
          ------------------------------------------------------------------ */
 
-      /* プリセット: Neon Yellow（既定） */
-      --volt: #d7ff00;
-      --volt-deep: #a8c400;
-      --volt-rgb: 215, 255, 0;
+      /* パターン集はレイアウトを見るためのワイヤー。色はグレーだけにする（2026-11-24）。
+         案件の色は template.html / template_B.html 側で決める */
+      --volt: #c8c8c8;
+      --volt-deep: #6b6b6b;
+      --volt-rgb: 200, 200, 200;
 
       --accent: var(--volt);            /* 主アクセント。チップ・バー・塗り */
       --accent-deep: var(--volt-deep);  /* ライト面で線・記号に使う濃いめ（✓マーク等） */
       --accent-rgb: var(--volt-rgb);    /* 透過ウォッシュ用。カンマ区切りのRGB値 */
       --accent-on-dark: var(--volt);    /* ダーク面に置く文字・バー。暗い色を指定されたとき明るく逃がす */
       --on-accent: var(--ink-700);      /* アクセント塗りの「上」に乗る文字色 */
-      --accent-tint: #fbffe9;           /* アクセントをごく薄く敷いた面 */
+      --accent-tint: #f4f4f4;           /* アクセントをごく薄く敷いた面 */
 
       /* ダーク面のグラデ（AM95のソール）。アクセント側は単色運用でグラデを使わない */
       --grad-ink: linear-gradient(160deg, #2c2c31 0%, #0b0b0b 70%);
@@ -344,7 +345,7 @@
       border: 1px solid var(--surface-border);
       border-radius: 12px;
       padding: 20px;
-      box-shadow: 0 4px 12px rgba(31, 64, 75, 0.015);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.015);
       transition: var(--transition-smooth);
       position: relative;
       overflow: hidden;
@@ -780,7 +781,7 @@
       left: 0;
       width: 100%;
       height: 6px;
-      background: #9aa4a8;
+      background: #a3a3a3;
       border-top-left-radius: 20px;
       border-top-right-radius: 20px;
     }
@@ -809,7 +810,7 @@
       flex: 1.1;
       justify-content: center;
       align-items: flex-start;
-      box-shadow: 0 15px 35px rgba(18, 43, 51, 0.2);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
     }
 
     .bridge-box .card-num {
@@ -981,7 +982,7 @@
       gap: 4px;
     }
     .ato-outline-cell.asis { background: #f6f7f7; border: 1px solid var(--surface-border); }
-    .ato-outline-cell.tobe { background: #f0f7f8; border: 1px solid var(--ink-100); }
+    .ato-outline-cell.tobe { background: #f3f3f3; border: 1px solid var(--ink-100); }
     .ato-outline-cell.action { background: #e9f2f5; border: 1.5px solid var(--ink-500); }
 
     /* AS-IS の中の事実は控えめに、そこから読み取った課題を本題として太くする */
@@ -1090,7 +1091,7 @@
     }
 
     .matrix-q-card.emphasis {
-      background: #f0f7f8;
+      background: #f3f3f3;
       border-color: var(--ink-100);
     }
 
@@ -1222,7 +1223,7 @@
     .flowchart-step-num {
       width: 32px;
       height: 32px;
-      background: #f0f7f8;
+      background: #f3f3f3;
       color: var(--ink-700);
       border-radius: 50%;
       display: flex;
@@ -1249,7 +1250,7 @@
     }
 
     .flowchart-step-desc {
-      background: #f0f7f8;
+      background: #f3f3f3;
       border: 1px solid var(--ink-100);
       border-radius: 4px;
       padding: 8px;
@@ -1291,7 +1292,7 @@
     }
 
     .insight-card {
-      background: #f0f7f8;
+      background: #f3f3f3;
       border: 1.5px solid var(--ink-100);
       border-left: 5px solid var(--ink-500);
       border-radius: 8px;
@@ -1383,7 +1384,7 @@
       font-size: var(--fs-display);
       font-weight: 900;
       color: transparent;
-      -webkit-text-stroke: 2px rgba(185, 215, 222, 0.35);
+      -webkit-text-stroke: 2px rgba(210, 210, 210, 0.35);
       line-height: 1;
     }
 
@@ -1569,7 +1570,7 @@
       border: 1px solid var(--surface-border);
       border-radius: 18px;
       padding: 18px 22px;
-      box-shadow: 0 6px 18px rgba(17, 37, 45, 0.05);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
     }
 
     .framework-lead-copy {
@@ -1876,7 +1877,7 @@
       justify-content: space-between;
       gap: 20px;
       padding: 0 4px 10px;
-      border-bottom: 2px solid rgba(17, 37, 45, 0.12);
+      border-bottom: 2px solid rgba(0, 0, 0, 0.12);
       margin-bottom: 10px;
     }
 
@@ -2306,9 +2307,9 @@
       box-shadow: 0 8px 20px rgba(66, 66, 71, 0.25);
     }
 
-    .brand-bubble.competitor-a { width: 64px; height: 64px; left: 29%; top: 24%; background: #e7eef0; color: var(--c-muted); }
-    .brand-bubble.competitor-b { width: 76px; height: 76px; left: 35%; top: 59%; background: #e7eef0; color: var(--c-muted); }
-    .brand-bubble.competitor-c { width: 56px; height: 56px; left: 71%; top: 61%; background: #e7eef0; color: var(--c-muted); }
+    .brand-bubble.competitor-a { width: 64px; height: 64px; left: 29%; top: 24%; background: #ebebeb; color: var(--c-muted); }
+    .brand-bubble.competitor-b { width: 76px; height: 76px; left: 35%; top: 59%; background: #ebebeb; color: var(--c-muted); }
+    .brand-bubble.competitor-c { width: 56px; height: 56px; left: 71%; top: 61%; background: #ebebeb; color: var(--c-muted); }
 
     /* PATTERN 25 体制・役割分担 */
     .org-layout {
@@ -2992,6 +2993,11 @@
     .slide-dark .panel-tag { background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.7); }
     .slide-dark .panel-hint { color: var(--ink-100); background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.2); }
 
+    /* 写真と絵文字もグレーにする（ワイヤー用） */
+    .slide img:not([src$=".svg"]),
+    .cjm-icon-row,
+    .cjm-emotion { filter: grayscale(1); }
+
     /* ------------------------------------------------------------------
        制作用: アクセントカラー・ピッカー（表紙のみ表示）
        表紙で色を試して決めるためのUI。印刷・PDF書き出しでは自動的に消える。
@@ -3479,8 +3485,8 @@
              使い方: 色を選ぶかカラーコードを直接打つと、デッキ全体に即反映される。
                      決まったら、そのコードを上の section の data-accent に書く。 -->
         <div class="accent-picker">
-          <input type="color" value="#d7ff00" aria-label="アクセントカラーを選ぶ">
-          <input type="text" value="#d7ff00" maxlength="7" spellcheck="false" aria-label="カラーコード">
+          <input type="color" value="#c8c8c8" aria-label="アクセントカラーを選ぶ">
+          <input type="text" value="#c8c8c8" maxlength="7" spellcheck="false" aria-label="カラーコード">
         </div>
         <!-- ▲制作用ここまで -->
         <div class="slide-header">
@@ -5890,7 +5896,7 @@
       // 現在効いているアクセント色。指定がなければCSSの既定値が返る
       function current() {
         return getComputedStyle(document.documentElement)
-          .getPropertyValue('--accent').trim() || '#d7ff00';
+          .getPropertyValue('--accent').trim() || '#c8c8c8';
       }
 
       window.DiSAAccent = { apply: apply, current: current };
