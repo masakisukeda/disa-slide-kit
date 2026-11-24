@@ -28,7 +28,7 @@
        白・黒・グレーは使わない。濃淡は --duo の透明度で付ける。
        =================================================================== */
     :root {
-      --paper: #f2389b;
+      --paper: #d7ff00;
       --paper-rgb: 242, 56, 155;
       --duo: #4d0a2c;
       --duo-rgb: 77, 10, 44;
@@ -139,7 +139,7 @@
       display: flex; justify-content: space-between; align-items: baseline;
       font-family: 'Inter', 'Noto Sans JP', sans-serif;
       font-size: var(--fs-label); font-weight: 700;
-      letter-spacing: 0.08em; text-transform: uppercase;
+      letter-spacing: 0.08em;  /* 大文字にしない（DiSA が DISA になるため） */
     }
     .slide-page-number { font-weight: 900; }
 
@@ -212,15 +212,15 @@
 
     /* ---------- 1. 表紙 ---------- */
     .p-cover .halftone {
-      position: absolute; left: 0; right: 0; bottom: 0; height: 64%;
+      position: absolute; left: 0; right: 44%; bottom: 0; height: 64%;  /* 写真は左に寄せ、右下の和文は紙の上に置く */
       z-index: 1;
     }
     .p-cover .slide-body { justify-content: flex-start; padding-top: 18px; }
     .p-cover .cover-jp {
-      position: absolute; right: 0; bottom: 64px;
+      position: absolute; right: 0; bottom: 64px; max-width: 44%; text-wrap: balance;  /* 写真に重ならない幅で折り返す */
       text-align: right;
     }
-    .p-cover .cover-jp .poster-title { font-size: 44px; }
+    .p-cover .cover-jp .poster-title { font-size: 40px; }
 
     /* ---------- 2. 中表紙 ---------- */
     .p-section .slide-body { justify-content: flex-end; padding-bottom: 28px; }
@@ -552,14 +552,14 @@
            インクの色は末尾のスクリプトが同じ色相から自動で作る。
            写真は .halftone の img を差し替える。カラー写真でよい。
            ======================================================== -->
-      <section class="slide slide-paper p-cover active" id="slide-1" data-accent="#f2389b">
+      <section class="slide slide-paper p-cover active" id="slide-1" data-accent="#d7ff00">
         <!-- ▼制作用: 紙の色のピッカー。納品前にこのブロックごと削除する -->
         <div class="accent-picker">
-          <input type="color" value="#f2389b" aria-label="紙の色を選ぶ">
-          <input type="text" value="#f2389b" maxlength="7" spellcheck="false" aria-label="カラーコード">
+          <input type="color" value="#d7ff00" aria-label="紙の色を選ぶ">
+          <input type="text" value="#d7ff00" maxlength="7" spellcheck="false" aria-label="カラーコード">
         </div>
         <!-- ▲制作用ここまで -->
-        <div class="halftone is-faded"><img src="./profile-photo.svg" alt=""></div>
+        <div class="halftone is-faded"><img src="./cover-photo.jpg" alt=""></div>
         <div class="poster-head">
           <span class="logo-box"><img src="./logo.svg" alt="ロゴ"></span>
         </div>
@@ -805,7 +805,7 @@
       }
 
       function current() {
-        return getComputedStyle(document.documentElement).getPropertyValue('--paper').trim() || '#f2389b';
+        return getComputedStyle(document.documentElement).getPropertyValue('--paper').trim() || '#d7ff00';
       }
 
       window.DiSAAccent = { apply: apply, current: current };
