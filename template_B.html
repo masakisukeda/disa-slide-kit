@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <title>[クライアント名]様向け ご提案スライド | 〇〇株式会社</title>
+  <meta name="description" content="[クライアント名]様向けの資料です。">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Noto+Sans+JP:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&amp;icon_names=lightbulb,trending_up&amp;display=block" rel="stylesheet">
+  
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="googlebot" content="noindex,nofollow">
+
+  <style>
+    /* ===================================================================
+       パターンB（2026-11-24 追加。標準の template.html がパターンA）
+       レコードジャケットのような「2色刷り＋網点写真＋特大の詰め組み」の見た目。
+       使う色は2つだけ。
+         --paper … 紙の色（表紙の data-accent で決める。明るい色にする）
+         --duo   … インクの色（paper と同じ色相の濃い色。スクリプトが自動計算）
+       白・黒・グレーは使わない。濃淡は --duo の透明度で付ける。
+       =================================================================== */
+    :root {
+      --paper: #f2389b;
+      --paper-rgb: 242, 56, 155;
+      --duo: #4d0a2c;
+      --duo-rgb: 77, 10, 44;
+
+      /* このテーマ専用の特大サイズ。標準の10段（--fs-*）に足すもの */
+      --fs-poster: 150px;      /* 表紙・中表紙の英字。1行10字まで */
+      --fs-poster-mid: 104px;  /* 数字・英字の見出し */
+      --fs-poster-jp: 64px;    /* 和文の大見出し。1行12字まで */
+      --fs-poster-stat: 300px;  /* 主役の数字（1枚に1つ） */
+      --fs-poster-ghost: 380px; /* 中表紙の背景に薄く置く章番号 */
+      --fs-poster-unit: 120px;  /* 主役の数字につける単位 */
+      --fs-poster-name: 34px;   /* ヘッダーの英字の名前 */
+      --fs-poster-col: 22px;    /* 3つ並びの見出し */
+
+      --fs-title-lead: 40px;
+      --fs-title-slide: 28px;
+      --fs-card-title: 16px;
+      --fs-subtitle: 14px;
+      --fs-body: 13px;
+      --fs-caption: 11px;
+      --fs-label: 10px;
+
+      --primary-dark: #0b0b0b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--primary-dark);
+      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+      font-feature-settings: "palt";
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #presentation-viewport {
+      width: 100vw; height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+
+    #presentation-wrapper {
+      width: 1280px; height: 720px;
+      position: relative; flex-shrink: 0;
+      transform-origin: center center;
+      background: var(--paper);
+      box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute; inset: 0;
+      width: 1280px; height: 720px;
+      opacity: 0; pointer-events: none; visibility: hidden;
+      transition: opacity 0.5s ease, visibility 0.5s;
+      padding: 40px 64px 30px;
+      display: flex; flex-direction: column; justify-content: space-between;
+      z-index: 1;
+      overflow: hidden;
+    }
+    .slide.active { opacity: 1; pointer-events: auto; visibility: visible; z-index: 2; }
+
+    /* 面は2種類。紙の面（ふつう）と、インクを敷いた面（強調・区切り） */
+    .slide-paper { background: var(--paper); color: var(--duo); }
+    .slide-ink   { background: var(--duo);   color: var(--paper); }
+
+    /* ---------- ヘッダー：ロゴの箱＋英字の名前（ジャケットの上の帯） ---------- */
+    .poster-head {
+      position: relative; z-index: 3;
+      display: flex; align-items: center; gap: 16px;
+      padding-bottom: 12px;
+      border-bottom: 3px solid currentColor;
+    }
+    /* ロゴは箱を付けず、文字だけをインクの色にする（インクの面では紙の色）。
+       ロゴの画像そのものを、body 冒頭の SVG フィルター（#logo-duo / #logo-paper）で塗り替える。
+       以前は色の四角を重ねていたが、拡大表示で四角の端が薄い線に見えたのでやめた（2026-11-24） */
+    .logo-box { display: inline-flex; align-items: center; height: 44px; }
+    .logo-box img { height: 34px; filter: url(#logo-duo); }
+    .slide-ink .logo-box img { filter: url(#logo-paper); }
+    .logo-filters { position: absolute; width: 0; height: 0; overflow: hidden; }
+    .logo-filters #logo-duo feFlood { flood-color: var(--duo); }
+    .logo-filters #logo-paper feFlood { flood-color: var(--paper); }
+
+    /* ロゴは表紙だけに出す。2枚目以降はヘッダーの英字の名前だけにする */
+    .slide:not(#slide-1) .logo-box { display: none; }
+
+    .poster-name {
+      font-family: 'Inter', sans-serif;
+      font-size: var(--fs-poster-name); font-weight: 900;
+      letter-spacing: -0.035em; line-height: 1;
+      text-transform: uppercase;
+    }
+    .poster-tag {
+      margin-left: auto;
+      font-family: 'Inter', sans-serif;
+      font-size: var(--fs-caption); font-weight: 900;
+      letter-spacing: 0.14em; text-transform: uppercase;
+    }
+
+    /* ---------- フッター：右下にクレジット1行（ジャケットの下の小さい行） ---------- */
+    .poster-foot {
+      position: relative; z-index: 3;
+      display: flex; justify-content: space-between; align-items: baseline;
+      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+      font-size: var(--fs-label); font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .slide-page-number { font-weight: 900; }
+
+    /* ---------- 文字 ---------- */
+    .poster-display {
+      font-family: 'Inter', sans-serif;
+      font-size: var(--fs-poster); font-weight: 900;
+      letter-spacing: -0.055em; line-height: 0.84;
+      text-transform: uppercase;
+      margin-left: -0.04em;
+    }
+    .poster-display.is-mid { font-size: var(--fs-poster-mid); }
+    .poster-jp {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: var(--fs-poster-jp); font-weight: 900;
+      letter-spacing: -0.04em; line-height: 1.12;
+    }
+    .poster-title {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: var(--fs-title-lead); font-weight: 900;
+      letter-spacing: -0.03em; line-height: 1.2;
+    }
+    .poster-sub {
+      font-size: var(--fs-subtitle); font-weight: 700;
+      line-height: 1.6; margin-top: 10px;
+    }
+    /* チェッカー（check_slide.py）が読む見出しの印。見た目は外側の poster-* が決める */
+    .slide-title, .slide-subtitle { font: inherit; letter-spacing: inherit; margin: 0; }
+
+    .poster-label {
+      font-family: 'Inter', sans-serif;
+      font-size: var(--fs-caption); font-weight: 900;
+      letter-spacing: 0.14em; text-transform: uppercase;
+    }
+
+    .slide-body {
+      position: relative; z-index: 2;
+      flex-grow: 1;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 16px 0;
+    }
+
+    /* ---------- 網点写真（2色の写真）----------
+       使い方: <div class="halftone"><img src="写真"></div>
+       写真の暗い所は --duo、明るい所は --paper になり、上に網点が乗る。
+       元の写真の色は何でもよい（白黒にしてから2色に置き換える）。 */
+    .halftone {
+      position: relative; overflow: hidden; isolation: isolate;
+      background: var(--duo);
+    }
+    .halftone img {
+      display: block; width: 100%; height: 100%;
+      object-fit: cover; object-position: center 20%;
+      filter: grayscale(1) contrast(1.15) brightness(1.08);
+      mix-blend-mode: screen;
+    }
+    /* 明るい所を紙の色に置き換える */
+    .halftone::before {
+      content: ''; position: absolute; inset: 0; z-index: 1;
+      background: var(--paper); mix-blend-mode: darken; pointer-events: none;
+    }
+    /* 網点。紙の色の点を細かく重ねて、印刷の粗さを出す */
+    .halftone::after {
+      content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+      background-image: radial-gradient(circle, rgba(var(--paper-rgb), 0) 0 1.1px, rgba(var(--paper-rgb), 0.55) 1.9px);
+      background-size: 4px 4px;
+    }
+    /* 文字を上に重ねる写真は、全体を薄くして文字を読めるようにする */
+    .halftone.is-faded img { opacity: 0.62; }
+
+    /* ---------- 1. 表紙 ---------- */
+    .p-cover .halftone {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 64%;
+      z-index: 1;
+    }
+    .p-cover .slide-body { justify-content: flex-start; padding-top: 18px; }
+    .p-cover .cover-jp {
+      position: absolute; right: 0; bottom: 64px;
+      text-align: right;
+    }
+    .p-cover .cover-jp .poster-title { font-size: 44px; }
+
+    /* ---------- 2. 中表紙 ---------- */
+    .p-section .slide-body { justify-content: flex-end; padding-bottom: 28px; }
+    .p-section .section-no {
+      position: absolute; right: -8px; top: -30px;
+      font-family: 'Inter', sans-serif; font-weight: 900;
+      font-size: var(--fs-poster-ghost); letter-spacing: -0.07em; line-height: 0.8;
+      opacity: 0.16;
+    }
+    .p-section .poster-title { margin-top: 26px; }
+
+    /* ---------- 3. ステートメント ---------- */
+    .p-statement .slide-body { justify-content: center; }
+    .p-statement .poster-jp { font-size: 76px; }
+    .p-statement .poster-sub { margin-top: 28px; max-width: 760px; font-size: var(--fs-card-title); }
+
+    /* ---------- 4. 3つ並び ---------- */
+    .poster-head-title { margin-bottom: 6px; }
+    .poster-cols {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;
+      border-top: 3px solid currentColor;
+      margin-top: 22px;
+    }
+    .poster-col {
+      padding: 18px 26px 4px 0;
+    }
+    .poster-col + .poster-col { padding-left: 26px; border-left: 1px solid rgba(var(--duo-rgb), 0.45); }
+    .poster-col .num {
+      font-family: 'Inter', sans-serif; font-weight: 900;
+      font-size: var(--fs-poster-mid); letter-spacing: -0.06em; line-height: 0.85;
+    }
+    .poster-col h3 {
+      font-size: var(--fs-poster-col); font-weight: 900; letter-spacing: -0.02em;
+      margin: 16px 0 8px; line-height: 1.3;
+    }
+    .poster-col p { font-size: var(--fs-body); font-weight: 600; line-height: 1.7; }
+
+    /* ---------- 5. 主役の数字 ---------- */
+    .p-stat .slide-body { flex-direction: row; align-items: center; gap: 56px; }
+    .p-stat .stat-big {
+      font-family: 'Inter', sans-serif; font-weight: 900;
+      font-size: var(--fs-poster-stat); letter-spacing: -0.075em; line-height: 0.8;
+      margin-left: -0.05em;
+    }
+    .p-stat .stat-big small { font-size: var(--fs-poster-unit); letter-spacing: -0.04em; }
+    .p-stat .stat-text { max-width: 440px; }
+    .p-stat .stat-text .poster-sub { font-size: var(--fs-card-title); }
+    .p-stat .stat-note { margin-top: 18px; font-size: var(--fs-caption); font-weight: 600; opacity: 0.8; }
+
+    /* ---------- 6. 写真＋文（担当者など） ---------- */
+    .p-photo { padding-left: 0; }
+    .p-photo .poster-head, .p-photo .poster-foot { margin-left: 64px; }
+    .p-photo .slide-body { flex-direction: row; justify-content: flex-start; align-items: stretch; gap: 56px; padding: 20px 64px 16px 0; }
+    .p-photo .halftone { width: 480px; flex-shrink: 0; }
+    .p-photo .photo-text { display: flex; flex-direction: column; justify-content: center; }
+    .p-photo .profile-list { list-style: none; margin-top: 22px; border-top: 3px solid currentColor; }
+    .p-photo .profile-list li {
+      display: grid; grid-template-columns: 112px 1fr; gap: 16px;
+      padding: 10px 0; border-bottom: 1px solid rgba(var(--duo-rgb), 0.45);
+      font-size: var(--fs-body); font-weight: 600; line-height: 1.6;
+    }
+    .p-photo .profile-list li span { font-family: 'Inter', sans-serif; font-weight: 900; font-size: var(--fs-caption); letter-spacing: 0.12em; padding-top: 2px; }
+
+    /* インク面では区切り線を紙の色に */
+    .slide-ink .poster-col + .poster-col,
+    .slide-ink .profile-list li { border-color: rgba(var(--paper-rgb), 0.45); }
+
+    /* Animation（template.html と同じ） */
+    .reveal { opacity: 0; transform: translateY(14px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.revealed { opacity: 1; transform: none; }
+    .step { opacity: 0; transition: opacity 0.4s ease; }
+    .step.is-shown { opacity: 1; }
+
+    /* Navigation UI */
+    #nav-controls {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      background: rgba(11, 11, 11, 0.95);
+      border: 1px solid rgba(var(--accent-rgb), 0.2);
+      padding: 8px 16px;
+      border-radius: 999px;
+      z-index: 1000;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      backdrop-filter: blur(8px);
+      gap: 12px;
+      transition: opacity 0.3s;
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #ffffff;
+      opacity: 0.7;
+      transition: var(--transition-smooth);
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      opacity: 1;
+      background: var(--accent);
+      color: var(--on-accent);
+      transform: scale(1.05);
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.2;
+      cursor: not-allowed;
+    }
+
+    .nav-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    .toc-select-wrapper select {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: var(--fs-caption);
+      font-weight: 700;
+      padding-right: 20px;
+      cursor: pointer;
+      outline: none;
+      max-width: 280px;
+    }
+
+    .toc-select-wrapper select option {
+      background: var(--primary-dark);
+      color: #ffffff;
+    }
+
+    #page-indicator {
+      color: rgba(255, 255, 255, 0.6);
+      font-family: 'Inter', sans-serif;
+      font-size: var(--fs-caption);
+      font-weight: 700;
+      min-width: 45px;
+      text-align: center;
+    }
+
+    #progress-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      border-bottom-left-radius: 999px;
+      border-bottom-right-radius: 999px;
+      overflow: hidden;
+    }
+
+    #progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent-on-dark);
+      transition: width 0.3s ease;
+    }
+
+    /* ------------------------------------------------------------------
+       制作用: アクセントカラー・ピッカー（表紙のみ表示）
+       表紙で色を試して決めるためのUI。印刷・PDF書き出しでは自動的に消える。
+       納品前に、このCSSブロックと表紙HTMLの .accent-picker ブロックを削除する。
+       ------------------------------------------------------------------ */
+    .accent-picker {
+      position: absolute;
+      right: 80px;   /* スライドの左右パディングに合わせる */
+      bottom: 92px;  /* フッターに重ならない高さ */
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 5px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(6px);
+      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+      opacity: 0.4;
+      transition: opacity 0.3s;
+    }
+
+    .accent-picker:hover,
+    .accent-picker:focus-within {
+      opacity: 1;
+    }
+
+    .accent-picker input[type="color"] {
+      width: 18px;
+      height: 18px;
+      padding: 0;
+      border: none;
+      border-radius: 50%;
+      background: none;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .accent-picker input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+
+    .accent-picker input[type="color"]::-webkit-color-swatch {
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 50%;
+    }
+
+    .accent-picker input[type="text"] {
+      width: 58px;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #ffffff;
+      font-family: 'Inter', sans-serif;
+      font-size: var(--fs-label);
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    .accent-picker input[type="text"].is-invalid { color: #ff8a8a; }
+
+    @media print {
+      .accent-picker { display: none !important; }
+    }
+
+    @media print {
+      @page {
+        size: 1280px 720px;
+        margin: 0;
+      }
+
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      html,
+      body {
+        width: 1280px !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+        background: #ffffff !important;
+      }
+
+      #presentation-viewport,
+      #presentation-wrapper {
+        display: block !important;
+        width: 1280px !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+        transform: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+      }
+
+      .slide {
+        position: relative !important;
+        inset: auto !important;
+        width: 1280px !important;
+        height: 720px !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+        transform: none !important;
+        transition: none !important;
+        page-break-after: always !important;
+        break-after: page !important;
+      }
+
+      .slide:last-child {
+        page-break-after: auto !important;
+        break-after: auto !important;
+      }
+
+      /* 深掘りの詳細はPDFに出ない。PDFで渡す資料なら、詳細は別スライドに書く */
+      .drill-panel,
+      [data-drill]::after {
+        display: none !important;
+      }
+
+      [data-drill] {
+        opacity: 1 !important;
+        box-shadow: none !important;
+      }
+
+      .reveal,
+      .step {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        transition: none !important;
+      }
+
+      #nav-controls {
+        display: none !important;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+  <!-- ロゴの色を塗り替えるフィルター（.logo-box img が使う） -->
+  <svg class="logo-filters" aria-hidden="true" focusable="false">
+    <filter id="logo-duo" color-interpolation-filters="sRGB"><feFlood/><feComposite in2="SourceAlpha" operator="in"/></filter>
+    <filter id="logo-paper" color-interpolation-filters="sRGB"><feFlood/><feComposite in2="SourceAlpha" operator="in"/></filter>
+  </svg>
+
+  <div id="presentation-viewport">
+    <div id="presentation-wrapper">
+
+      <!-- ==================== SLIDE 1 表紙 ====================
+           紙の色は下の section の data-accent に1色だけ書く（明るい色にする）。
+           インクの色は末尾のスクリプトが同じ色相から自動で作る。
+           写真は .halftone の img を差し替える。カラー写真でよい。
+           ======================================================== -->
+      <section class="slide slide-paper p-cover active" id="slide-1" data-accent="#f2389b">
+        <!-- ▼制作用: 紙の色のピッカー。納品前にこのブロックごと削除する -->
+        <div class="accent-picker">
+          <input type="color" value="#f2389b" aria-label="紙の色を選ぶ">
+          <input type="text" value="#f2389b" maxlength="7" spellcheck="false" aria-label="カラーコード">
+        </div>
+        <!-- ▲制作用ここまで -->
+        <div class="halftone is-faded"><img src="./profile-photo.svg" alt=""></div>
+        <div class="poster-head">
+          <span class="logo-box"><img src="./logo.svg" alt="ロゴ"></span>
+        </div>
+        <div class="slide-body">
+          <h1 class="poster-display reveal">Project<br>Plan 2027</h1>
+          <div class="cover-jp reveal">
+            <p class="poster-title">[クライアント名]様 ご提案</p>
+          </div>
+        </div>
+        <div class="poster-foot">
+          <span></span>
+          <span>[タイトル] / 〇〇株式会社 2026.11</span>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 2 中表紙 ==================== -->
+      <section class="slide slide-ink p-section section-divider" id="slide-2">
+        <div class="poster-head">
+          <span class="logo-box"><img src="./logo.svg" alt="ロゴ"></span>
+          <span class="poster-name">Chapter 01</span>
+          <span class="poster-tag">Section</span>
+        </div>
+        <div class="slide-body">
+          <span class="section-no" aria-hidden="true">01</span>
+          <p class="poster-display reveal">Why<br>Now</p>
+          <h2 class="poster-title reveal">いま見直す理由</h2>
+          <p class="poster-sub reveal">依頼から公開までの日数が、この2年で2倍になりました。</p>
+        </div>
+        <div class="poster-foot">
+          <span class="slide-page-number">02 / 06</span>
+          <span>[タイトル] / 〇〇株式会社</span>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 3 ステートメント ====================
+           言葉を1枚で見せる。1行12字まで、2行まで。 -->
+      <section class="slide slide-paper p-statement" id="slide-3">
+        <div class="poster-head">
+          <span class="logo-box"><img src="./logo.svg" alt="ロゴ"></span>
+          <span class="poster-name">Statement</span>
+          <span class="poster-tag">Our Point</span>
+        </div>
+        <div class="slide-body">
+          <p class="poster-label reveal">提案の中心</p>
+          <h2 class="poster-jp statement-text reveal">決める人を、<br>1人に決める。</h2>
+          <p class="poster-sub reveal">サイト改修の判断を、部署ごとの合議から担当者1人の決裁に変えます。確認の往復を減らし、公開までの日数を短くします。</p>
+        </div>
+        <div class="poster-foot">
+          <span class="slide-page-number">03 / 06</span>
+          <span>[タイトル] / 〇〇株式会社</span>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 4 3つ並び ==================== -->
+      <section class="slide slide-paper p-cols" id="slide-4">
+        <div class="poster-head">
+          <span class="logo-box"><img src="./logo.svg" alt="ロゴ"></span>
+          <span class="poster-name">3 Steps</span>
+          <span class="poster-tag">Plan</span>
+        </div>
+        <div class="slide-body">
+          <div class="poster-title poster-head-title"><h2 class="slide-title">3段階で進める</h2></div>
+          <div class="poster-sub"><p class="slide-subtitle">各段階の終わりに、御社の担当者と内容を確認してから次へ進みます。</p></div>
+          <div class="poster-cols">
+            <div class="poster-col reveal">
+              <div class="num">01</div>
+              <h3>今の進め方を調べる</h3>
+              <p>担当者5名に話を聞き、依頼から公開までの手順と日数を一覧にします。</p>
+            </div>
+            <div class="poster-col reveal">
+              <div class="num">02</div>
+              <h3>新しい手順を決める</h3>
+              <p>誰が何を決めるかを表にまとめ、御社の承認を取ります。</p>
+            </div>
+            <div class="poster-col reveal">
+              <div class="num">03</div>
+              <h3>1案件で試す</h3>
+              <p>次のLP制作で新しい手順を使い、日数を前と比べます。</p>
+            </div>
+          </div>
+        </div>
+        <div class="poster-foot">
+          <span class="slide-page-number">04 / 06</span>
+          <span>[タイトル] / 〇〇株式会社</span>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 5 主役の数字 ==================== -->
+      <section class="slide slide-ink p-stat" id="slide-5">
+        <div class="poster-head">
+          <span class="logo-box"><img src="./logo.svg" alt="ロゴ"></span>
+          <span class="poster-name">Result</span>
+          <span class="poster-tag">Goal</span>
+        </div>
+        <div class="slide-body">
+          <div class="stat-big reveal">14<small>日</small></div>
+          <div class="stat-text reveal">
+            <p class="poster-label">目標</p>
+            <div class="poster-title"><h2 class="slide-title">公開までを14日にする</h2></div>
+            <div class="poster-sub"><p class="slide-subtitle">いまは依頼から公開まで平均30日かかっています。確認の往復を減らし、半分以下にします。</p></div>
+            <p class="stat-note slide-source">※ 30日は2026年4〜9月の12案件の平均（御社の管理表から算出）</p>
+          </div>
+        </div>
+        <div class="poster-foot">
+          <span class="slide-page-number">05 / 06</span>
+          <span>[タイトル] / 〇〇株式会社</span>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 6 写真＋文（担当者） ==================== -->
+      <section class="slide slide-paper p-photo" id="slide-6">
+        <div class="poster-head">
+          <span class="logo-box"><img src="./logo.svg" alt="ロゴ"></span>
+          <span class="poster-name">Profile</span>
+          <span class="poster-tag">Director</span>
+        </div>
+        <div class="slide-body">
+          <div class="halftone"><img src="./profile-photo.svg" alt="担当者の顔写真"></div>
+          <div class="photo-text reveal">
+            <p class="poster-label">担当</p>
+            <div class="poster-display is-mid"><h2 class="slide-title">Your<br>Name</h2></div>
+            <div class="poster-sub"><p class="slide-subtitle">〇〇 太郎 / 〇〇株式会社 代表取締役</p></div>
+            <ul class="profile-list">
+              <li><span>ROLE</span>進め方の設計と、毎週の打ち合わせの進行を担当します</li>
+              <li><span>CAREER</span>ここに経歴を1行で書く</li>
+              <li><span>CONTACT</span>example.com</li>
+            </ul>
+          </div>
+        </div>
+        <div class="poster-foot">
+          <span class="slide-page-number">06 / 06</span>
+          <span>[タイトル] / 〇〇株式会社</span>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- NAVIGATION CONTROL BAR -->
+  <div id="nav-controls">
+    <button id="prev-btn" class="nav-btn" disabled aria-label="前のスライド">
+      <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+    </button>
+    
+    <div class="toc-select-wrapper">
+      <select id="toc-select" aria-label="スライド選択">
+        <option value="slide-1">1. 表紙</option>
+        <option value="slide-2">2. 中表紙</option>
+        <option value="slide-3">3. ステートメント</option>
+        <option value="slide-4">4. 3つ並び</option>
+        <option value="slide-5">5. 主役の数字</option>
+        <option value="slide-6">6. 写真＋文（担当者）</option>
+      </select>
+    </div>
+
+    <span id="page-indicator">1 / 6</span>
+
+    <button id="next-btn" class="nav-btn" aria-label="次のスライド">
+      <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+    </button>
+
+    <div id="progress-bar">
+      <div id="progress-bar-fill"></div>
+    </div>
+  </div>
+
+  <!-- ------------------------------------------------------------------
+       紙の色とインクの色の自動生成（パターンB）
+       表紙の data-accent を紙の色（--paper）にし、同じ色相で暗くした色を
+       インクの色（--duo）にする。紙とインクのコントラストが目標を超えるまで暗くする。
+       目標は紙の明るさで変える（ピンク 4.5:1 前後〜黄色 8:1）。
+       一律に高くすると、ピンクなどでインクが黒と見分けがつかず、2色刷りに見えない。
+       一律に低くすると、黄色などでインクが薄くなり、文字が読みにくい。
+       紙の色は明るい色にする（暗い色だとインクと見分けがつかない）。
+       ------------------------------------------------------------------ -->
+  <script>
+    (function () {
+      function lum(c) {
+        var a = c.map(function (v) {
+          v /= 255;
+          return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+        });
+        return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+      }
+      function ratio(x, y) {
+        var a = lum(x), b = lum(y);
+        return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+      }
+      function toHsl(c) {
+        var r = c[0] / 255, g = c[1] / 255, b = c[2] / 255;
+        var mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+        var hh = 0, s = 0, l = (mx + mn) / 2;
+        if (d) {
+          s = l > 0.5 ? d / (2 - mx - mn) : d / (mx + mn);
+          hh = mx === r ? ((g - b) / d + (g < b ? 6 : 0)) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+          hh /= 6;
+        }
+        return [hh, s, l];
+      }
+      function toRgb(hsl) {
+        var hh = hsl[0], s = hsl[1], l = hsl[2];
+        if (!s) { var v = Math.round(l * 255); return [v, v, v]; }
+        var q = l < 0.5 ? l * (1 + s) : l + s - l * s, p = 2 * l - q;
+        function ch(t) {
+          if (t < 0) t += 1; if (t > 1) t -= 1;
+          if (t < 1 / 6) return p + (q - p) * 6 * t;
+          if (t < 1 / 2) return q;
+          if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+          return p;
+        }
+        return [ch(hh + 1 / 3), ch(hh), ch(hh - 1 / 3)].map(function (v) { return Math.round(v * 255); });
+      }
+      function hex(c) {
+        return '#' + c.map(function (v) {
+          return ('0' + Math.max(0, Math.min(255, v)).toString(16)).slice(-2);
+        }).join('');
+      }
+
+      function apply(raw) {
+        var m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(String(raw == null ? '' : raw).trim());
+        if (!m) return false;
+        var h = m[1];
+        if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+        var paper = [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+
+        // 同じ色相のまま暗くしていき、紙と目標のコントラストを超えた最初の色をインクにする
+        var target = Math.max(4.5, Math.min(8, 4.5 + (lum(paper) - 0.25) * 10));
+        var hsl = toHsl(paper), duo = [0, 0, 0];
+        for (var i = 0; i <= 100; i++) {
+          var l = hsl[2] - i / 100;
+          if (l < 0) break;
+          var cand = toRgb([hsl[0], hsl[1], l]);
+          if (ratio(cand, paper) >= target) { duo = cand; break; }
+        }
+        if (lum(paper) < 0.2) console.warn('[パターンB] 紙の色が暗すぎます。明るい色にしてください:', hex(paper));
+
+        var s = document.documentElement.style;
+        s.setProperty('--paper', hex(paper));
+        s.setProperty('--paper-rgb', paper.join(', '));
+        s.setProperty('--duo', hex(duo));
+        s.setProperty('--duo-rgb', duo.join(', '));
+        return hex(paper);
+      }
+
+      function current() {
+        return getComputedStyle(document.documentElement).getPropertyValue('--paper').trim() || '#f2389b';
+      }
+
+      window.DiSAAccent = { apply: apply, current: current };
+
+      var host = document.querySelector('[data-accent]');
+      if (host && apply(host.getAttribute('data-accent')) === false) {
+        console.warn('[accent] カラーコードが不正です:', host.getAttribute('data-accent'));
+      }
+    })();
+  </script>
+
+  <!-- ▼制作用: 上のピッカーUIを動かすスクリプト。納品前にこの script ごと削除する -->
+  <script>
+    (function () {
+      var box = document.querySelector('.accent-picker');
+      if (!box || !window.DiSAAccent) return;
+
+      var swatch = box.querySelector('input[type="color"]');
+      var code = box.querySelector('input[type="text"]');
+      var host = document.querySelector('[data-accent]') || document.querySelector('.slide-lead');
+
+      function sync(hex) {
+        swatch.value = hex;
+        code.value = hex;
+        code.classList.remove('is-invalid');
+        if (host) host.setAttribute('data-accent', hex);
+      }
+
+      sync(window.DiSAAccent.current());
+
+      swatch.addEventListener('input', function () {
+        var hex = window.DiSAAccent.apply(swatch.value);
+        if (hex) sync(hex);
+      });
+
+      // 打ちかけの値でエラーを出さないよう、正しく読めたときだけ反映する
+      code.addEventListener('input', function () {
+        var hex = window.DiSAAccent.apply(code.value);
+        if (hex) {
+          swatch.value = hex;
+          code.classList.remove('is-invalid');
+          if (host) host.setAttribute('data-accent', hex);
+        } else {
+          code.classList.add('is-invalid');
+        }
+      });
+
+      // 入力を離れたタイミングで #rrggbb 表記に揃える（打っている最中は邪魔しない）
+      code.addEventListener('change', function () {
+        var hex = window.DiSAAccent.apply(code.value);
+        if (hex) sync(hex);
+        else sync(window.DiSAAccent.current());
+      });
+    })();
+  </script>
+
+  <!-- Slide Core Engine Script -->
+  <script>
+    (function () {
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const prevBtn = document.getElementById('prev-btn');
+      const nextBtn = document.getElementById('next-btn');
+      const pageIndicator = document.getElementById('page-indicator');
+      const progressBarFill = document.getElementById('progress-bar-fill');
+      const tocSelect = document.getElementById('toc-select');
+      const wrapper = document.getElementById('presentation-wrapper');
+      
+      let currentIndex = 0;
+
+      // Scaling presentation wrapper to fit window
+      const scalePresentation = () => {
+        const targetWidth = 1280;
+        const targetHeight = 720;
+        const scaleX = window.innerWidth / targetWidth;
+        const scaleY = window.innerHeight / targetHeight;
+        const scale = Math.min(scaleX, scaleY, 1.35); // 最大拡大率を少し制限して高精細を保つ
+        wrapper.style.transform = `scale(${scale})`;
+      };
+      
+      window.addEventListener('resize', scalePresentation);
+      scalePresentation();
+
+      const updateReveals = (slideEl) => {
+        const reveals = Array.from(slideEl.querySelectorAll('.reveal:not(.step)'));
+        reveals.forEach((el, index) => {
+          setTimeout(() => {
+            el.classList.add('revealed');
+          }, index * 150); // Stagger element entries
+        });
+      };
+
+      const resetReveals = (slideEl) => {
+        const reveals = Array.from(slideEl.querySelectorAll('.reveal'));
+        reveals.forEach(el => el.classList.remove('revealed'));
+      };
+
+      // .step はクリック（→キー等）で1つずつ出す。showAll が true なら全部出た状態にする
+      const getSteps = (slideEl) => Array.from(slideEl.querySelectorAll('.step'));
+
+      const setSteps = (slideEl, showAll) => {
+        getSteps(slideEl).forEach(el => el.classList.toggle('is-shown', showAll));
+      };
+
+      // クリックで深掘り: data-drill="パネルのid" を押すと、同じスライドの .drill-panel が開く
+      const closeDrill = (slideEl) => {
+        slideEl.classList.remove('has-drill-open');
+        slideEl.querySelectorAll('.drill-panel.is-open').forEach(p => p.classList.remove('is-open'));
+        slideEl.querySelectorAll('.is-drill-active').forEach(t => t.classList.remove('is-drill-active'));
+      };
+
+      const openDrill = (trigger) => {
+        const slideEl = trigger.closest('.slide');
+        const panel = slideEl.querySelector('#' + CSS.escape(trigger.dataset.drill));
+        if (!panel) return;
+        const wasActive = trigger.classList.contains('is-drill-active');
+        closeDrill(slideEl);
+        if (wasActive) return; // もう一度押したら閉じるだけ
+
+        // 押した要素がスライドの右半分にあれば、パネルは左から出す（押した要素を隠さない）
+        const t = trigger.getBoundingClientRect();
+        const s = slideEl.getBoundingClientRect();
+        panel.style.transition = 'none';
+        panel.classList.toggle('is-left', t.left + t.width / 2 > s.left + s.width / 2);
+        void panel.offsetWidth;
+        panel.style.transition = '';
+
+        panel.classList.add('is-open');
+        trigger.classList.add('is-drill-active');
+        slideEl.classList.add('has-drill-open');
+      };
+
+      document.querySelectorAll('[data-drill]').forEach(t => {
+        t.setAttribute('role', 'button');
+        t.setAttribute('tabindex', '0');
+        t.setAttribute('aria-controls', t.dataset.drill);
+      });
+
+      document.querySelectorAll('.drill-panel').forEach(panel => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'drill-close';
+        btn.setAttribute('aria-label', '閉じる');
+        btn.textContent = '×';
+        panel.prepend(btn);
+      });
+
+      document.addEventListener('click', (e) => {
+        const trigger = e.target.closest('[data-drill]');
+        if (trigger) {
+          openDrill(trigger);
+        } else if (e.target.closest('.drill-close') || !e.target.closest('.drill-panel, #nav-controls')) {
+          closeDrill(slides[currentIndex]);
+        }
+      });
+
+      const goToSlide = (index, skipHistory, showAllSteps) => {
+        if (index < 0 || index >= slides.length) return;
+
+        closeDrill(slides[currentIndex]);
+        resetReveals(slides[currentIndex]);
+        slides[currentIndex].classList.remove('active');
+
+        currentIndex = index;
+
+        setSteps(slides[currentIndex], !!showAllSteps);
+        slides[currentIndex].classList.add('active');
+        updateReveals(slides[currentIndex]);
+
+        // UI state updates
+        prevBtn.disabled = currentIndex === 0;
+        nextBtn.disabled = currentIndex === slides.length - 1;
+
+        const pageNum = currentIndex + 1;
+        pageIndicator.textContent = `${pageNum} / ${slides.length}`;
+        progressBarFill.style.width = `${(pageNum / slides.length) * 100}%`;
+        tocSelect.value = slides[currentIndex].id;
+
+        // 更新・リロードしても最後に見ていたスライドに戻れるよう、URLハッシュに現在地を保存する
+        if (!skipHistory) {
+          history.replaceState(null, '', '#' + slides[currentIndex].id);
+        }
+        // URLのハッシュを消して開き直すビューア（プレビュー画面の自動更新など）向けに、ブラウザにも現在地を残す
+        try { localStorage.setItem('slide-pos:' + location.pathname, slides[currentIndex].id); } catch (e) {}
+      };
+
+      // 次へ: 隠れている .step があれば1つ出す。なければ次のスライドへ
+      const next = () => {
+        if (slides[currentIndex].classList.contains('has-drill-open')) {
+          closeDrill(slides[currentIndex]); // 詳細を開いているときは、まず閉じる
+          return;
+        }
+        const hidden = getSteps(slides[currentIndex]).find(el => !el.classList.contains('is-shown'));
+        if (hidden) {
+          hidden.classList.add('is-shown');
+        } else if (currentIndex < slides.length - 1) {
+          goToSlide(currentIndex + 1);
+        }
+      };
+
+      // 前へ: 出ている .step があれば最後の1つを隠す。なければ前のスライドを全部出た状態で表示
+      const prev = () => {
+        if (slides[currentIndex].classList.contains('has-drill-open')) {
+          closeDrill(slides[currentIndex]);
+          return;
+        }
+        const shown = getSteps(slides[currentIndex]).filter(el => el.classList.contains('is-shown'));
+        if (shown.length) {
+          shown[shown.length - 1].classList.remove('is-shown');
+        } else if (currentIndex > 0) {
+          goToSlide(currentIndex - 1, false, true);
+        }
+      };
+
+      prevBtn.addEventListener('click', prev);
+      nextBtn.addEventListener('click', next);
+
+      tocSelect.addEventListener('change', (e) => {
+        const targetId = e.target.value;
+        const targetIndex = slides.findIndex(s => s.id === targetId);
+        if (targetIndex !== -1) goToSlide(targetIndex);
+      });
+
+      // Keyboard Controls
+      document.addEventListener('keydown', (e) => {
+        // 目次やアクセント色の入力中はページを送らない
+        if (e.target.closest && e.target.closest('input, select, textarea')) return;
+
+        if (e.key === 'Escape') {
+          closeDrill(slides[currentIndex]);
+          return;
+        }
+        if (e.key === 'Enter' && e.target.closest && e.target.closest('[data-drill]')) {
+          openDrill(e.target.closest('[data-drill]'));
+          return;
+        }
+
+        // PageDown / PageUp はプレゼン用クリッカーが送るキー
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+          e.preventDefault();
+          next();
+        } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+          e.preventDefault();
+          prev();
+        }
+      });
+
+      // 初期表示: URLハッシュに前回のスライドIDが残っていれば、そこから再開する
+      let savedId = window.location.hash.replace('#', '');
+      if (!savedId) { try { savedId = localStorage.getItem('slide-pos:' + location.pathname) || ''; } catch (e) {} }
+      const restoreIndex = slides.findIndex(s => s.id === savedId);
+      if (restoreIndex > 0) {
+        slides[0].classList.remove('active');
+        goToSlide(restoreIndex, true, true);
+      } else {
+        setTimeout(() => updateReveals(slides[0]), 300);
+      }
+    })();
+  </script>
+
+</body>
+
+</html>
+

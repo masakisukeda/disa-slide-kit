@@ -12,7 +12,8 @@ PowerPoint も Google スライドも使いません。**HTMLファイル1枚が
 GitHubのファイル一覧では `.html` がソースコードとして表示されます。**実物はこちら。**
 
 - **[パターン集を見る](https://masakisukeda.github.io/disa-slide-kit/patterns.html)** — 33パターンのカタログ
-- **[テンプレートを見る](https://masakisukeda.github.io/disa-slide-kit/template.html)** — 新規作成の起点
+- **[テンプレートを見る](https://masakisukeda.github.io/disa-slide-kit/template.html)** — 新規作成の起点（パターンA）
+- **[パターンBを見る](https://masakisukeda.github.io/disa-slide-kit/template_B.html)** — 2色刷り・網点写真・特大の文字のテンプレート
 
 矢印キー（← →）でスライドを送れます。表紙の右下のピッカーで色も試せます。
 
@@ -21,6 +22,7 @@ GitHubのファイル一覧では `.html` がソースコードとして表示�
 | ファイル | 中身 |
 | --- | --- |
 | `template.html` | 新規作成の起点。1ページ=1スライドの構造、ナビゲーション、印刷レイアウト込みで6枚ぶん |
+| `template_B.html` | パターンB。レコードジャケットのような「2色刷り＋網点写真＋特大の詰め組み」の見た目。仕組みは `template.html` と同じで、見た目だけが違う。表紙・中表紙・ステートメント・3つ並び・主役の数字・写真＋文の6枚ぶん。ルールの違いは `STYLE_GUIDE.md` 1章「パターンB」 |
 | `patterns.html` | レイアウト部品のカタログ。比較テーブル、Before/Afterフロー、4象限、ロードマップ、タイムライン、目次、中表紙、数値ハイライト、人物紹介など33パターン |
 | `STYLE_GUIDE.md` | 作成ルール。構成の決め方、配色、文字サイズ、PDF書き出しの手順と失敗例まで |
 | `logo.svg` | 差し替え用のプレースホルダロゴ |
@@ -29,7 +31,7 @@ GitHubのファイル一覧では `.html` がソースコードとして表示�
 ## 使い方
 
 1. このリポジトリをダウンロードする（`Code` → `Download ZIP`、または `git clone`）
-2. `template.html` を案件用のフォルダへコピーして `index.html` にリネームする
+2. `template.html`（パターンBなら `template_B.html`）を案件用のフォルダへコピーして `index.html` にリネームする
 3. `logo.svg` と `profile-photo.svg` を同じフォルダに置き、**自社のものに差し替える**
 4. ブラウザで `index.html` を開く。矢印キーでスライドが送れる
 5. 部品が要るときは `patterns.html` をブラウザで開き、使いたいスライドの
@@ -45,6 +47,8 @@ GitHubのファイル一覧では `.html` がソースコードとして表示�
 
 濃淡やホバー色などの派生色は、末尾のスクリプトが自動で計算します。
 `data-accent` を書かなければ、既定のネオンイエローのままです。
+
+パターンB（`template_B.html`）では、`data-accent` が**紙の色**になります。インクの色は同じ色相で暗くして自動で作るので、紙の色には明るい色を選んでください。
 
 制作中は表紙の右下にカラーピッカーが出るので、そこで色を試してから確定できます。
 **ピッカーで選んだ色はファイルに保存されません。** 決まったら `data-accent` に書いてください。
