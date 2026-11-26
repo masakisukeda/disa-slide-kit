@@ -209,6 +209,12 @@
     }
     /* 文字を上に重ねる写真は、全体を薄くして文字を読めるようにする */
     .halftone.is-faded img { opacity: 0.62; }
+    /* マウスを乗せると元の写真に戻す（2026-11-25 すけさん）。表紙は文字の層がマウスを素通りさせる */
+    .halftone img, .halftone::before, .halftone::after { transition: opacity 0.3s, filter 0.3s; }
+    .halftone:hover img { filter: none; mix-blend-mode: normal; opacity: 1; }
+    .halftone:hover::before, .halftone:hover::after { opacity: 0; }
+    .p-cover .slide-body, .p-cover .poster-head { pointer-events: none; }
+    .p-cover .slide-body a, .p-cover .poster-head a { pointer-events: auto; }
 
     /* ---------- 1. 表紙 ---------- */
     .p-cover .halftone {
@@ -874,6 +880,8 @@
       const wrapper = document.getElementById('presentation-wrapper');
       
       let currentIndex = 0;
+      // 最後に見ていたページを覚えるのは手元のプレビュー（ファイル・localhost）だけ。公開したスライドは毎回1枚目から開く（2026-11-26）
+      const isLocalPreview = location.protocol === 'file:' || /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
 
       // Scaling presentation wrapper to fit window
       const scalePresentation = () => {
@@ -988,7 +996,7 @@
           history.replaceState(null, '', '#' + slides[currentIndex].id);
         }
         // URLのハッシュを消して開き直すビューア（プレビュー画面の自動更新など）向けに、ブラウザにも現在地を残す
-        try { localStorage.setItem('slide-pos:' + location.pathname, slides[currentIndex].id); } catch (e) {}
+        if (isLocalPreview) try { localStorage.setItem('slide-pos:' + location.pathname, slides[currentIndex].id); } catch (e) {}
       };
 
       // 次へ: 隠れている .step があれば1つ出す。なければ次のスライドへ
@@ -1054,7 +1062,7 @@
 
       // 初期表示: URLハッシュに前回のスライドIDが残っていれば、そこから再開する
       let savedId = window.location.hash.replace('#', '');
-      if (!savedId) { try { savedId = localStorage.getItem('slide-pos:' + location.pathname) || ''; } catch (e) {} }
+      if (!savedId && isLocalPreview) { try { savedId = localStorage.getItem('slide-pos:' + location.pathname) || ''; } catch (e) {} }
       const restoreIndex = slides.findIndex(s => s.id === savedId);
       if (restoreIndex > 0) {
         slides[0].classList.remove('active');

@@ -5965,6 +5965,8 @@
       const wrapper = document.getElementById('presentation-wrapper');
       
       let currentIndex = 0;
+      // 最後に見ていたページを覚えるのは手元のプレビュー（ファイル・localhost）だけ。公開したスライドは毎回1枚目から開く（2026-11-26）
+      const isLocalPreview = location.protocol === 'file:' || /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
 
       // Scaling presentation wrapper to fit window
       const scalePresentation = () => {
@@ -6079,7 +6081,7 @@
           history.replaceState(null, '', '#' + slides[currentIndex].id);
         }
         // URLのハッシュを消して開き直すビューア（プレビュー画面の自動更新など）向けに、ブラウザにも現在地を残す
-        try { localStorage.setItem('slide-pos:' + location.pathname, slides[currentIndex].id); } catch (e) {}
+        if (isLocalPreview) try { localStorage.setItem('slide-pos:' + location.pathname, slides[currentIndex].id); } catch (e) {}
       };
 
       // 次へ: 隠れている .step があれば1つ出す。なければ次のスライドへ
@@ -6145,7 +6147,7 @@
 
       // 初期表示: URLハッシュに前回のスライドIDが残っていれば、そこから再開する
       let savedId = window.location.hash.replace('#', '');
-      if (!savedId) { try { savedId = localStorage.getItem('slide-pos:' + location.pathname) || ''; } catch (e) {} }
+      if (!savedId && isLocalPreview) { try { savedId = localStorage.getItem('slide-pos:' + location.pathname) || ''; } catch (e) {} }
       const restoreIndex = slides.findIndex(s => s.id === savedId);
       if (restoreIndex > 0) {
         slides[0].classList.remove('active');
